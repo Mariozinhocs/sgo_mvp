@@ -1,6 +1,6 @@
 {
-  "name": "Connect MVP",
-  "short_name": "Connect",
+  "name": "SGO MVP",
+  "short_name": "SGO",
   "description": "Webapp PWA para check-in, assinatura e dashboard operacional.",
   "start_url": ".",
   "scope": ".",
