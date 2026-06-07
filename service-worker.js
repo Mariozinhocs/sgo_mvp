@@ -3,6 +3,7 @@ const URLS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json'
+  // Você pode adicionar CSS/JS externos aqui se separar arquivos depois.
 ];
 
 self.addEventListener('install', event => {
@@ -14,9 +15,13 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      }))
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
     )
   );
 });
