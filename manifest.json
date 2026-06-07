@@ -1,12 +1,12 @@
 {
-  "name": "SGO – Ponto Eletrônico",
-  "short_name": "SGO Ponto",
+  "name": "SGO – Sioux",
+  "short_name": "SGO Operacional",
   "description": "Sistema de registro de ponto eletrônico com geolocalização para equipes em postos distribuídos.",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#0f172a",
+  "background_color": "#020826",
+  "theme_color": "#020826",
   "lang": "pt-BR",
   "icons": [
     {
