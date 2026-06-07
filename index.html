@@ -4,138 +4,220 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f172a" />
-  <title>Connect MVP</title>
+  <title>SGO – Ponto Eletrônico</title>
   <link rel="manifest" href="manifest.json">
   <style>
+    * { box-sizing: border-box; }
     body{font-family:Arial,sans-serif;margin:0;background:#f5f7fb;color:#1f2937}
-    header{background:#0f172a;color:#fff;padding:20px 24px}
+    header{background:#0f172a;color:#fff;padding:20px 24px;text-align:center}
     h1{margin:0;font-size:22px}
-    main{padding:20px;max-width:1100px;margin:auto}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
-    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+    main{padding:20px;max-width:480px;margin:0 auto}
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.06);margin-bottom:16px}
     .row{display:flex;gap:10px;flex-wrap:wrap}
-    input,button,textarea{font:inherit;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px}
-    button{background:#2563eb;color:#fff;border:none;cursor:pointer}
+    input,button{font:inherit;padding:10px 12px;border-radius:10px}
+    input{border:1px solid #cbd5e1;width:100%}
+    button{border:none;cursor:pointer}
+    button.primary{background:#2563eb;color:#fff}
     button.secondary{background:#e2e8f0;color:#111827}
-    ul{padding-left:18px}
+    button:disabled{opacity:0.6;cursor:not-allowed}
     .small{font-size:12px;color:#64748b}
-    .pill{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-size:12px;margin-right:6px}
-    #map{height:260px;background:linear-gradient(135deg,#dbeafe,#eff6ff);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#334155}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px}
+    .status-pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px}
+    .ativo{background:#dcfce7;color:#166534}
+    .inativo{background:#fee2e2;color:#b91c1c}
+    ul{padding-left:18px;margin:8px 0}
+    li{font-size:13px;margin-bottom:4px}
+    h2{margin-top:0;font-size:18px}
   </style>
 </head>
 <body>
 <header>
-  <h1>SGO MVP</h1>
-  <div class="small">Webapp/PWA para check-in, assinatura e dashboard</div>
+  <h1>SGO – Ponto Eletrônico</h1>
+  <div class="small">Registro de presença georreferenciado</div>
 </header>
 
 <main>
-  <div class="grid">
-    <section class="card">
-      <h2>Check-in</h2>
-      <div class="row">
-        <button id="btnGeo">Capturar geolocalização</button>
-        <button class="secondary" id="btnQR">Validar QR</button>
+  <!-- Tela de login -->
+  <section id="screen-login" class="card">
+    <h2>Login do colaborador</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
+      <input id="loginUser" placeholder="Usuário (CPF, matrícula ou e-mail)" />
+      <input id="loginPass" type="password" placeholder="Senha" />
+      <button id="btnLogin" class="primary">Entrar</button>
+    </div>
+    <p class="small" id="loginMsg"></p>
+  </section>
+
+  <!-- Tela de ponto -->
+  <section id="screen-ponto" style="display:none">
+    <div class="card">
+      <p class="small">
+        Usuário: <strong id="userName"></strong>
+      </p>
+      <p class="small">
+        Situação atual:
+        <span id="statusPill" class="status-pill inativo">Inativo</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Registro de ponto</h2>
+
+      <div class="row" style="margin-bottom:10px">
+        <button id="btnCheckin" class="primary">Registrar ponto (check-in)</button>
+        <button id="btnCheckout" class="secondary">Registrar saída (check-out)</button>
       </div>
-      <p class="small" id="geoInfo">Sem localização capturada.</p>
-      <div id="map">Mapa/placeholder de localização</div>
-      <p><span class="pill">Status</span><span id="checkStatus">Aguardando check-in</span></p>
-      <button id="btnCheckin">Registrar check-in</button>
-    </section>
 
-    <section class="card">
-      <h2>Assinatura</h2>
-      <p class="small">Documento pendente</p>
-      <textarea id="docText" rows="5" style="width:100%">Holerite/Documento operacional exemplo</textarea>
-      <div class="row" style="margin-top:10px">
-        <input id="sigName" placeholder="Nome para assinatura" />
-        <button id="btnSign">Assinar</button>
-      </div>
-      <p class="small" id="signStatus">Sem assinatura realizada.</p>
-    </section>
-  </div>
+      <p class="small" id="lastMsg">
+        Nenhum ponto registrado nesta sessão.
+      </p>
+    </div>
 
-  <div class="grid" style="margin-top:16px">
-    <section class="card">
-      <h2>Dashboard</h2>
-      <table>
-        <thead><tr><th>Métrica</th><th>Valor</th></tr></thead>
-        <tbody>
-          <tr><td>Colaboradores ativos</td><td id="m1">12</td></tr>
-          <tr><td>Check-ins hoje</td><td id="m2">8</td></tr>
-          <tr><td>Documentos pendentes</td><td id="m3">3</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="card">
-      <h2>Histórico</h2>
+    <div class="card">
+      <h2>Histórico local</h2>
       <ul id="history"></ul>
-    </section>
-  </div>
+      <p class="small">
+        *Histórico armazenado apenas neste dispositivo. Integração com o sistema central será feita em fase posterior.
+      </p>
+    </div>
+
+    <div style="text-align:right">
+      <button id="btnLogout" class="secondary">Sair</button>
+    </div>
+  </section>
 </main>
 
 <script>
-let currentPos = null;
-const historyEl = document.getElementById('history');
+  const screenLogin = document.getElementById('screen-login');
+  const screenPonto = document.getElementById('screen-ponto');
+  const userNameEl = document.getElementById('userName');
+  const statusPill = document.getElementById('statusPill');
+  const lastMsg = document.getElementById('lastMsg');
+  const historyEl = document.getElementById('history');
+  const loginMsg = document.getElementById('loginMsg');
+  const btnCheckin = document.getElementById('btnCheckin');
+  const btnCheckout = document.getElementById('btnCheckout');
 
-function addHistory(text){
-  const li=document.createElement('li');
-  li.textContent = new Date().toLocaleTimeString('pt-BR')+' - '+text;
-  historyEl.prepend(li);
-}
+  let currentUser = null;
+  let statusAtual = 'Inativo'; // 'Ativo' ou 'Inativo'
 
-document.getElementById('btnGeo').onclick = ()=>{
-  if(!navigator.geolocation){
-    alert('Geolocalização indisponível');
-    return;
+  function showScreen(name) {
+    if (name === 'login') {
+      screenLogin.style.display = 'block';
+      screenPonto.style.display = 'none';
+    } else {
+      screenLogin.style.display = 'none';
+      screenPonto.style.display = 'block';
+    }
   }
-  navigator.geolocation.getCurrentPosition(p=>{
-    currentPos = {lat:p.coords.latitude, lng:p.coords.longitude};
-    document.getElementById('geoInfo').textContent = `Lat ${currentPos.lat.toFixed(6)} | Lng ${currentPos.lng.toFixed(6)}`;
-    document.getElementById('map').textContent = 'Localização capturada com sucesso';
-    addHistory('Geolocalização capturada');
-  }, ()=>{
-    alert('Não foi possível obter a localização');
-  }, {enableHighAccuracy:true, timeout:10000});
-};
 
-document.getElementById('btnQR').onclick = ()=>{
-  addHistory('QR Code validado (simulado)');
-  alert('Validação de QR simulada no MVP');
-};
-
-document.getElementById('btnCheckin').onclick = ()=>{
-  if(!currentPos){
-    alert('Capture a geolocalização primeiro');
-    return;
+  function atualizarStatus(novoStatus) {
+    statusAtual = novoStatus;
+    statusPill.textContent = statusAtual;
+    if (statusAtual === 'Ativo') {
+      statusPill.classList.remove('inativo');
+      statusPill.classList.add('ativo');
+      btnCheckin.disabled = true;
+      btnCheckout.disabled = false;
+    } else {
+      statusPill.classList.remove('ativo');
+      statusPill.classList.add('inativo');
+      btnCheckin.disabled = false;
+      btnCheckout.disabled = true;
+    }
   }
-  document.getElementById('checkStatus').textContent = 'Check-in registrado com sucesso';
-  document.getElementById('m2').textContent = String(Number(document.getElementById('m2').textContent)+1);
-  addHistory('Check-in registrado');
-};
 
-document.getElementById('btnSign').onclick = ()=>{
-  const name = document.getElementById('sigName').value.trim();
-  if(!name){
-    alert('Informe o nome para assinatura');
-    return;
+  function addHistory(text) {
+    const li = document.createElement('li');
+    li.textContent = new Date().toLocaleTimeString('pt-BR') + ' - ' + text;
+    historyEl.prepend(li);
   }
-  document.getElementById('signStatus').textContent = `Assinado por ${name}`;
-  document.getElementById('m3').textContent = String(Math.max(0, Number(document.getElementById('m3').textContent)-1));
-  addHistory('Documento assinado por '+name);
-};
 
-addHistory('Sistema iniciado');
+  // Restaura sessão se existir
+  const savedUser = localStorage.getItem('sgo_user');
+  if (savedUser) {
+    currentUser = savedUser;
+    userNameEl.textContent = currentUser;
+    atualizarStatus('Inativo');
+    showScreen('ponto');
+  } else {
+    showScreen('login');
+  }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js');
-  });
-}
+  // Login (MVP: qualquer usuário/senha não vazios é aceito)
+  document.getElementById('btnLogin').onclick = () => {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if (!u || !p) {
+      loginMsg.textContent = 'Informe usuário e senha.';
+      return;
+    }
+    currentUser = u;
+    localStorage.setItem('sgo_user', currentUser);
+    userNameEl.textContent = currentUser;
+    loginMsg.textContent = '';
+    atualizarStatus('Inativo');
+    addHistory('Login efetuado por ' + currentUser);
+    showScreen('ponto');
+  };
+
+  // Logout
+  document.getElementById('btnLogout').onclick = () => {
+    localStorage.removeItem('sgo_user');
+    currentUser = null;
+    historyEl.innerHTML = '';
+    lastMsg.textContent = 'Nenhum ponto registrado nesta sessão.';
+    atualizarStatus('Inativo');
+    showScreen('login');
+  };
+
+  // Função: captura localização e registra ponto (check-in ou check-out)
+  function registrarPonto(tipo) {
+    const now = new Date();
+    const dataHora = now.toLocaleString('pt-BR');
+
+    function finalizarRegistro(locStr) {
+      lastMsg.textContent = `${tipo} registrado em ${dataHora} – ${locStr}`;
+      addHistory(`${tipo} registrado – ${locStr}`);
+      // Futuro: enviar via fetch() para o backend com usuário, tipo, data/hora e coordenadas.
+    }
+
+    if (!navigator.geolocation) {
+      const locStr = 'Localização não capturada (geolocalização indisponível)';
+      finalizarRegistro(locStr);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      const locStr = `Lat ${lat}, Lng ${lng}`;
+      finalizarRegistro(locStr);
+    }, () => {
+      const locStr = 'Localização não capturada (erro ao obter posição)';
+      finalizarRegistro(locStr);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  // Check-in
+  btnCheckin.onclick = () => {
+    if (!currentUser) return;
+    registrarPonto('Check-in');
+    atualizarStatus('Ativo');
+  };
+
+  // Check-out
+  btnCheckout.onclick = () => {
+    if (!currentUser) return;
+    registrarPonto('Check-out');
+    atualizarStatus('Inativo');
+  };
+
+  // Registro do service worker para PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js');
+    });
+  }
 </script>
 </body>
 </html>
