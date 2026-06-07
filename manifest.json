@@ -1,7 +1,7 @@
 {
-  "name": "SGO MVP",
-  "short_name": "SGO",
-  "description": "Webapp PWA para check-in, assinatura e dashboard operacional.",
+  "name": "SGO – Ponto Eletrônico",
+  "short_name": "SGO Ponto",
+  "description": "Sistema de registro de ponto eletrônico com geolocalização para equipes em postos distribuídos.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
