@@ -55,7 +55,7 @@
     .card {
       position: relative;
       background: var(--bg-card);
-      max-width: 420px;
+      max-width: 460px;
       width:100%;
       border-radius: 18px;
       padding: 20px 18px 20px;
@@ -73,7 +73,7 @@
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.6);
       background: rgba(15,23,42,0.04);
-      color: var(--text-secondary);
+      color:var(--text-secondary);
       display:flex;
       align-items:center;
       gap:6px;
@@ -244,7 +244,25 @@
       border-radius:999px;
       background:rgba(148,163,184,0.16);
       font-size:11px;
-      margin-right:4px;
+      margin:2px 4px 2px 0;
+    }
+
+    .badge-role span.kind {
+      font-size:11px;
+      color:#9ca3af;
+    }
+
+    .hint-users {
+      margin-top:6px;
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .hint-users code {
+      background:rgba(148,163,184,0.12);
+      padding:2px 4px;
+      border-radius:4px;
+      font-size:11px;
     }
   </style>
 </head>
@@ -270,7 +288,7 @@
         id="identificador"
         type="text"
         required
-        placeholder="Ex: 00123 ou nome.sobrenome ou nome@empresa.com"
+        placeholder="Ex: user.user, gestor.gestor ou admin.admin"
         autocomplete="username" />
 
       <label for="senha">Senha</label>
@@ -278,7 +296,7 @@
         id="senha"
         type="password"
         required
-        placeholder="Sua senha"
+        placeholder="Senha de teste: 123456"
         autocomplete="current-password" />
 
       <button id="btnEntrar" class="primary" type="submit">
@@ -286,8 +304,10 @@
       </button>
 
       <p class="small" style="margin-top:8px;">
-        • Login aceita matrícula, nome de usuário (nome.sobrenome) ou e-mail institucional, conforme configurado pelo gestor.<br>
-        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor).
+        • Login de demonstração com usuários de teste (dados locais, sem backend).<br>
+        • Operador: <strong>user.user</strong> / <strong>123456</strong> (apenas painel do Operador).<br>
+        • Supervisor: <strong>gestor.gestor</strong> / <strong>123456</strong> (Operador + Gestor com escopo limitado de postos; não cria usuários).<br>
+        • Gerente de Operação: <strong>admin.admin</strong> / <strong>123456</strong> (Operador + Gestor global; no futuro terá visão de delegação, não criação direta de usuários).
       </p>
     </form>
 
@@ -307,6 +327,12 @@
       <button id="btnIrGestor" class="secondary" type="button" style="display:none">
         Painel do Gestor
       </button>
+
+      <div class="hint-users" id="hintGestor" style="display:none;">
+        • Perfis de gestão neste dispositivo:
+        <br>– <code>gestor.gestor</code>: SUPERVISOR (vê apenas postos e equipes atribuídos; sem criação de usuários).
+        <br>– <code>admin.admin</code>: GERENTE_OPERACAO (vê todos os postos/supervisores; criação/atribuição/exclusão de usuários ficará em módulo específico no futuro).
+      </div>
     </div>
   </div>
 
@@ -375,6 +401,7 @@
   const rolesBadges  = document.getElementById('rolesBadges');
   const btnIrOperador = document.getElementById('btnIrOperador');
   const btnIrGestor   = document.getElementById('btnIrGestor');
+  const hintGestor    = document.getElementById('hintGestor');
 
   function limparMensagens() {
     msgErro.style.display = 'none';
@@ -397,18 +424,99 @@
     areaPerfis.style.display = 'block';
     const ident = usuario.identificadorExibicao || usuario.email || usuario.username || usuario.matricula || '';
     textoUsuario.textContent = `Autenticado como ${usuario.nome}${ident ? ' (' + ident + ')' : ''}.`;
-    rolesBadges.innerHTML = '';
 
+    rolesBadges.innerHTML = '';
     const roles = usuario.roles || [];
+
     roles.forEach(r => {
       const span = document.createElement('span');
       span.className = 'badge-role';
-      span.textContent = r;
+      let label = r;
+      let tipo = '';
+      if (r === 'OPERADOR')          { label = 'Operador'; tipo = 'Campo'; }
+      if (r === 'SUPERVISOR')       { label = 'Supervisor'; tipo = 'Gestão parcial'; }
+      if (r === 'GERENTE_OPERACAO') { label = 'Gerente de Operação'; tipo = 'Gestão global'; }
+      span.innerHTML = `<strong>${label}</strong>${tipo ? '<span class="kind"> · ' + tipo + '</span>' : ''}`;
       rolesBadges.appendChild(span);
     });
 
-    btnIrOperador.style.display = roles.includes('OPERADOR') ? 'inline-flex' : 'none';
-    btnIrGestor.style.display   = roles.includes('GESTOR')   ? 'inline-flex' : 'none';
+    const temOperador = roles.includes('OPERADOR');
+    const temGestor   = roles.includes('SUPERVISOR') || roles.includes('GERENTE_OPERACAO');
+
+    btnIrOperador.style.display = temOperador ? 'inline-flex' : 'none';
+    btnIrGestor.style.display   = temGestor   ? 'inline-flex' : 'none';
+    hintGestor.style.display    = temGestor   ? 'block'      : 'none';
+  }
+
+  function criarUsuarioMock(identificador, senha) {
+    // Três usuários de teste locais:
+    // 1) user.user  -> apenas OPERADOR
+    // 2) gestor.gestor -> OPERADOR + SUPERVISOR (escopo limitado, sem criação de usuários)
+    // 3) admin.admin   -> OPERADOR + GERENTE_OPERACAO (escopo total, futura delegação)
+    if (senha !== '123456') return null;
+
+    if (identificador === 'user.user') {
+      return {
+        id: 2,
+        nome: 'Operador Demo',
+        email: 'user.user@empresa.com',
+        username: 'user.user',
+        matricula: '00002',
+        documento: '111.111.111-11',
+        telefone: '(00) 00000-0001',
+        postoPrincipal: 'UBS Centro',
+        postoPrincipalLat: -3.132000,
+        postoPrincipalLng: -60.021000,
+        situacao: 'Ativo',
+        deveTrocarSenha: false,
+        roles: ['OPERADOR'],
+        escopoPostos: [] // operador puro não tem escopo de gestão
+      };
+    }
+
+    if (identificador === 'gestor.gestor') {
+      return {
+        id: 3,
+        nome: 'Supervisor Demo',
+        email: 'gestor.gestor@empresa.com',
+        username: 'gestor.gestor',
+        matricula: '00003',
+        documento: '222.222.222-22',
+        telefone: '(00) 00000-0002',
+        postoPrincipal: 'UBS Centro',
+        postoPrincipalLat: -3.132000,
+        postoPrincipalLng: -60.021000,
+        situacao: 'Ativo',
+        deveTrocarSenha: false,
+        // Supervisor: vê apenas alguns postos e respectivas equipes; não cria usuários
+        roles: ['OPERADOR', 'SUPERVISOR'],
+        escopoPostos: [2, 3] // Exemplo: UBS Centro (2) e Escola Zona Leste (3)
+      };
+    }
+
+    if (identificador === 'admin.admin') {
+      return {
+        id: 1,
+        nome: 'Admin Demo',
+        email: 'admin.admin@empresa.com',
+        username: 'admin.admin',
+        matricula: '00001',
+        documento: '000.000.000-00',
+        telefone: '(00) 00000-0000',
+        postoPrincipal: 'Centro de Cooperação da Cidade',
+        postoPrincipalLat: -3.089968,
+        postoPrincipalLng: -60.009204,
+        situacao: 'Ativo',
+        deveTrocarSenha: true,
+        // Gerente de Operação: visão global de postos/supervisores/equipes.
+        // Criação/atribuição/exclusão de usuários será feita, no futuro,
+        // por um módulo específico (não pelo Supervisor).
+        roles: ['OPERADOR', 'GERENTE_OPERACAO'],
+        escopoPostos: 'TODOS'
+      };
+    }
+
+    return null;
   }
 
   formLogin.addEventListener('submit', async (e) => {
@@ -426,39 +534,25 @@
     btnEntrar.disabled = true;
     btnEntrar.textContent = 'Validando...';
 
-    // ---- MOCK LOCAL admin.admin / 123456 ----
-    if (identificador === 'admin.admin' && senha === '123456') {
-      const usuarioMock = {
-        id: 1,
-        nome: 'Admin Demo',
-        email: 'admin.admin@empresa.com',
-        username: 'admin.admin',
-        matricula: '00001',
-        documento: '000.000.000-00',
-        telefone: '(00) 00000-0000',
-
-        // Posto principal já atribuído ao Admin
-        postoPrincipal: 'Centro de Cooperação da Cidade',
-        postoPrincipalLat: -3.089968,
-        postoPrincipalLng: -60.009204,
-
-        situacao: 'Ativo',
-        deveTrocarSenha: true,
-        roles: ['OPERADOR', 'GESTOR'],
-        // features: ['central_controle']
-      };
-
-      localStorage.setItem('sgo_auth_token', 'token-mock-admin');
+    // ---- MOCK LOCAL: user.user, gestor.gestor, admin.admin ----
+    const usuarioMock = criarUsuarioMock(identificador, senha);
+    if (usuarioMock) {
+      localStorage.setItem('sgo_auth_token', 'token-mock-' + usuarioMock.username);
       localStorage.setItem('sgo_usuario', JSON.stringify(usuarioMock));
 
-      mostrarOk('Login de teste realizado (admin.admin).');
+      if (usuarioMock.deveTrocarSenha) {
+        mostrarOk('Login de teste realizado. No primeiro acesso completo, será solicitada troca de senha.');
+      } else {
+        mostrarOk('Login de teste realizado.');
+      }
+
       popularPerfis(usuarioMock);
 
       btnEntrar.disabled = false;
       btnEntrar.textContent = 'Entrar';
       return;
     }
-    // ---- FIM MOCK ----
+    // ---- FIM MOCK LOCAL ----
 
     try {
       const resp = await fetch(API_LOGIN_URL, {
@@ -512,6 +606,7 @@
     window.location.href = 'gestor.html';
   });
 
+  // Se já existe usuário no localStorage, reaproveita
   (function checkUsuarioLocal() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
