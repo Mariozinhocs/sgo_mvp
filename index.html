@@ -6,8 +6,9 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Acesso</title>
 
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="icon" type="image/png" href="icon-512.png" />
+  <!-- Ícones na pasta "icons" -->
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+  <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
   <style>
     :root {
@@ -256,6 +257,7 @@
 
     <div class="logo-wrapper">
       <div class="logo-img">
+        <!-- Logo vindo da pasta "icons" -->
         <img src="icons/icon-512.png" alt="SGO" />
       </div>
       <h1>SGO</h1>
@@ -285,7 +287,7 @@
 
       <p class="small" style="margin-top:8px;">
         • Login aceita matrícula, nome de usuário (nome.sobrenome) ou e-mail institucional, conforme configurado pelo gestor.<br>
-        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor). [web:245]
+        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor).
       </p>
     </form>
 
@@ -424,7 +426,7 @@
     btnEntrar.disabled = true;
     btnEntrar.textContent = 'Validando...';
 
-    // ---- MOCK LOCAL admin.admin / 123456 ---- [web:245]
+    // ---- MOCK LOCAL admin.admin / 123456 ----
     if (identificador === 'admin.admin' && senha === '123456') {
       const usuarioMock = {
         id: 1,
@@ -443,7 +445,6 @@
         situacao: 'Ativo',
         deveTrocarSenha: true,
         roles: ['OPERADOR', 'GESTOR'],
-        // exemplo de feature futura para Central de Controle:
         // features: ['central_controle']
       };
 
