@@ -6,116 +6,97 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Operador</title>
 
-  <!-- Manifest e favicon -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" type="image/x-icon" href="./favicon.ico">
-
   <style>
     :root {
-      /* Tema LIGHT (padrão) */
-      --bg-body: #f3f4f6;
-      --bg-header: #020826;
-      --bg-card: #ffffff;
-      --text-main: #111827;
-      --text-secondary: #6b7280;
-      --primary: #2563eb;
-      --primary-contrast: #ffffff;
-      --border-subtle: #e5e7eb;
-
-      --status-ativo-bg: #dcfce7;
-      --status-ativo-text: #166534;
-      --status-inativo-bg: #fee2e2;
-      --status-inativo-text: #b91c1c;
-    }
-
-    /* Tema DARK (inspirado no logo azul escuro) */
-    body.theme-dark {
-      --bg-body: #020826;        /* fundo quase preto azulado */
-      --bg-header: #020826;
-      --bg-card: #050b35;
-      --text-main: #f9fafb;
+      --bg-body: #0f172a;
+      --bg-card: #020617;
+      --text-main: #e5e7eb;
       --text-secondary: #9ca3af;
-      --primary: #2563eb;
-      --primary-contrast: #ffffff;
+      --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.12);
+      --danger: #ef4444;
+      --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
-
-      --status-ativo-bg: #064e3b;
-      --status-ativo-text: #bbf7d0;
-      --status-inativo-bg: #7f1d1d;
-      --status-inativo-text: #fee2e2;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      background: var(--bg-body);
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
       color: var(--text-main);
+      min-height: 100vh;
     }
 
     header {
-      position: relative;
-      background: var(--bg-header);
-      color: #ffffff;
-      padding: 20px 24px 32px;
+      padding: 18px 18px 10px;
       text-align: center;
     }
 
-    h1 { margin: 0; font-size: 22px; }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header .subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
 
     main {
-      padding: 20px;
+      padding: 10px 14px 24px;
       max-width: 480px;
       margin: 0 auto;
     }
 
     .card {
-      background: var(--bg-card);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.10);
-      margin-bottom: 16px;
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 14px 14px 16px;
       border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      margin-bottom: 14px;
     }
 
-    .row { display:flex; gap:10px; flex-wrap:wrap; }
-
-    input, button {
-      font: inherit;
-      padding: 10px 12px;
-      border-radius: 10px;
+    h2 {
+      margin: 0 0 6px;
+      font-size: 17px;
     }
 
-    input {
-      border: 1px solid var(--border-subtle);
-      width: 100%;
-      background: var(--bg-card);
-      color: var(--text-main);
-    }
-
-    input::placeholder {
+    .small {
+      font-size: 12px;
       color: var(--text-secondary);
     }
 
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
     button {
+      font: inherit;
+      border-radius: 999px;
       border: none;
+      padding: 10px 14px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     button.primary {
       background: var(--primary);
-      color: var(--primary-contrast);
+      color: #022c22;
+      font-weight: 600;
     }
 
     button.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    body.theme-dark button.secondary {
-      background: #1f2937;
-      color: #e5e7eb;
+      background: rgba(148,163,184,0.12);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
     }
 
     button:disabled {
@@ -123,279 +104,398 @@
       cursor: not-allowed;
     }
 
-    .small { font-size: 12px; color: var(--text-secondary); }
-
     .status-pill {
-      display: inline-block;
-      padding: 4px 10px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 5px 9px;
       border-radius: 999px;
       font-size: 12px;
+      margin-top: 6px;
     }
 
-    .status-ativo {
-      background: var(--status-ativo-bg);
-      color: var(--status-ativo-text);
+    .status-ok {
+      background: var(--primary-soft);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.5);
     }
 
-    .status-inativo {
-      background: var(--status-inativo-bg);
-      color: var(--status-inativo-text);
+    .status-warn {
+      background: var(--danger-soft);
+      color: #fecaca;
+      border: 1px solid rgba(248,113,113,0.55);
     }
 
-    ul { padding-left: 18px; margin: 8px 0; }
-    li { font-size: 13px; margin-bottom: 4px; }
-    h2 { margin-top: 0; font-size: 18px; }
-
-    .theme-toggle {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      font-size: 14px;
-      padding: 6px 10px;
+    .badge-posto {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size: 12px;
+      padding: 4px 8px;
       border-radius: 999px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15,23,42,0.7);
-      color: #e5e7eb;
-      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(148,163,184,0.14);
+      border: 1px solid rgba(148,163,184,0.45);
     }
 
-    body.theme-dark .theme-toggle {
-      background: rgba(15,23,42,0.9);
+    .map-placeholder {
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.4);
+      padding: 10px 10px;
+      margin-top:8px;
+      font-size:11px;
+      color: var(--text-secondary);
     }
 
-    .theme-toggle span {
-      font-size: 16px;
+    ul {
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    li.history-item {
+      font-size:12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(31,41,55,0.8);
+    }
+
+    li.history-item:last-child {
+      border-bottom:none;
+    }
+
+    .dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#34d399;
+    }
+
+    .dot-red {
+      background:#f97373;
+    }
+
+    .chip {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.18);
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      margin-bottom:2px;
+    }
+
+    select {
+      width:100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#020617;
+      color:var(--text-main);
+      font-size:13px;
+    }
+
+    .time-big {
+      font-size: 32px;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 <header>
-  <h1>SGO – Ponto Eletrônico</h1>
-  <div class="small">Registro de presença georreferenciado</div>
-
-  <!-- Ícone + texto para alternância de tema -->
-  <button id="btnTheme" class="theme-toggle">
-    <span id="themeIcon">🌙</span>
-    <span id="themeLabel">Dark</span>
-  </button>
+  <h1>SGO – Operador</h1>
+  <div class="subtitle">Registro de ponto com localização</div>
 </header>
 
 <main>
-  <!-- Tela de login -->
-  <section id="screen-login" class="card">
-    <h2>Login do colaborador</h2>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
-      <input id="loginUser" placeholder="Usuário (CPF, matrícula ou e-mail)" />
-      <input id="loginPass" type="password" placeholder="Senha" />
-      <button id="btnLogin" class="primary">Entrar</button>
+  <!-- Bloco de status principal -->
+  <section class="card">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="label">Situação atual</div>
+        <div id="statusTexto" class="time-big">Aguardando</div>
+        <div id="statusPill" class="status-pill status-warn">
+          <span class="dot dot-red"></span>
+          Fora da área de posto
+        </div>
+        <div class="chip">
+          <span>Último registro:</span>
+          <span id="chipUltimoRegistro">Nenhum</span>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="label">Hora</div>
+        <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
+        <div class="small" id="dataAtual">--/--/----</div>
+      </div>
     </div>
-    <p class="small" id="loginMsg"></p>
   </section>
 
-  <!-- Tela de ponto -->
-  <section id="screen-ponto" style="display:none">
-    <div class="card">
-      <p class="small">
-        Usuário: <strong id="userName"></strong>
-      </p>
-      <p class="small">
-        Situação atual:
-        <span id="statusPill" class="status-pill status-inativo">Inativo</span>
-      </p>
+  <!-- Posto + localização -->
+  <section class="card">
+    <h2>Localização e posto</h2>
+    <div class="label">Posto designado</div>
+    <div id="postoAtual" class="badge-posto">
+      <span>Não definido (MVP)</span>
     </div>
 
-    <div class="card">
-      <h2>Registro de ponto</h2>
-
-      <div class="row" style="margin-bottom:10px">
-        <button id="btnCheckin" class="primary">Registrar ponto (check-in)</button>
-        <button id="btnCheckout" class="secondary">Registrar saída (check-out)</button>
-      </div>
-
-      <p class="small" id="lastMsg">
-        Nenhum ponto registrado nesta sessão.
-      </p>
+    <div class="map-placeholder" id="infoLocal">
+      Sem localização. Toque em “Capturar localização” para iniciar.
     </div>
 
-    <div class="card">
-      <h2>Histórico local</h2>
-      <ul id="history"></ul>
-      <p class="small">
-        *Histórico armazenado apenas neste dispositivo. Integração com o sistema central será feita em fase posterior.
-      </p>
+    <div class="row" style="margin-top:10px">
+      <button id="btnGeo" class="secondary" type="button">Capturar localização</button>
+      <button id="btnCheckin" class="primary" type="button" disabled>Check-in</button>
+      <button id="btnCheckout" class="secondary" type="button" disabled>Check-out</button>
     </div>
 
-    <div style="text-align:right">
-      <button id="btnLogout" class="secondary">Sair</button>
-    </div>
+    <p class="small" style="margin-top:8px">
+      *Sua localização é usada apenas para validar se você está dentro do raio geográfico do posto na hora do registro, usando a API de geolocalização do navegador. [web:120][web:123]
+    </p>
+  </section>
+
+  <!-- Seleção de posto (mock local) -->
+  <section class="card">
+    <h2>Postos disponíveis (MVP)</h2>
+    <p class="small">
+      Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API. [web:124][web:127]
+    </p>
+
+    <div class="label" style="margin-top:4px">Selecione o posto</div>
+    <select id="selectPosto">
+      <option value="">Selecione um posto</option>
+      <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
+      <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
+      <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
+    </select>
+  </section>
+
+  <!-- Histórico local -->
+  <section class="card">
+    <h2>Histórico local</h2>
+    <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API do sistema. [web:124][web:127]</p>
+    <ul id="histLista"></ul>
   </section>
 </main>
 
 <script>
-  const screenLogin  = document.getElementById('screen-login');
-  const screenPonto  = document.getElementById('screen-ponto');
-  const userNameEl   = document.getElementById('userName');
-  const statusPill   = document.getElementById('statusPill');
-  const lastMsg      = document.getElementById('lastMsg');
-  const historyEl    = document.getElementById('history');
-  const loginMsg     = document.getElementById('loginMsg');
-  const btnCheckin   = document.getElementById('btnCheckin');
-  const btnCheckout  = document.getElementById('btnCheckout');
-  const btnTheme     = document.getElementById('btnTheme');
-  const themeIcon    = document.getElementById('themeIcon');
-  const themeLabel   = document.getElementById('themeLabel');
+  // Atualização de data/hora
+  function atualizarRelogio() {
+    const agora = new Date();
+    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const data = agora.toLocaleDateString('pt-BR');
+    document.getElementById('horaAtual').textContent = hora;
+    document.getElementById('dataAtual').textContent = data;
+  }
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
 
-  let currentUser = null;
-  let statusAtual = 'Inativo'; // 'Ativo' ou 'Inativo'
+  // Postos mock (mesmos do painel do gestor)
+  const postosMock = [
+    { nome: 'UBS Centro', lat: -3.132000, lng: -60.021000, raio: 100 },
+    { nome: 'Escola Zona Leste', lat: -3.100500, lng: -60.005800, raio: 150 },
+    { nome: 'Base Operacional Norte', lat: -3.050000, lng: -60.010000, raio: 200 }
+  ];
 
-  function showScreen(name) {
-    if (name === 'login') {
-      screenLogin.style.display = 'block';
-      screenPonto.style.display = 'none';
+  let postoSelecionado = null;
+  let ultimaPosicao = null;
+  let historicoLocal = [];
+
+  const infoLocal = document.getElementById('infoLocal');
+  const statusTexto = document.getElementById('statusTexto');
+  const statusPill = document.getElementById('statusPill');
+  const chipUltimoRegistro = document.getElementById('chipUltimoRegistro');
+  const histLista = document.getElementById('histLista');
+
+  const btnGeo = document.getElementById('btnGeo');
+  const btnCheckin = document.getElementById('btnCheckin');
+  const btnCheckout = document.getElementById('btnCheckout');
+  const selectPosto = document.getElementById('selectPosto');
+  const postoAtual = document.getElementById('postoAtual');
+
+  // Haversine: distância entre dois pontos (km) [web:125][web:128]
+  function distanciaKm(lat1, lon1, lat2, lon2) {
+    function toRad(x) { return x * Math.PI / 180; }
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  function renderHistorico() {
+    histLista.innerHTML = '';
+    historicoLocal.slice().reverse().forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+      li.innerHTML = `
+        <div>
+          <span class="dot ${item.tipo === 'Check-out' ? 'dot-red' : ''}"></span>
+          <strong style="margin-left:4px">${item.tipo}</strong>
+          <span class="small"> · ${item.posto}</span>
+        </div>
+        <div class="small">
+          ${item.dataHora} · Distância: ${item.distancia.toFixed(1)} m
+        </div>
+      `;
+      histLista.appendChild(li);
+    });
+  }
+
+  function adicionarHistorico(tipo, posto, distanciaMetros) {
+    const agora = new Date();
+    const dataHora = agora.toLocaleString('pt-BR');
+    historicoLocal.push({ tipo, posto, distancia: distanciaMetros, dataHora });
+    chipUltimoRegistro.textContent = `${tipo} · ${dataHora}`;
+    renderHistorico();
+  }
+
+  function atualizarStatusDentroFora(dentro, distanciaMetros) {
+    if (dentro) {
+      statusTexto.textContent = 'Dentro da área';
+      statusPill.className = 'status-pill status-ok';
+      statusPill.innerHTML = `
+        <span class="dot"></span>
+        Dentro do raio do posto (${distanciaMetros.toFixed(1)} m)
+      `;
     } else {
-      screenLogin.style.display = 'none';
-      screenPonto.style.display = 'block';
+      statusTexto.textContent = 'Fora da área';
+      statusPill.className = 'status-pill status-warn';
+      statusPill.innerHTML = `
+        <span class="dot dot-red"></span>
+        Fora do raio (${distanciaMetros.toFixed(1)} m)
+      `;
     }
   }
 
-  function atualizarStatus(novoStatus) {
-    statusAtual = novoStatus;
-    statusPill.textContent = statusAtual;
-    if (statusAtual === 'Ativo') {
-      statusPill.classList.remove('status-inativo');
-      statusPill.classList.add('status-ativo');
+  selectPosto.addEventListener('change', () => {
+    const val = selectPosto.value;
+    if (!val) {
+      postoSelecionado = null;
+      postoAtual.innerHTML = '<span>Não definido (MVP)</span>';
       btnCheckin.disabled = true;
-      btnCheckout.disabled = false;
-    } else {
-      statusPill.classList.remove('status-ativo');
-      statusPill.classList.add('status-inativo');
-      btnCheckin.disabled = false;
       btnCheckout.disabled = true;
-    }
-  }
-
-  function addHistory(text) {
-    const li = document.createElement('li');
-    li.textContent = new Date().toLocaleTimeString('pt-BR') + ' - ' + text;
-    historyEl.prepend(li);
-  }
-
-  // Tema: aplica inicial a partir do localStorage
-  function aplicarTemaInicial() {
-    const savedTheme = localStorage.getItem('sgo_theme');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('theme-dark');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-    } else {
-      document.body.classList.remove('theme-dark');
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-    }
-  }
-
-  btnTheme.onclick = () => {
-    const isDark = document.body.classList.toggle('theme-dark');
-    localStorage.setItem('sgo_theme', isDark ? 'dark' : 'light');
-    if (isDark) {
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-    } else {
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-    }
-  };
-
-  aplicarTemaInicial();
-
-  // Restaura sessão se existir
-  const savedUser = localStorage.getItem('sgo_user');
-  if (savedUser) {
-    currentUser = savedUser;
-    userNameEl.textContent = currentUser;
-    atualizarStatus('Inativo');
-    showScreen('ponto');
-  } else {
-    showScreen('login');
-  }
-
-  // Login (MVP: qualquer usuário/senha não vazios é aceito)
-  document.getElementById('btnLogin').onclick = () => {
-    const u = document.getElementById('loginUser').value.trim();
-    const p = document.getElementById('loginPass').value.trim();
-    if (!u || !p) {
-      loginMsg.textContent = 'Informe usuário e senha.';
       return;
     }
-    currentUser = u;
-    localStorage.setItem('sgo_user', currentUser);
-    userNameEl.textContent = currentUser;
-    loginMsg.textContent = '';
-    atualizarStatus('Inativo');
-    addHistory('Login efetuado por ' + currentUser);
-    showScreen('ponto');
-  };
+    const [nome, lat, lng, raio] = val.split('|');
+    postoSelecionado = {
+      nome,
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
+      raio: parseFloat(raio)
+    };
+    postoAtual.innerHTML = `
+      <span>${postoSelecionado.nome}</span>
+      <span class="small">· Raio ${postoSelecionado.raio} m</span>
+    `;
+    btnGeo.disabled = false;
+  });
 
-  // Logout
-  document.getElementById('btnLogout').onclick = () => {
-    localStorage.removeItem('sgo_user');
-    currentUser = null;
-    historyEl.innerHTML = '';
-    lastMsg.textContent = 'Nenhum ponto registrado nesta sessão.';
-    atualizarStatus('Inativo');
-    showScreen('login');
-  };
-
-  // Captura localização e registra ponto (check-in ou check-out)
-  function registrarPonto(tipo) {
-    const now = new Date();
-    const dataHora = now.toLocaleString('pt-BR');
-
-    function finalizarRegistro(locStr) {
-      lastMsg.textContent = `${tipo} registrado em ${dataHora} – ${locStr}`;
-      addHistory(`${tipo} registrado – ${locStr}`);
-      // Futuro: enviar via fetch() para o backend com usuário, tipo, data/hora e coordenadas.
+  btnGeo.addEventListener('click', () => {
+    if (!postoSelecionado) {
+      alert('Selecione um posto antes de capturar a localização.');
+      return;
     }
 
     if (!navigator.geolocation) {
-      const locStr = 'Localização não capturada (geolocalização indisponível)';
-      finalizarRegistro(locStr);
+      alert('Geolocalização não suportada neste dispositivo.');
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude.toFixed(6);
-      const lng = pos.coords.longitude.toFixed(6);
-      const locStr = `Lat ${lat}, Lng ${lng}`;
-      finalizarRegistro(locStr);
-    }, () => {
-      const locStr = 'Localização não capturada (erro ao obter posição)';
-      finalizarRegistro(locStr);
-    }, { enableHighAccuracy: true, timeout: 10000 });
-  }
+    infoLocal.textContent = 'Capturando localização...';
 
-  // Check-in
-  btnCheckin.onclick = () => {
-    if (!currentUser) return;
-    registrarPonto('Check-in');
-    atualizarStatus('Ativo');
-  };
+    navigator.geolocation.getCurrentPosition((pos) => {
+      ultimaPosicao = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: pos.coords.accuracy
+      };
 
-  // Check-out
-  btnCheckout.onclick = () => {
-    if (!currentUser) return;
-    registrarPonto('Check-out');
-    atualizarStatus('Inativo');
-  };
+      const distKm = distanciaKm(
+        ultimaPosicao.lat,
+        ultimaPosicao.lng,
+        postoSelecionado.lat,
+        postoSelecionado.lng
+      );
+      const distMetros = distKm * 1000;
 
-  // Registro do service worker para PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js');
+      const dentro = distMetros <= postoSelecionado.raio;
+
+      infoLocal.innerHTML = `
+        <div><strong>Lat:</strong> ${ultimaPosicao.lat.toFixed(6)} · <strong>Lng:</strong> ${ultimaPosicao.lng.toFixed(6)}</div>
+        <div class="small">Precisão: ~${Math.round(ultimaPosicao.accuracy)} m</div>
+        <div class="small">Distância até o posto: ~${distMetros.toFixed(1)} m (raio permitido: ${postoSelecionado.raio} m)</div>
+      `;
+
+      atualizarStatusDentroFora(dentro, distMetros);
+      btnCheckin.disabled = !dentro;
+      btnCheckout.disabled = !dentro;
+    }, (err) => {
+      infoLocal.textContent = 'Não foi possível obter sua localização. Verifique as permissões de localização do navegador.';
+      console.error(err);
+    }, {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
     });
-  }
+  });
+
+  btnCheckin.addEventListener('click', () => {
+    if (!postoSelecionado || !ultimaPosicao) {
+      alert('Capture a localização e selecione um posto antes de registrar.');
+      return;
+    }
+
+    const distKm = distanciaKm(
+      ultimaPosicao.lat,
+      ultimaPosicao.lng,
+      postoSelecionado.lat,
+      postoSelecionado.lng
+    );
+    const distMetros = distKm * 1000;
+
+    if (distMetros > postoSelecionado.raio) {
+      alert('Você está fora do raio do posto. Não é possível registrar o check-in.');
+      return;
+    }
+
+    adicionarHistorico('Check-in', postoSelecionado.nome, distMetros);
+    statusTexto.textContent = 'Check-in realizado';
+  });
+
+  btnCheckout.addEventListener('click', () => {
+    if (!postoSelecionado || !ultimaPosicao) {
+      alert('Capture a localização e selecione um posto antes de registrar.');
+      return;
+    }
+
+    const distKm = distanciaKm(
+      ultimaPosicao.lat,
+      ultimaPosicao.lng,
+      postoSelecionado.lat,
+      postoSelecionado.lng
+    );
+    const distMetros = distKm * 1000;
+
+    if (distMetros > postoSelecionado.raio) {
+      alert('Você está fora do raio do posto. Não é possível registrar o check-out.');
+      return;
+    }
+
+    adicionarHistorico('Check-out', postoSelecionado.nome, distMetros);
+    statusTexto.textContent = 'Check-out realizado';
+  });
 </script>
 </body>
 </html>
