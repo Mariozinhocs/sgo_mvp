@@ -35,4 +35,612 @@
     * { box-sizing: border-box; }
 
     body {
-      
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+
+    header {
+      position: relative;
+      background: var(--bg-header);
+      color: #ffffff;
+      padding: 20px 24px 32px;
+    }
+
+    header h1 { margin: 0; font-size: 22px; }
+    header .subtitle { font-size: 13px; color: #cbd5f5; }
+
+    main {
+      padding: 20px;
+      max-width: 1100px;
+      margin: 0 auto 40px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.10);
+      margin-bottom: 16px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+
+    input, button, select, textarea {
+      font: inherit;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    input, select, textarea {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--text-main);
+      width: 100%;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: var(--primary-contrast);
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #111827;
+    }
+
+    body.theme-dark button.secondary {
+      background: #1f2937;
+      color: #e5e7eb;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .small { font-size: 12px; color: var(--text-secondary); }
+
+    h2 { margin-top: 0; font-size: 18px; }
+
+    .theme-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15,23,42,0.7);
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    body.theme-dark .theme-toggle {
+      background: rgba(15,23,42,0.9);
+    }
+
+    .theme-toggle span { font-size: 16px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 960px) {
+      .grid-2 {
+        grid-template-columns: 1.4fr 1fr;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    body.theme-dark .badge {
+      background: #111827;
+      color: #e5e7eb;
+    }
+
+    .section-title {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .tag {
+      display:inline-block;
+      padding:2px 6px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.2);
+      color:var(--text-secondary);
+      font-size:11px;
+    }
+
+    .divider {
+      height:1px;
+      background:var(--border-subtle);
+      margin:8px 0 12px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>SGO – Painel do Gestor</h1>
+  <div class="subtitle">Cadastro de operadores, postos e designações</div>
+
+  <!-- Alternância de tema -->
+  <button id="btnTheme" class="theme-toggle">
+    <span id="themeIcon">🌙</span>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main>
+  <!-- LOGIN DO GESTOR -->
+  <section id="screen-login-gestor" class="card">
+    <h2>Login do gestor</h2>
+    <div class="row" style="flex-direction:column;gap:10px;margin-bottom:10px">
+      <input id="gestorUser" placeholder="Usuário (e-mail institucional)" />
+      <input id="gestorPass" type="password" placeholder="Senha" />
+      <div class="row" style="justify-content:space-between;gap:8px">
+        <button id="btnLoginGestor" class="primary">Entrar</button>
+        <span class="small">*Somente gestores autorizados devem acessar este painel.</span>
+      </div>
+    </div>
+    <p class="small" id="loginGestorMsg"></p>
+  </section>
+
+  <!-- PAINEL DO GESTOR -->
+  <section id="screen-gestor" style="display:none">
+    <!-- Visão geral + (placeholder) Dashboard futuro -->
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="section-title">
+            <h2>Visão geral</h2>
+            <span class="tag">MVP – dados ilustrativos</span>
+          </div>
+          <div class="row" style="flex-wrap:wrap">
+            <div style="flex:1 1 140px">
+              <div class="small">Operadores ativos</div>
+              <div style="font-size:24px;font-weight:bold" id="g_operadoresAtivos">12</div>
+            </div>
+            <div style="flex:1 1 140px">
+              <div class="small">Registros de ponto hoje</div>
+              <div style="font-size:24px;font-weight:bold" id="g_pontosHoje">34</div>
+            </div>
+            <div style="flex:1 1 140px">
+              <div class="small">Postos cadastrados</div>
+              <div style="font-size:24px;font-weight:bold" id="g_postos">5</div>
+            </div>
+          </div>
+          <p class="small" style="margin-top:8px">
+            *Nesta seção, na Fase 2, entra o dashboard com gráficos e filtros (por posto, período, operador).
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h2>Últimos registros de ponto</h2>
+            <span class="tag">Lista de referência</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Operador</th>
+                <th>Tipo</th>
+                <th>Data/Hora</th>
+                <th>Local (lat, lng)</th>
+              </tr>
+            </thead>
+            <tbody id="g_ultimosRegistros">
+              <tr>
+                <td>Ana Souza</td>
+                <td><span class="badge">Check-in</span></td>
+                <td>07/06/2026 08:02</td>
+                <td>-3.134500, -60.021300</td>
+              </tr>
+              <tr>
+                <td>João Lima</td>
+                <td><span class="badge">Check-out</span></td>
+                <td>07/06/2026 17:15</td>
+                <td>-3.098700, -60.012900</td>
+              </tr>
+              <tr>
+                <td>Maria Silva</td>
+                <td><span class="badge">Check-in</span></td>
+                <td>07/06/2026 07:55</td>
+                <td>-3.120000, -60.005000</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small">
+            *Na integração com o backend, estes dados virão da API de registros de ponto.
+          </p>
+        </div>
+      </div>
+
+      <!-- Coluna direita: Operadores e Postos -->
+      <div>
+        <!-- Operadores -->
+        <div class="card">
+          <div class="section-title">
+            <h2>Operadores</h2>
+            <span class="tag">Cadastro básico</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Matrícula</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody id="g_tabelaOperadores">
+              <tr>
+                <td>Ana Souza</td>
+                <td>00123</td>
+                <td><span class="badge">Ativo</span></td>
+              </tr>
+              <tr>
+                <td>João Lima</td>
+                <td>00456</td>
+                <td><span class="badge">Ativo</span></td>
+              </tr>
+              <tr>
+                <td>Maria Silva</td>
+                <td>00789</td>
+                <td><span class="badge">Inativo</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <p class="small" style="margin-bottom:6px;">Adicionar operador (cadastro unitário)</p>
+          <div class="row" style="gap:8px;margin-bottom:8px">
+            <input id="op_nome" placeholder="Nome do operador" />
+          </div>
+          <div class="row" style="gap:8px;margin-bottom:8px">
+            <input id="op_matricula" placeholder="Matrícula" />
+            <input id="op_email" placeholder="E-mail (opcional)" />
+          </div>
+          <div class="row" style="gap:8px;margin-bottom:4px">
+            <button id="btnAddOperador" class="primary">Adicionar</button>
+            <button id="btnImportarOperadores" class="secondary" disabled>Importar lista (Fase 2)</button>
+          </div>
+          <p class="small">
+            *A importação em lote será implementada na Fase 2 via upload de arquivo (CSV/planilha).
+          </p>
+        </div>
+
+        <!-- Postos -->
+        <div class="card">
+          <div class="section-title">
+            <h2>Postos georreferenciados</h2>
+            <span class="tag">Cadastro básico</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Posto</th>
+                <th>Lat / Lng</th>
+                <th>Raio (m)</th>
+              </tr>
+            </thead>
+            <tbody id="g_tabelaPostos">
+              <tr>
+                <td>UBS Centro</td>
+                <td>-3.132000, -60.021000</td>
+                <td>100</td>
+              </tr>
+              <tr>
+                <td>Escola Zona Leste</td>
+                <td>-3.100500, -60.005800</td>
+                <td>150</td>
+              </tr>
+              <tr>
+                <td>Base Operacional Norte</td>
+                <td>-3.050000, -60.010000</td>
+                <td>200</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <p class="small" style="margin-bottom:6px;">Adicionar posto (coordenadas podem ser ajustadas no mapa na Fase 2)</p>
+          <div class="row" style="gap:8px;margin-bottom:8px">
+            <input id="po_nome" placeholder="Nome do posto" />
+          </div>
+          <div class="row" style="gap:8px;margin-bottom:8px">
+            <input id="po_lat" placeholder="Latitude" />
+            <input id="po_lng" placeholder="Longitude" />
+            <input id="po_raio" placeholder="Raio (m)" />
+          </div>
+          <div class="row" style="gap:8px;margin-bottom:4px">
+            <button id="btnAddPosto" class="primary">Adicionar posto</button>
+            <button id="btnMapaPostos" class="secondary" disabled>Ver no mapa (Fase 2)</button>
+          </div>
+          <p class="small">
+            *Na Fase 2, o gestor poderá clicar em um mapa para definir os postos visualmente.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGNACOES -->
+    <div class="card">
+      <div class="section-title">
+        <h2>Designações de operadores a postos</h2>
+        <span class="tag">Operador → Posto + Escala</span>
+      </div>
+
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <select id="desig_operador">
+          <option value="">Selecione um operador</option>
+          <option value="00123">Ana Souza (00123)</option>
+          <option value="00456">João Lima (00456)</option>
+          <option value="00789">Maria Silva (00789)</option>
+        </select>
+        <select id="desig_posto">
+          <option value="">Selecione um posto</option>
+          <option value="UBS Centro">UBS Centro</option>
+          <option value="Escola Zona Leste">Escola Zona Leste</option>
+          <option value="Base Operacional Norte">Base Operacional Norte</option>
+        </select>
+      </div>
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <input id="desig_escala" placeholder="Escala (ex: Seg–Sex 08h–17h)" />
+      </div>
+      <div class="row" style="gap:8px;margin-bottom:4px">
+        <button id="btnAddDesignacao" class="primary">Criar designação</button>
+      </div>
+      <p class="small" id="desig_msg"></p>
+
+      <div class="divider"></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Operador</th>
+            <th>Posto</th>
+            <th>Escala</th>
+          </tr>
+        </thead>
+        <tbody id="g_tabelaDesignacoes">
+          <tr>
+            <td>Ana Souza (00123)</td>
+            <td>UBS Centro</td>
+            <td>Seg–Sex 08h–17h</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="small" style="margin-top:8px">
+        *Após criar a designação, o sistema poderá gerar uma mensagem padrão para o operador com link do app, escala e posto designado.
+      </p>
+    </div>
+  </section>
+</main>
+
+<script>
+  const btnTheme       = document.getElementById('btnTheme');
+  const themeIcon      = document.getElementById('themeIcon');
+  const themeLabel     = document.getElementById('themeLabel');
+
+  const screenLogin    = document.getElementById('screen-login-gestor');
+  const screenGestor   = document.getElementById('screen-gestor');
+  const loginGestorMsg = document.getElementById('loginGestorMsg');
+
+  const gTabelaOperadores  = document.getElementById('g_tabelaOperadores');
+  const gTabelaPostos      = document.getElementById('g_tabelaPostos');
+  const gTabelaDesignacoes = document.getElementById('g_tabelaDesignacoes');
+  const desigMsg           = document.getElementById('desig_msg');
+
+  let gestorLogado = false;
+
+  // Tema
+  function aplicarTemaInicial() {
+    const savedTheme = localStorage.getItem('sgo_theme_gestor');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('theme-dark');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+    } else {
+      document.body.classList.remove('theme-dark');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+    }
+  }
+
+  btnTheme.onclick = () => {
+    const isDark = document.body.classList.toggle('theme-dark');
+    localStorage.setItem('sgo_theme_gestor', isDark ? 'dark' : 'light');
+    if (isDark) {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+    }
+  };
+
+  aplicarTemaInicial();
+
+  function mostrarPainelGestor() {
+    screenLogin.style.display = 'none';
+    screenGestor.style.display = 'block';
+  }
+
+  function mostrarLoginGestor() {
+    screenLogin.style.display = 'block';
+    screenGestor.style.display = 'none';
+  }
+
+  // Restaura flag de login do gestor (MVP – apenas local)
+  const savedGestor = localStorage.getItem('sgo_gestor_logado');
+  if (savedGestor === 'true') {
+    gestorLogado = true;
+    mostrarPainelGestor();
+  } else {
+    mostrarLoginGestor();
+  }
+
+  // Login do gestor (MVP: qualquer credencial não vazia)
+  document.getElementById('btnLoginGestor').onclick = () => {
+    const u = document.getElementById('gestorUser').value.trim();
+    const p = document.getElementById('gestorPass').value.trim();
+    if (!u || !p) {
+      loginGestorMsg.textContent = 'Informe usuário e senha do gestor.';
+      return;
+    }
+    gestorLogado = true;
+    localStorage.setItem('sgo_gestor_logado', 'true');
+    loginGestorMsg.textContent = '';
+    mostrarPainelGestor();
+  };
+
+  // Adicionar operador (apenas na tabela, mock)
+  document.getElementById('btnAddOperador').onclick = () => {
+    const nome = document.getElementById('op_nome').value.trim();
+    const matricula = document.getElementById('op_matricula').value.trim();
+    const email = document.getElementById('op_email').value.trim();
+
+    if (!nome || !matricula) {
+      alert('Informe pelo menos nome e matrícula do operador.');
+      return;
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${nome}</td>
+      <td>${matricula}</td>
+      <td><span class="badge">Ativo</span></td>
+    `;
+    gTabelaOperadores.appendChild(tr);
+
+    // Limpa campos
+    document.getElementById('op_nome').value = '';
+    document.getElementById('op_matricula').value = '';
+    document.getElementById('op_email').value = '';
+
+    alert('Operador adicionado (MVP: apenas na interface, depois integraremos com o backend).');
+  };
+
+  // Adicionar posto (apenas na tabela, mock)
+  document.getElementById('btnAddPosto').onclick = () => {
+    const nome = document.getElementById('po_nome').value.trim();
+    const lat  = document.getElementById('po_lat').value.trim();
+    const lng  = document.getElementById('po_lng').value.trim();
+    const raio = document.getElementById('po_raio').value.trim();
+
+    if (!nome || !lat || !lng || !raio) {
+      alert('Preencha nome, latitude, longitude e raio.');
+      return;
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${nome}</td>
+      <td>${lat}, ${lng}</td>
+      <td>${raio}</td>
+    `;
+    gTabelaPostos.appendChild(tr);
+
+    document.getElementById('po_nome').value = '';
+    document.getElementById('po_lat').value  = '';
+    document.getElementById('po_lng').value  = '';
+    document.getElementById('po_raio').value = '';
+
+    alert('Posto adicionado (MVP: apenas na interface, depois integraremos com o backend).');
+  };
+
+  // Criar designação (mock)
+  document.getElementById('btnAddDesignacao').onclick = () => {
+    const op   = document.getElementById('desig_operador').value;
+    const posto  = document.getElementById('desig_posto').value;
+    const escala = document.getElementById('desig_escala').value.trim();
+
+    if (!op || !posto || !escala) {
+      desigMsg.textContent = 'Selecione operador, posto e informe a escala.';
+      return;
+    }
+
+    const opText = document.getElementById('desig_operador')
+      .options[document.getElementById('desig_operador').selectedIndex].text;
+    const postoText = document.getElementById('desig_posto')
+      .options[document.getElementById('desig_posto').selectedIndex].text;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${opText}</td>
+      <td>${postoText}</td>
+      <td>${escala}</td>
+    `;
+    gTabelaDesignacoes.appendChild(tr);
+
+    // Mensagem padrão para envio ao operador
+    const mensagem = `
+Operador: ${opText}
+Posto designado: ${postoText}
+Escala: ${escala}
+
+Acesse o app de ponto do operador em:
+${window.location.origin}/sgo_mvp/
+    `.trim();
+
+    desigMsg.textContent = 'Designação criada. Mensagem sugerida para envio ao operador foi copiada para a área de transferência (quando suportado).';
+
+    // Tenta copiar a mensagem
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(mensagem).catch(() => {});
+    }
+
+    // Limpa escala
+    document.getElementById('desig_escala').value = '';
+  };
+</script>
+</body>
+</html>
