@@ -1,9 +1,11 @@
-const CACHE_NAME = 'sgo-mvp-v2';
+const CACHE_NAME = 'sgo-mvp-v1';
 const URLS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json'
-  // Adicione aqui outros arquivos estáticos se separar CSS/JS depois
+  './manifest.json',
+  './favicon.ico',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
