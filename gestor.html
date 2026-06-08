@@ -96,7 +96,7 @@
     }
 
     button.secondary {
-      background: #e2e8f0;
+      background: #e5e7f0;
       color: #111827;
     }
 
@@ -213,6 +213,12 @@
     a.map-link:hover {
       text-decoration: underline;
     }
+
+    .btn-small {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
   </style>
 </head>
 <body>
@@ -326,6 +332,7 @@
                 <th>Nome</th>
                 <th>Matrícula</th>
                 <th>Situação</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody id="g_tabelaOperadores">
@@ -333,16 +340,25 @@
                 <td>Ana Souza</td>
                 <td>00123</td>
                 <td><span class="badge">Ativo</span></td>
+                <td>
+                  <button class="secondary btn-small btn-edit-operador">Editar</button>
+                </td>
               </tr>
               <tr>
                 <td>João Lima</td>
                 <td>00456</td>
                 <td><span class="badge">Ativo</span></td>
+                <td>
+                  <button class="secondary btn-small btn-edit-operador">Editar</button>
+                </td>
               </tr>
               <tr>
                 <td>Maria Silva</td>
                 <td>00789</td>
                 <td><span class="badge">Inativo</span></td>
+                <td>
+                  <button class="secondary btn-small btn-edit-operador">Editar</button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -379,6 +395,7 @@
                 <th>Lat / Lng</th>
                 <th>Raio (m)</th>
                 <th>Mapa</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody id="g_tabelaPostos">
@@ -391,6 +408,9 @@
                     Ver no Maps
                   </a>
                 </td>
+                <td>
+                  <button class="secondary btn-small btn-edit-posto">Editar</button>
+                </td>
               </tr>
               <tr>
                 <td>Escola Zona Leste</td>
@@ -401,6 +421,9 @@
                     Ver no Maps
                   </a>
                 </td>
+                <td>
+                  <button class="secondary btn-small btn-edit-posto">Editar</button>
+                </td>
               </tr>
               <tr>
                 <td>Base Operacional Norte</td>
@@ -410,6 +433,9 @@
                   <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.050000,-60.010000" target="_blank" rel="noopener noreferrer">
                     Ver no Maps
                   </a>
+                </td>
+                <td>
+                  <button class="secondary btn-small btn-edit-posto">Editar</button>
                 </td>
               </tr>
             </tbody>
@@ -585,6 +611,7 @@
       <td>${nome}</td>
       <td>${matricula}</td>
       <td><span class="badge">Ativo</span></td>
+      <td><button class="secondary btn-small btn-edit-operador">Editar</button></td>
     `;
     gTabelaOperadores.appendChild(tr);
 
@@ -597,8 +624,7 @@
 
   // Helper para criar link do Google Maps a partir de lat/lng
   function criarLinkMaps(lat, lng) {
-    // Padrão recomendado: Google Maps URLs com query lat,lng [web:78][web:84]
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`; // [web:78][web:84]
   }
 
   // Adicionar posto (apenas na tabela, mock) + link "Ver no Maps"
@@ -613,8 +639,8 @@
       return;
     }
 
-    const tr = document.createElement('tr');
     const url = criarLinkMaps(lat, lng);
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${nome}</td>
       <td data-lat="${lat}" data-lng="${lng}">${lat}, ${lng}</td>
@@ -624,6 +650,7 @@
           Ver no Maps
         </a>
       </td>
+      <td><button class="secondary btn-small btn-edit-posto">Editar</button></td>
     `;
     gTabelaPostos.appendChild(tr);
 
@@ -634,6 +661,112 @@
 
     alert('Posto adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
+
+  // Edição inline de OPERADOR
+  gTabelaOperadores.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('btn-edit-operador')) return;
+
+    const btn = e.target;
+    const tr = btn.closest('tr');
+    const nomeTd = tr.children[0];
+    const matTd  = tr.children[1];
+    const sitTd  = tr.children[2];
+
+    if (btn.dataset.mode !== 'edit') {
+      // Entrar em modo edição
+      const nomeAtual = nomeTd.textContent.trim();
+      const matAtual  = matTd.textContent.trim();
+      const sitAtual  = sitTd.textContent.includes('Inativo') ? 'Inativo' : 'Ativo';
+
+      nomeTd.innerHTML = `<input value="${nomeAtual}">`;
+      matTd.innerHTML  = `<input value="${matAtual}">`;
+      sitTd.innerHTML  = `
+        <select>
+          <option value="Ativo"${sitAtual === 'Ativo' ? ' selected' : ''}>Ativo</option>
+          <option value="Inativo"${sitAtual === 'Inativo' ? ' selected' : ''}>Inativo</option>
+        </select>
+      `;
+
+      btn.textContent = 'Salvar';
+      btn.dataset.mode = 'edit';
+    } else {
+      // Salvar edição
+      const novoNome = nomeTd.querySelector('input').value.trim();
+      const novaMat  = matTd.querySelector('input').value.trim();
+      const novaSit  = sitTd.querySelector('select').value;
+
+      if (!novoNome || !novaMat) {
+        alert('Nome e matrícula são obrigatórios.');
+        return;
+      }
+
+      nomeTd.textContent = novoNome;
+      matTd.textContent  = novaMat;
+      sitTd.innerHTML    = `<span class="badge">${novaSit}</span>`;
+
+      btn.textContent = 'Editar';
+      btn.dataset.mode = '';
+      // Futuro: enviar atualização ao backend via API
+    }
+  });
+
+  // Edição inline de POSTO
+  gTabelaPostos.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('btn-edit-posto')) return;
+
+    const btn = e.target;
+    const tr = btn.closest('tr');
+    const nomeTd = tr.children[0];
+    const coordTd = tr.children[1];
+    const raioTd  = tr.children[2];
+    const mapaTd  = tr.children[3];
+
+    if (btn.dataset.mode !== 'edit') {
+      const nomeAtual = nomeTd.textContent.trim();
+      const latAtual  = coordTd.dataset.lat || coordTd.textContent.split(',')[0].trim();
+      const lngAtual  = coordTd.dataset.lng || coordTd.textContent.split(',')[1].trim();
+      const raioAtual = raioTd.textContent.trim();
+
+      nomeTd.innerHTML = `<input value="${nomeAtual}">`;
+      coordTd.innerHTML = `
+        <input style="margin-bottom:4px" placeholder="Latitude" value="${latAtual}">
+        <input placeholder="Longitude" value="${lngAtual}">
+      `;
+      raioTd.innerHTML = `<input value="${raioAtual}">`;
+      mapaTd.innerHTML = `<span class="small">Atualize lat/lng e salve para recriar o link.</span>`;
+
+      btn.textContent = 'Salvar';
+      btn.dataset.mode = 'edit';
+    } else {
+      const novoNome = nomeTd.querySelector('input').value.trim();
+      const inputsCoord = coordTd.querySelectorAll('input');
+      const novaLat  = inputsCoord[0].value.trim();
+      const novaLng  = inputsCoord[1].value.trim();
+      const novoRaio = raioTd.querySelector('input').value.trim();
+
+      if (!novoNome || !novaLat || !novaLng || !novoRaio) {
+        alert('Nome, lat, lng e raio são obrigatórios.');
+        return;
+      }
+
+      nomeTd.textContent = novoNome;
+      coordTd.textContent = `${novaLat}, ${novaLng}`;
+      coordTd.dataset.lat = novaLat;
+      coordTd.dataset.lng = novaLng;
+      raioTd.textContent  = novoRaio;
+
+      const url = criarLinkMaps(novaLat, novaLng);
+      mapaTd.innerHTML = `
+        <a class="map-link" href="${url}" target="_blank" rel="noopener noreferrer">
+          Ver no Maps
+        </a>
+      `;
+
+      btn.textContent = 'Editar';
+      btn.dataset.mode = '';
+      // Futuro: enviar atualização ao backend via API
+    }
+  });
 
   // Criar designação (mock)
   document.getElementById('btnAddDesignacao').onclick = () => {
