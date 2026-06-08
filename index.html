@@ -245,7 +245,7 @@
       display:block;
     }
 
-    /* Tabela de escala */
+    /* Escala */
     table {
       width:100%;
       border-collapse:collapse;
@@ -299,16 +299,14 @@
   <div class="subtitle">Ponto e escala diária</div>
 </header>
 
-<!-- Abas -->
 <div class="tabs-header">
   <button class="tab-button active" data-tab="tab-ponto">Ponto</button>
   <button class="tab-button" data-tab="tab-escala">Escala</button>
 </div>
 
 <main>
-  <!-- Painel PONTO -->
+  <!-- PONTO -->
   <section id="tab-ponto" class="tab-panel active">
-    <!-- Bloco de status principal -->
     <section class="card">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
@@ -331,7 +329,6 @@
       </div>
     </section>
 
-    <!-- Localização / posto -->
     <section class="card">
       <h2>Localização e posto</h2>
       <div class="label">Posto designado</div>
@@ -350,15 +347,14 @@
       </div>
 
       <p class="small" style="margin-top:8px">
-        *Sua localização é usada apenas para validar se você está dentro do raio geográfico do posto na hora do registro, via API de geolocalização do navegador. [web:120][web:123]
+        *Sua localização é usada para registrar o ponto com distância até o posto, e o gestor consegue ver quando você estava fora da área designada. [web:151][web:153][web:157]
       </p>
     </section>
 
-    <!-- Seleção de posto (mock) -->
     <section class="card">
       <h2>Postos disponíveis (MVP)</h2>
       <p class="small">
-        Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API. [web:124][web:127]
+        Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API.
       </p>
       <div class="label" style="margin-top:4px">Selecione o posto</div>
       <select id="selectPosto">
@@ -369,20 +365,19 @@
       </select>
     </section>
 
-    <!-- Histórico local -->
     <section class="card">
       <h2>Histórico local</h2>
-      <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API do sistema. [web:124][web:127]</p>
+      <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API.</p>
       <ul id="histLista"></ul>
     </section>
   </section>
 
-  <!-- Painel ESCALA -->
+  <!-- ESCALA -->
   <section id="tab-escala" class="tab-panel">
     <section class="card">
       <h2>Escala fornecida</h2>
       <p class="small">
-        Esta tabela representa a escala enviada pelo gestor. O texto da jornada não é editável; você apenas marca os dias cumpridos, localmente, como uma checklist pessoal. [web:129][web:130]
+        Escala enviada pelo gestor. Você não altera os horários aqui, apenas marca os dias cumpridos como checklist local.
       </p>
 
       <table>
@@ -395,7 +390,6 @@
           </tr>
         </thead>
         <tbody id="escalaTabela">
-          <!-- Exemplo de escala mock; depois podemos substituir por dados reais JSON -->
           <tr data-id="seg">
             <td class="escala-dia">Segunda</td>
             <td class="escala-hora">08:00–17:00</td>
@@ -440,7 +434,7 @@
       </table>
 
       <p class="small" style="margin-top:8px">
-        *Na integração futura, esta escala virá diretamente do painel do gestor, e os checks poderão ser sincronizados com o sistema para conferência de jornadas.
+        *No futuro, essa escala vem diretamente do painel do gestor, e os checks podem ser sincronizados para conferência de jornada.
       </p>
     </section>
   </section>
@@ -472,7 +466,7 @@
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
 
-  // Postos mock (mesmos do gestor)
+  // Postos mock
   const postosMock = [
     { nome: 'UBS Centro', lat: -3.132000, lng: -60.021000, raio: 100 },
     { nome: 'Escola Zona Leste', lat: -3.100500, lng: -60.005800, raio: 150 },
@@ -519,6 +513,7 @@
           <span class="dot ${item.tipo === 'Check-out' ? 'dot-red' : ''}"></span>
           <strong style="margin-left:4px">${item.tipo}</strong>
           <span class="small"> · ${item.posto}</span>
+          ${item.foraDaArea ? '<span class="small" style="color:#f97373;padding-left:4px;">(fora do posto)</span>' : ''}
         </div>
         <div class="small">
           ${item.dataHora} · Distância: ${item.distancia.toFixed(1)} m
@@ -528,11 +523,17 @@
     });
   }
 
-  function adicionarHistorico(tipo, posto, distanciaMetros) {
+  function adicionarHistorico(tipo, posto, distanciaMetros, foraDaArea) {
     const agora = new Date();
     const dataHora = agora.toLocaleString('pt-BR');
-    historicoLocal.push({ tipo, posto, distancia: distanciaMetros, dataHora });
-    chipUltimoRegistro.textContent = `${tipo} · ${dataHora}`;
+    historicoLocal.push({
+      tipo,
+      posto,
+      distancia: distanciaMetros,
+      dataHora,
+      foraDaArea: !!foraDaArea
+    });
+    chipUltimoRegistro.textContent = `${tipo} · ${dataHora}${foraDaArea ? ' (fora da área)' : ''}`;
     renderHistorico();
   }
 
@@ -615,8 +616,9 @@
       `;
 
       atualizarStatusDentroFora(dentro, distMetros);
-      btnCheckin.disabled = !dentro;
-      btnCheckout.disabled = !dentro;
+      // Agora sempre permite registrar; check-in fora do raio apenas será marcado
+      btnCheckin.disabled = false;
+      btnCheckout.disabled = false;
     }, (err) => {
       infoLocal.textContent = 'Não foi possível obter sua localização. Verifique as permissões de localização do navegador.';
       console.error(err);
@@ -640,13 +642,13 @@
       postoSelecionado.lng
     );
     const distMetros = distKm * 1000;
+    const foraDaArea = distMetros > postoSelecionado.raio;
 
-    if (distMetros > postoSelecionado.raio) {
-      alert('Você está fora do raio do posto. Não é possível registrar o check-in.');
-      return;
+    if (foraDaArea) {
+      alert('Check-in registrado, mas fora do raio do posto. O gestor verá essa observação no painel.');
     }
 
-    adicionarHistorico('Check-in', postoSelecionado.nome, distMetros);
+    adicionarHistorico('Check-in', postoSelecionado.nome, distMetros, foraDaArea);
     statusTexto.textContent = 'Check-in realizado';
   });
 
@@ -663,17 +665,17 @@
       postoSelecionado.lng
     );
     const distMetros = distKm * 1000;
+    const foraDaArea = distMetros > postoSelecionado.raio;
 
-    if (distMetros > postoSelecionado.raio) {
-      alert('Você está fora do raio do posto. Não é possível registrar o check-out.');
-      return;
+    if (foraDaArea) {
+      alert('Check-out registrado, mas fora do raio do posto. O gestor verá essa observação no painel.');
     }
 
-    adicionarHistorico('Check-out', postoSelecionado.nome, distMetros);
+    adicionarHistorico('Check-out', postoSelecionado.nome, distMetros, foraDaArea);
     statusTexto.textContent = 'Check-out realizado';
   });
 
-  // Checklist de escala: salvar no localStorage (apenas no dispositivo)
+  // Checklist da escala no localStorage
   const ESCALA_STORAGE_KEY = 'sgo_operador_escala_checks';
 
   function carregarChecksEscala() {
