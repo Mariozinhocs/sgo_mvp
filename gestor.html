@@ -10,7 +10,6 @@
 
   <style>
     :root {
-      /* Tema LIGHT (padrão) */
       --bg-body: #f3f4f6;
       --bg-header: #020826;
       --bg-card: #ffffff;
@@ -268,7 +267,6 @@
   <h1>SGO – Painel do Gestor</h1>
   <div class="subtitle">Cadastro de operadores, postos e designações</div>
 
-  <!-- Alternância de tema -->
   <button id="btnTheme" class="theme-toggle">
     <span id="themeIcon">🌙</span>
     <span id="themeLabel">Dark</span>
@@ -292,8 +290,8 @@
 
   <!-- PAINEL DO GESTOR -->
   <section id="screen-gestor" style="display:none">
-    <!-- Visão geral + placeholder Dashboard -->
     <div class="grid-2">
+      <!-- Coluna esquerda: visão geral -->
       <div>
         <div class="card">
           <div class="section-title">
@@ -360,7 +358,7 @@
         </div>
       </div>
 
-      <!-- Coluna direita: Abas Operadores / Postos -->
+      <!-- Coluna direita: abas Operadores / Postos -->
       <div>
         <div class="card">
           <div class="section-title">
@@ -368,13 +366,12 @@
             <span class="tag">Operadores e Postos</span>
           </div>
 
-          <!-- Abas -->
           <div class="tabs-header">
             <button class="tab-button active" data-tab="tab-operadores">Operadores</button>
             <button class="tab-button" data-tab="tab-postos">Postos</button>
           </div>
 
-          <!-- Painel Operadores -->
+          <!-- Operadores -->
           <div id="tab-operadores" class="tab-panel active">
             <table>
               <thead>
@@ -432,7 +429,7 @@
             </p>
           </div>
 
-          <!-- Painel Postos -->
+          <!-- Postos -->
           <div id="tab-postos" class="tab-panel">
             <table>
               <thead>
@@ -490,6 +487,14 @@
             <div class="divider"></div>
 
             <p class="small" style="margin-bottom:6px;">Adicionar posto</p>
+
+            <div class="row" style="gap:8px;margin-bottom:8px">
+              <input id="po_maps_url" placeholder="Cole aqui o link do Google Maps (opcional)" />
+              <button id="btnExtrairCoords" class="secondary btn-small" type="button">
+                Extrair coordenadas
+              </button>
+            </div>
+
             <div class="row" style="gap:8px;margin-bottom:8px">
               <input id="po_nome" placeholder="Nome do posto" />
             </div>
@@ -503,14 +508,14 @@
               <button id="btnMapaPostos" class="secondary" disabled>Selecionar no mapa (Fase 2)</button>
             </div>
             <p class="small">
-              *Na Fase 2, o gestor poderá clicar em um mapa integrado para definir a coordenada; aqui usamos o link do Google Maps a partir de lat/lng.
+              *Você pode colar o link do Google Maps, clicar em “Extrair coordenadas” e depois ajustar manualmente se precisar.
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- DESIGNACOES -->
+    <!-- Designações -->
     <div class="card">
       <div class="section-title">
         <h2>Designações de operadores a postos</h2>
@@ -584,7 +589,7 @@
 
   let gestorLogado = false;
 
-  // Tabs simples (Operadores / Postos) [web:102][web:105]
+  // Tabs (Operadores/Postos) [web:102][web:105]
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
@@ -635,7 +640,6 @@
     screenGestor.style.display = 'none';
   }
 
-  // Restaura flag de login do gestor (MVP – apenas local)
   const savedGestor = localStorage.getItem('sgo_gestor_logado');
   if (savedGestor === 'true') {
     gestorLogado = true;
@@ -644,7 +648,7 @@
     mostrarLoginGestor();
   }
 
-  // Login do gestor (MVP: qualquer credencial não vazia)
+  // Login simples
   document.getElementById('btnLoginGestor').onclick = () => {
     const u = document.getElementById('gestorUser').value.trim();
     const p = document.getElementById('gestorPass').value.trim();
@@ -658,7 +662,7 @@
     mostrarPainelGestor();
   };
 
-  // Adicionar operador (apenas na tabela, mock)
+  // Adicionar operador (mock)
   document.getElementById('btnAddOperador').onclick = () => {
     const nome = document.getElementById('op_nome').value.trim();
     const matricula = document.getElementById('op_matricula').value.trim();
@@ -685,12 +689,59 @@
     alert('Operador adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
 
-  // Helper para criar link do Google Maps a partir de lat/lng
+  // Helper para criar link Maps a partir de lat/lng [web:84]
   function criarLinkMaps(lat, lng) {
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
 
-  // Adicionar posto (apenas na tabela, mock) + link "Ver no Maps"
+  // Extrair coordenadas de um link do Google Maps [web:115][web:118][web:84]
+  function extrairCoordsDeMapsUrl(url) {
+    if (!url) return null;
+
+    // Formato com @lat,lng,...
+    const matchArroba = url.match(/@(-?[\d.]+),(-?[\d.]+)/);
+    if (matchArroba) {
+      return { lat: matchArroba[1], lng: matchArroba[2] };
+    }
+
+    // Formatos com q=lat,lng ou query=lat,lng
+    try {
+      const u = new URL(url);
+      const q = u.searchParams.get('q') || u.searchParams.get('query');
+      if (q) {
+        const coords = q.split(',');
+        if (coords.length >= 2 && !isNaN(parseFloat(coords[0])) && !isNaN(parseFloat(coords[1]))) {
+          return { lat: coords[0], lng: coords[1] };
+        }
+      }
+    } catch(e) {
+      // URL inválida: ignora
+    }
+
+    return null;
+  }
+
+  // Botão "Extrair coordenadas"
+  document.getElementById('btnExtrairCoords').onclick = () => {
+    const url = document.getElementById('po_maps_url').value.trim();
+    if (!url) {
+      alert('Cole primeiro o link do Google Maps.');
+      return;
+    }
+
+    const coords = extrairCoordsDeMapsUrl(url);
+    if (!coords) {
+      alert('Não consegui extrair latitude/longitude desse link. Tente abrir no navegador e copiar um link completo.');
+      return;
+    }
+
+    document.getElementById('po_lat').value = coords.lat;
+    document.getElementById('po_lng').value = coords.lng;
+
+    alert('Coordenadas extraídas do link. Confira Lat/Lng antes de salvar o posto.');
+  };
+
+  // Adicionar posto (mock) + link Maps
   document.getElementById('btnAddPosto').onclick = () => {
     const nome = document.getElementById('po_nome').value.trim();
     const lat  = document.getElementById('po_lat').value.trim();
@@ -721,11 +772,12 @@
     document.getElementById('po_lat').value  = '';
     document.getElementById('po_lng').value  = '';
     document.getElementById('po_raio').value = '';
+    document.getElementById('po_maps_url').value = '';
 
     alert('Posto adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
 
-  // Edição inline de OPERADOR
+  // Edição inline Operador
   gTabelaOperadores.addEventListener('click', (e) => {
     if (!e.target.classList.contains('btn-edit-operador')) return;
 
@@ -767,11 +819,10 @@
 
       btn.textContent = 'Editar';
       btn.dataset.mode = '';
-      // Futuro: enviar atualização ao backend via API
     }
   });
 
-  // Edição inline de POSTO
+  // Edição inline Posto
   gTabelaPostos.addEventListener('click', (e) => {
     if (!e.target.classList.contains('btn-edit-posto')) return;
 
@@ -825,11 +876,10 @@
 
       btn.textContent = 'Editar';
       btn.dataset.mode = '';
-      // Futuro: enviar atualização ao backend via API
     }
   });
 
-  // Criar designação (mock)
+  // Designações (mock)
   document.getElementById('btnAddDesignacao').onclick = () => {
     const op   = document.getElementById('desig_operador').value;
     const posto  = document.getElementById('desig_posto').value;
