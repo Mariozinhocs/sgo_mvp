@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#020826" />
+  <title>SGO – Acesso</title>
+
+  <style>
+    :root {
+      --bg-body: #020617;
+      --bg-card: #020617;
+      --text-main: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.12);
+      --border-subtle: #1f2937;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      color: var(--text-main);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      max-width: 420px;
+      width:100%;
+      border-radius: 18px;
+      padding: 18px 18px 20px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+    }
+
+    h1 {
+      margin:0;
+      font-size:22px;
+    }
+
+    .subtitle {
+      font-size:13px;
+      color:var(--text-secondary);
+      margin-top:4px;
+    }
+
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .logo-icon {
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      background:radial-gradient(circle at 30% 20%, #22c55e, #14532d);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+    }
+
+    label {
+      display:block;
+      font-size:12px;
+      margin-top:10px;
+      margin-bottom:4px;
+      color:var(--text-secondary);
+    }
+
+    input {
+      width:100%;
+      padding: 9px 11px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:#020617;
+      color:var(--text-main);
+      font-size:14px;
+    }
+
+    input::placeholder {
+      color:var(--text-secondary);
+    }
+
+    button {
+      font: inherit;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #022c22;
+      font-weight: 600;
+      width:100%;
+      margin-top:12px;
+    }
+
+    button.secondary {
+      background: rgba(148,163,184,0.12);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
+      width:100%;
+      margin-top:6px;
+    }
+
+    button:disabled {
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+
+    .small {
+      font-size:12px;
+      color:var(--text-secondary);
+    }
+
+    .error {
+      font-size:12px;
+      color:#fecaca;
+      margin-top:6px;
+      background:rgba(248,113,113,0.18);
+      border-radius:10px;
+      padding:6px 8px;
+      border:1px solid rgba(248,113,113,0.5);
+    }
+
+    .success {
+      font-size:12px;
+      color:#bbf7d0;
+      margin-top:6px;
+    }
+
+    .divider {
+      height:1px;
+      background:rgba(31,41,55,0.9);
+      margin:12px 0;
+    }
+
+    .role-actions {
+      margin-top:4px;
+    }
+
+    .role-actions h2 {
+      font-size:14px;
+      margin:0 0 6px;
+    }
+
+    .badge-role {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.16);
+      font-size:11px;
+      margin-right:4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">◎</div>
+      <div>
+        <h1>SGO</h1>
+        <div class="subtitle">Acesso ao sistema de gestão de operações</div>
+      </div>
+    </div>
+
+    <form id="formLogin">
+      <label for="email">E-mail institucional</label>
+      <input id="email" type="email" required placeholder="nome@empresa.com" autocomplete="username" />
+
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" required placeholder="Sua senha" autocomplete="current-password" />
+
+      <button id="btnEntrar" class="primary" type="submit">
+        Entrar
+      </button>
+    </form>
+
+    <div id="msgErro" class="error" style="display:none"></div>
+    <div id="msgOk" class="success" style="display:none"></div>
+
+    <div class="divider"></div>
+
+    <div id="areaPerfis" class="role-actions" style="display:none">
+      <h2>Acessar painéis</h2>
+      <p class="small" id="textoUsuario"></p>
+      <div id="rolesBadges" style="margin-bottom:6px;"></div>
+
+      <button id="btnIrOperador" class="secondary" type="button" style="display:none">
+        Painel do Operador
+      </button>
+      <button id="btnIrGestor" class="secondary" type="button" style="display:none">
+        Painel do Gestor
+      </button>
+    </div>
+  </div>
+
+<script>
+  // Configuração da API – ajuste a URL conforme seu backend
+  const API_LOGIN_URL = '/api/auth/login'; // exemplo; trocar na integração real
+
+  const formLogin  = document.getElementById('formLogin');
+  const btnEntrar  = document.getElementById('btnEntrar');
+  const msgErro    = document.getElementById('msgErro');
+  const msgOk      = document.getElementById('msgOk');
+  const areaPerfis = document.getElementById('areaPerfis');
+  const textoUsuario = document.getElementById('textoUsuario');
+  const rolesBadges  = document.getElementById('rolesBadges');
+  const btnIrOperador = document.getElementById('btnIrOperador');
+  const btnIrGestor   = document.getElementById('btnIrGestor');
+
+  // Se já existir sessão válida no backend, você pode ter um endpoint /api/auth/me
+  // que retorna o usuário e seus perfis; aí você pula o login. [web:183][web:191][web:194]
+
+  function limparMensagens() {
+    msgErro.style.display = 'none';
+    msgOk.style.display = 'none';
+  }
+
+  function mostrarErro(texto) {
+    msgErro.textContent = texto;
+    msgErro.style.display = 'block';
+    msgOk.style.display = 'none';
+  }
+
+  function mostrarOk(texto) {
+    msgOk.textContent = texto;
+    msgOk.style.display = 'block';
+    msgErro.style.display = 'none';
+  }
+
+  function popularPerfis(usuario) {
+    areaPerfis.style.display = 'block';
+    textoUsuario.textContent = `Autenticado como ${usuario.nome} (${usuario.email}).`;
+    rolesBadges.innerHTML = '';
+
+    const roles = usuario.roles || [];
+    roles.forEach(r => {
+      const span = document.createElement('span');
+      span.className = 'badge-role';
+      span.textContent = r;
+      rolesBadges.appendChild(span);
+    });
+
+    // Controles de acesso na interface: se tiver papel de OPERADOR, mostra botão de Operador; se tiver GESTOR, mostra Gestor. [web:189][web:190]
+    btnIrOperador.style.display = roles.includes('OPERADOR') ? 'inline-flex' : 'none';
+    btnIrGestor.style.display   = roles.includes('GESTOR')   ? 'inline-flex' : 'none';
+  }
+
+  // Clique em “Entrar”
+  formLogin.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    limparMensagens();
+
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+
+    if (!email || !senha) {
+      mostrarErro('Informe e-mail e senha.');
+      return;
+    }
+
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Validando...';
+
+    try {
+      // Exemplo de chamada; na prática, configure HTTPS, CORS, etc. [web:178][web:179][web:183]
+      const resp = await fetch(API_LOGIN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, senha })
+      });
+
+      if (!resp.ok) {
+        mostrarErro('Usuário ou senha inválidos, ou falha de comunicação.');
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar';
+        return;
+      }
+
+      // Esperando algo como:
+      // { token: "...", usuario: { id, nome, email, roles: ["OPERADOR","GESTOR"] } }
+      const data = await resp.json();
+
+      if (!data || !data.usuario || !data.usuario.roles) {
+        mostrarErro('Resposta inesperada do servidor. Fale com o suporte.');
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar';
+        return;
+      }
+
+      // Armazena os dados necessários para o front (token, info básica)
+      // Em produção, considere usar cookies HttpOnly para o token e evitar expor em JS. [web:178][web:183][web:194]
+      localStorage.setItem('sgo_auth_token', data.token || '');
+      localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
+
+      mostrarOk('Login realizado com sucesso.');
+      popularPerfis(data.usuario);
+
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+    } catch (err) {
+      console.error(err);
+      mostrarErro('Erro de rede ao tentar autenticar. Verifique sua conexão.');
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+    }
+  });
+
+  // Abertura dos painéis
+  btnIrOperador.addEventListener('click', () => {
+    // Painel do operador: operador.html
+    window.location.href = 'operador.html';
+  });
+
+  btnIrGestor.addEventListener('click', () => {
+    // Painel do gestor: gestor.html
+    window.location.href = 'gestor.html';
+  });
+
+  // Se já tiver usuário no localStorage, apenas exibe perfis (não revalida senha aqui; validação robusta sempre no backend). [web:168][web:171][web:172]
+  (function checkUsuarioLocal() {
+    try {
+      const raw = localStorage.getItem('sgo_usuario');
+      if (!raw) return;
+      const usuario = JSON.parse(raw);
+      if (usuario && usuario.email) {
+        popularPerfis(usuario);
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
