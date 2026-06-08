@@ -407,18 +407,45 @@
       color:var(--text-secondary);
     }
 
-    /* Mensagens */
-    .msg-section-title {
-      font-size:13px;
+    /* Mensagens / Comunicação Interna */
+    .msg-tabs-header {
+      display:flex;
+      gap:6px;
+      margin-top:6px;
+    }
+
+    .msg-tab-button {
+      flex:1;
+      text-align:center;
+      padding:6px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:11px;
+      cursor:pointer;
+    }
+
+    .msg-tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
       font-weight:600;
-      margin-top:2px;
-      margin-bottom:4px;
+    }
+
+    .msg-tab-panel {
+      display:none;
+      margin-top:6px;
+    }
+
+    .msg-tab-panel.active {
+      display:block;
     }
 
     .msg-list {
       max-height:220px;
       overflow-y:auto;
-      margin-top:6px;
+      margin-top:4px;
     }
 
     .msg-item {
@@ -449,9 +476,7 @@
     }
 
     .msg-form {
-      margin-top:8px;
-      border-top:1px solid rgba(31,41,55,0.9);
-      padding-top:8px;
+      margin-top:4px;
     }
 
     .file-label {
@@ -740,53 +765,66 @@
     </section>
   </section>
 
-  <!-- MENSAGENS -->
+  <!-- MENSAGENS / COMUNICAÇÃO INTERNA -->
   <section id="tab-msg" class="tab-panel">
     <section class="card">
-      <h2>Comunicação com o gestor</h2>
+      <h2>Comunicação Interna</h2>
       <p class="small">
-        Use este espaço para enviar mensagens, arquivos, documentos ou fotos ao seu gestor (justificativas, atestados, ocorrências)
-        e acompanhar respostas vindas da gestão.
+        Envie e receba mensagens internas com sua equipe de gestão. Funciona como um e-mail simples:
+        você escreve uma nova mensagem, consulta a caixa de entrada e acompanha o histórico de enviados.
       </p>
 
-      <!-- Caixa de entrada: mensagens recebidas de gestores/superiores -->
-      <div class="msg-section-title">Mensagens recebidas</div>
-      <p class="small">
-        Aqui aparecem respostas, orientações e documentos enviados pela gestão para você (MVP simulado neste dispositivo).
-      </p>
-      <div class="msg-list" id="msgListaRecebidas"></div>
+      <!-- Abas internas: Nova, Recebidas, Enviadas -->
+      <div class="msg-tabs-header">
+        <button class="msg-tab-button active" data-msg-tab="msg-nova">Nova mensagem</button>
+        <button class="msg-tab-button" data-msg-tab="msg-recebidas">Recebidas</button>
+        <button class="msg-tab-button" data-msg-tab="msg-enviadas">Enviadas</button>
+      </div>
 
-      <div class="divider"></div>
+      <!-- Nova mensagem -->
+      <div id="msg-nova" class="msg-tab-panel active">
+        <div class="msg-form">
+          <div class="label">Mensagem para o gestor/supervisor</div>
+          <textarea id="msgTexto" rows="3" placeholder="Descreva sua mensagem para o gestor..."></textarea>
 
-      <!-- Caixa de saída: mensagens enviadas pelo operador -->
-      <div class="msg-section-title">Mensagens enviadas</div>
-      <div class="msg-list" id="msgListaEnviadas"></div>
+          <div style="margin-top:6px">
+            <div class="file-label">Anexos para enviar (opcional)</div>
+            <input id="msgArquivo" class="file-input" type="file"
+                   multiple
+                   accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+          </div>
 
-      <div class="msg-form">
-        <div class="label">Nova mensagem para o gestor</div>
-        <textarea id="msgTexto" rows="3" placeholder="Descreva sua mensagem para o gestor..."></textarea>
+          <div class="row" style="margin-top:8px;justify-content:flex-end">
+            <button id="btnEnviarMsg" class="primary" type="button">Enviar</button>
+          </div>
 
-        <div style="margin-top:6px">
-          <div class="file-label">Anexos para enviar (opcional)</div>
-          <input id="msgArquivo" class="file-input" type="file"
-                 multiple
-                 accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+          <p class="small" style="margin-top:6px">
+            *No MVP, as mensagens e anexos ficam registrados apenas neste dispositivo. Na Fase 2, serão integrados ao painel do gestor/supervisor.
+          </p>
         </div>
+      </div>
 
-        <div class="row" style="margin-top:8px;justify-content:flex-end">
-          <button id="btnEnviarMsg" class="primary" type="button">Enviar ao gestor</button>
-        </div>
-
-        <p class="small" style="margin-top:6px">
-          *No MVP, as mensagens e anexos ficam registrados apenas neste dispositivo. Na Fase 2, serão integrados ao painel do gestor/supervisor.
+      <!-- Caixa de entrada -->
+      <div id="msg-recebidas" class="msg-tab-panel">
+        <p class="small">
+          Mensagens e documentos enviados pela gestão para você (simulados neste dispositivo).
         </p>
+        <div class="msg-list" id="msgListaRecebidas"></div>
+      </div>
+
+      <!-- Caixa de saída -->
+      <div id="msg-enviadas" class="msg-tab-panel">
+        <p class="small">
+          Histórico das mensagens que você enviou.
+        </p>
+        <div class="msg-list" id="msgListaEnviadas"></div>
       </div>
     </section>
   </section>
 </main>
 
 <script>
-  // ---------- Tema compartilhado com index ----------
+  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
@@ -838,7 +876,7 @@
     }
   });
 
-  // ---------- Abas ----------
+  // ---------- Abas principais ----------
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -870,7 +908,6 @@
     const roles = usuario.roles || [];
     const temOperador = roles.includes('OPERADOR');
 
-    // se não tiver role OPERADOR, não deveria estar aqui
     if (!temOperador) {
       window.location.href = 'gestor.html';
     }
@@ -996,6 +1033,20 @@
     });
   });
 
+  // ---------- Abas internas de mensagens ----------
+  const msgTabButtons = document.querySelectorAll('.msg-tab-button');
+  const msgTabPanels  = document.querySelectorAll('.msg-tab-panel');
+
+  msgTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.msgTab;
+      msgTabButtons.forEach(b => b.classList.remove('active'));
+      msgTabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
   // ---------- Mensagens (entrada e saída) ----------
   const msgListaRecebidas = document.getElementById('msgListaRecebidas');
   const msgListaEnviadas  = document.getElementById('msgListaEnviadas');
@@ -1003,7 +1054,6 @@
   const msgArquivo = document.getElementById('msgArquivo');
   const btnEnviarMsg = document.getElementById('btnEnviarMsg');
 
-  // Mocks locais: caixa de entrada (simula respostas/documentos de gestores)
   let mensagensRecebidas = [
     {
       id: 1,
@@ -1096,7 +1146,7 @@
   btnEnviarMsg.addEventListener('click', () => {
     const texto = msgTexto.value.trim();
     if (!texto) {
-      alert('Digite uma mensagem para enviar ao gestor.');
+      alert('Digite uma mensagem para enviar.');
       return;
     }
     const anexosCount = msgArquivo.files ? msgArquivo.files.length : 0;
