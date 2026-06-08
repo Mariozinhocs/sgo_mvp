@@ -219,7 +219,6 @@
       border-radius: 999px;
     }
 
-    /* Abas */
     .tabs-header {
       display: flex;
       gap: 8px;
@@ -274,7 +273,6 @@
 </header>
 
 <main>
-  <!-- LOGIN DO GESTOR -->
   <section id="screen-login-gestor" class="card">
     <h2>Login do gestor</h2>
     <div class="row" style="flex-direction:column;gap:10px;margin-bottom:10px">
@@ -288,10 +286,8 @@
     <p class="small" id="loginGestorMsg"></p>
   </section>
 
-  <!-- PAINEL DO GESTOR -->
   <section id="screen-gestor" style="display:none">
     <div class="grid-2">
-      <!-- Coluna esquerda: visão geral -->
       <div>
         <div class="card">
           <div class="section-title">
@@ -320,7 +316,7 @@
         <div class="card">
           <div class="section-title">
             <h2>Últimos registros de ponto</h2>
-            <span class="tag">Lista de referência</span>
+            <span class="tag">Inclui flag fora do posto</span>
           </div>
           <table>
             <thead>
@@ -329,6 +325,7 @@
                 <th>Tipo</th>
                 <th>Data/Hora</th>
                 <th>Local (lat, lng)</th>
+                <th>Obs.</th>
               </tr>
             </thead>
             <tbody id="g_ultimosRegistros">
@@ -337,28 +334,30 @@
                 <td><span class="badge">Check-in</span></td>
                 <td>07/06/2026 08:02</td>
                 <td>-3.134500, -60.021300</td>
+                <td></td>
               </tr>
               <tr>
                 <td>João Lima</td>
                 <td><span class="badge">Check-out</span></td>
                 <td>07/06/2026 17:15</td>
                 <td>-3.098700, -60.012900</td>
+                <td><span class="small" style="color:#b91c1c;">Fora do posto</span></td>
               </tr>
               <tr>
                 <td>Maria Silva</td>
                 <td><span class="badge">Check-in</span></td>
                 <td>07/06/2026 07:55</td>
                 <td>-3.120000, -60.005000</td>
+                <td></td>
               </tr>
             </tbody>
           </table>
           <p class="small">
-            *Na integração com o backend, estes dados virão da API de registros de ponto.
+            *Quando o operador registrar ponto fora do raio do posto, a API poderá marcar o registro com essa observação para conferência.
           </p>
         </div>
       </div>
 
-      <!-- Coluna direita: abas Operadores / Postos -->
       <div>
         <div class="card">
           <div class="section-title">
@@ -371,7 +370,6 @@
             <button class="tab-button" data-tab="tab-postos">Postos</button>
           </div>
 
-          <!-- Operadores -->
           <div id="tab-operadores" class="tab-panel active">
             <table>
               <thead>
@@ -429,7 +427,6 @@
             </p>
           </div>
 
-          <!-- Postos -->
           <div id="tab-postos" class="tab-panel">
             <table>
               <thead>
@@ -515,7 +512,6 @@
       </div>
     </div>
 
-    <!-- Designações -->
     <div class="card">
       <div class="section-title">
         <h2>Designações de operadores a postos</h2>
@@ -589,20 +585,16 @@
 
   let gestorLogado = false;
 
-  // Tabs (Operadores/Postos) [web:102][web:105]
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
-
       tabButtons.forEach(b => b.classList.remove('active'));
       tabPanels.forEach(p => p.classList.remove('active'));
-
       btn.classList.add('active');
       document.getElementById(target).classList.add('active');
     });
   });
 
-  // Tema
   function aplicarTemaInicial() {
     const savedTheme = localStorage.getItem('sgo_theme_gestor');
     if (savedTheme === 'dark') {
@@ -648,7 +640,6 @@
     mostrarLoginGestor();
   }
 
-  // Login simples
   document.getElementById('btnLoginGestor').onclick = () => {
     const u = document.getElementById('gestorUser').value.trim();
     const p = document.getElementById('gestorPass').value.trim();
@@ -662,7 +653,6 @@
     mostrarPainelGestor();
   };
 
-  // Adicionar operador (mock)
   document.getElementById('btnAddOperador').onclick = () => {
     const nome = document.getElementById('op_nome').value.trim();
     const matricula = document.getElementById('op_matricula').value.trim();
@@ -689,22 +679,16 @@
     alert('Operador adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
 
-  // Helper para criar link Maps a partir de lat/lng [web:84]
   function criarLinkMaps(lat, lng) {
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
 
-  // Extrair coordenadas de um link do Google Maps [web:115][web:118][web:84]
   function extrairCoordsDeMapsUrl(url) {
     if (!url) return null;
-
-    // Formato com @lat,lng,...
     const matchArroba = url.match(/@(-?[\d.]+),(-?[\d.]+)/);
     if (matchArroba) {
       return { lat: matchArroba[1], lng: matchArroba[2] };
     }
-
-    // Formatos com q=lat,lng ou query=lat,lng
     try {
       const u = new URL(url);
       const q = u.searchParams.get('q') || u.searchParams.get('query');
@@ -714,14 +698,10 @@
           return { lat: coords[0], lng: coords[1] };
         }
       }
-    } catch(e) {
-      // URL inválida: ignora
-    }
-
+    } catch(e) {}
     return null;
   }
 
-  // Botão "Extrair coordenadas"
   document.getElementById('btnExtrairCoords').onclick = () => {
     const url = document.getElementById('po_maps_url').value.trim();
     if (!url) {
@@ -741,7 +721,6 @@
     alert('Coordenadas extraídas do link. Confira Lat/Lng antes de salvar o posto.');
   };
 
-  // Adicionar posto (mock) + link Maps
   document.getElementById('btnAddPosto').onclick = () => {
     const nome = document.getElementById('po_nome').value.trim();
     const lat  = document.getElementById('po_lat').value.trim();
@@ -777,7 +756,6 @@
     alert('Posto adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
 
-  // Edição inline Operador
   gTabelaOperadores.addEventListener('click', (e) => {
     if (!e.target.classList.contains('btn-edit-operador')) return;
 
@@ -822,7 +800,6 @@
     }
   });
 
-  // Edição inline Posto
   gTabelaPostos.addEventListener('click', (e) => {
     if (!e.target.classList.contains('btn-edit-posto')) return;
 
@@ -879,7 +856,6 @@
     }
   });
 
-  // Designações (mock)
   document.getElementById('btnAddDesignacao').onclick = () => {
     const op   = document.getElementById('desig_operador').value;
     const posto  = document.getElementById('desig_posto').value;
@@ -912,7 +888,7 @@ Acesse o app de ponto do operador em:
 ${window.location.origin}/sgo_mvp/
     `.trim();
 
-    desigMsg.textContent = 'Designação criada. Mensagem sugerida para envio ao operador foi copiada para a área de transferência (quando suportado).';
+    desigMsg.textContent = 'Designação criada. Mensagem sugerida foi copiada para a área de transferência (quando suportado).';
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(mensagem).catch(() => {});
