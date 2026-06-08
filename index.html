@@ -256,7 +256,7 @@
 
     <div class="logo-wrapper">
       <div class="logo-img">
-        <img src="icons/icon-512.png" alt="SGO" />
+        <img src="icon-512.png" alt="SGO" />
       </div>
       <h1>SGO</h1>
       <div class="subtitle">Acesso ao sistema de gestão de operações</div>
@@ -285,7 +285,7 @@
 
       <p class="small" style="margin-top:8px;">
         • Login aceita matrícula, nome de usuário (nome.sobrenome) ou e-mail institucional, conforme configurado pelo gestor.<br>
-        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor). [web:242][web:245]
+        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor). [web:245]
       </p>
     </form>
 
@@ -424,7 +424,7 @@
     btnEntrar.disabled = true;
     btnEntrar.textContent = 'Validando...';
 
-    // ---- MOCK LOCAL admin.admin / 123456 ---- [web:242][web:245]
+    // ---- MOCK LOCAL admin.admin / 123456 ---- [web:245]
     if (identificador === 'admin.admin' && senha === '123456') {
       const usuarioMock = {
         id: 1,
@@ -434,10 +434,17 @@
         matricula: '00001',
         documento: '000.000.000-00',
         telefone: '(00) 00000-0000',
-        postoPrincipal: 'UBS Centro',
+
+        // Posto principal já atribuído ao Admin
+        postoPrincipal: 'Centro de Cooperação da Cidade',
+        postoPrincipalLat: -3.089968,
+        postoPrincipalLng: -60.009204,
+
         situacao: 'Ativo',
         deveTrocarSenha: true,
-        roles: ['OPERADOR', 'GESTOR']
+        roles: ['OPERADOR', 'GESTOR'],
+        // exemplo de feature futura para Central de Controle:
+        // features: ['central_controle']
       };
 
       localStorage.setItem('sgo_auth_token', 'token-mock-admin');
