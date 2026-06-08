@@ -408,44 +408,17 @@
     }
 
     /* Mensagens */
-    .msg-tabs-header {
-      display:flex;
-      gap:6px;
-      margin-top:6px;
-    }
-
-    .msg-tab-button {
-      flex:1;
-      text-align:center;
-      padding:6px 6px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:rgba(15,23,42,0.85);
-      color:var(--text-secondary);
-      font-size:11px;
-      cursor:pointer;
-    }
-
-    .msg-tab-button.active {
-      background:var(--primary);
-      border-color:var(--primary);
-      color:#022c22;
+    .msg-section-title {
+      font-size:13px;
       font-weight:600;
-    }
-
-    .msg-tab-panel {
-      display:none;
-      margin-top:6px;
-    }
-
-    .msg-tab-panel.active {
-      display:block;
+      margin-top:2px;
+      margin-bottom:4px;
     }
 
     .msg-list {
       max-height:220px;
       overflow-y:auto;
-      margin-top:4px;
+      margin-top:6px;
     }
 
     .msg-item {
@@ -776,27 +749,18 @@
         e acompanhar respostas vindas da gestão.
       </p>
 
-      <!-- Abas internas de mensagens -->
-      <div class="msg-tabs-header">
-        <button class="msg-tab-button active" data-msg-tab="msg-recebidas">Recebidas</button>
-        <button class="msg-tab-button" data-msg-tab="msg-enviadas">Enviadas</button>
-      </div>
-
       <!-- Caixa de entrada: mensagens recebidas de gestores/superiores -->
-      <div id="msg-recebidas" class="msg-tab-panel active">
-        <p class="small">
-          Mensagens e documentos enviados pela gestão para você (MVP simulado neste dispositivo).
-        </p>
-        <div class="msg-list" id="msgListaRecebidas"></div>
-      </div>
+      <div class="msg-section-title">Mensagens recebidas</div>
+      <p class="small">
+        Aqui aparecem respostas, orientações e documentos enviados pela gestão para você (MVP simulado neste dispositivo).
+      </p>
+      <div class="msg-list" id="msgListaRecebidas"></div>
+
+      <div class="divider"></div>
 
       <!-- Caixa de saída: mensagens enviadas pelo operador -->
-      <div id="msg-enviadas" class="msg-tab-panel">
-        <p class="small">
-          Histórico das mensagens que você enviou para o gestor/supervisor.
-        </p>
-        <div class="msg-list" id="msgListaEnviadas"></div>
-      </div>
+      <div class="msg-section-title">Mensagens enviadas</div>
+      <div class="msg-list" id="msgListaEnviadas"></div>
 
       <div class="msg-form">
         <div class="label">Nova mensagem para o gestor</div>
@@ -874,7 +838,7 @@
     }
   });
 
-  // ---------- Abas principais ----------
+  // ---------- Abas ----------
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -906,6 +870,7 @@
     const roles = usuario.roles || [];
     const temOperador = roles.includes('OPERADOR');
 
+    // se não tiver role OPERADOR, não deveria estar aqui
     if (!temOperador) {
       window.location.href = 'gestor.html';
     }
@@ -1031,20 +996,6 @@
     });
   });
 
-  // ---------- Abas internas de mensagens ----------
-  const msgTabButtons = document.querySelectorAll('.msg-tab-button');
-  const msgTabPanels  = document.querySelectorAll('.msg-tab-panel');
-
-  msgTabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.msgTab;
-      msgTabButtons.forEach(b => b.classList.remove('active'));
-      msgTabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
   // ---------- Mensagens (entrada e saída) ----------
   const msgListaRecebidas = document.getElementById('msgListaRecebidas');
   const msgListaEnviadas  = document.getElementById('msgListaEnviadas');
@@ -1052,6 +1003,7 @@
   const msgArquivo = document.getElementById('msgArquivo');
   const btnEnviarMsg = document.getElementById('btnEnviarMsg');
 
+  // Mocks locais: caixa de entrada (simula respostas/documentos de gestores)
   let mensagensRecebidas = [
     {
       id: 1,
