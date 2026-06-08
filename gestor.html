@@ -157,6 +157,7 @@
       padding: 8px 10px;
       border-bottom: 1px solid var(--border-subtle);
       text-align: left;
+      vertical-align: middle;
     }
 
     th {
@@ -202,6 +203,16 @@
       background:var(--border-subtle);
       margin:8px 0 12px;
     }
+
+    a.map-link {
+      font-size: 12px;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a.map-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -233,7 +244,7 @@
 
   <!-- PAINEL DO GESTOR -->
   <section id="screen-gestor" style="display:none">
-    <!-- Visão geral + (placeholder) Dashboard futuro -->
+    <!-- Visão geral + placeholder Dashboard -->
     <div class="grid-2">
       <div>
         <div class="card">
@@ -359,7 +370,7 @@
         <div class="card">
           <div class="section-title">
             <h2>Postos georreferenciados</h2>
-            <span class="tag">Cadastro básico</span>
+            <span class="tag">Cadastro + Google Maps</span>
           </div>
           <table>
             <thead>
@@ -367,30 +378,46 @@
                 <th>Posto</th>
                 <th>Lat / Lng</th>
                 <th>Raio (m)</th>
+                <th>Mapa</th>
               </tr>
             </thead>
             <tbody id="g_tabelaPostos">
               <tr>
                 <td>UBS Centro</td>
-                <td>-3.132000, -60.021000</td>
+                <td data-lat="-3.132000" data-lng="-60.021000">-3.132000, -60.021000</td>
                 <td>100</td>
+                <td>
+                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.132000,-60.021000" target="_blank" rel="noopener noreferrer">
+                    Ver no Maps
+                  </a>
+                </td>
               </tr>
               <tr>
                 <td>Escola Zona Leste</td>
-                <td>-3.100500, -60.005800</td>
+                <td data-lat="-3.100500" data-lng="-60.005800">-3.100500, -60.005800</td>
                 <td>150</td>
+                <td>
+                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.100500,-60.005800" target="_blank" rel="noopener noreferrer">
+                    Ver no Maps
+                  </a>
+                </td>
               </tr>
               <tr>
                 <td>Base Operacional Norte</td>
-                <td>-3.050000, -60.010000</td>
+                <td data-lat="-3.050000" data-lng="-60.010000">-3.050000, -60.010000</td>
                 <td>200</td>
+                <td>
+                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.050000,-60.010000" target="_blank" rel="noopener noreferrer">
+                    Ver no Maps
+                  </a>
+                </td>
               </tr>
             </tbody>
           </table>
 
           <div class="divider"></div>
 
-          <p class="small" style="margin-bottom:6px;">Adicionar posto (coordenadas podem ser ajustadas no mapa na Fase 2)</p>
+          <p class="small" style="margin-bottom:6px;">Adicionar posto</p>
           <div class="row" style="gap:8px;margin-bottom:8px">
             <input id="po_nome" placeholder="Nome do posto" />
           </div>
@@ -401,10 +428,10 @@
           </div>
           <div class="row" style="gap:8px;margin-bottom:4px">
             <button id="btnAddPosto" class="primary">Adicionar posto</button>
-            <button id="btnMapaPostos" class="secondary" disabled>Ver no mapa (Fase 2)</button>
+            <button id="btnMapaPostos" class="secondary" disabled>Selecionar no mapa (Fase 2)</button>
           </div>
           <p class="small">
-            *Na Fase 2, o gestor poderá clicar em um mapa para definir os postos visualmente.
+            *Na Fase 2, o gestor poderá clicar em um mapa integrado para definir a coordenada; aqui usamos o link do Google Maps a partir de lat/lng.
           </p>
         </div>
       </div>
@@ -459,7 +486,7 @@
       </table>
 
       <p class="small" style="margin-top:8px">
-        *Após criar a designação, o sistema poderá gerar uma mensagem padrão para o operador com link do app, escala e posto designado.
+        *Após criar a designação, o sistema gera uma mensagem padrão para o operador com link do app, escala e posto designado.
       </p>
     </div>
   </section>
@@ -561,7 +588,6 @@
     `;
     gTabelaOperadores.appendChild(tr);
 
-    // Limpa campos
     document.getElementById('op_nome').value = '';
     document.getElementById('op_matricula').value = '';
     document.getElementById('op_email').value = '';
@@ -569,7 +595,13 @@
     alert('Operador adicionado (MVP: apenas na interface, depois integraremos com o backend).');
   };
 
-  // Adicionar posto (apenas na tabela, mock)
+  // Helper para criar link do Google Maps a partir de lat/lng
+  function criarLinkMaps(lat, lng) {
+    // Padrão recomendado: Google Maps URLs com query lat,lng [web:78][web:84]
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  }
+
+  // Adicionar posto (apenas na tabela, mock) + link "Ver no Maps"
   document.getElementById('btnAddPosto').onclick = () => {
     const nome = document.getElementById('po_nome').value.trim();
     const lat  = document.getElementById('po_lat').value.trim();
@@ -582,10 +614,16 @@
     }
 
     const tr = document.createElement('tr');
+    const url = criarLinkMaps(lat, lng);
     tr.innerHTML = `
       <td>${nome}</td>
-      <td>${lat}, ${lng}</td>
+      <td data-lat="${lat}" data-lng="${lng}">${lat}, ${lng}</td>
       <td>${raio}</td>
+      <td>
+        <a class="map-link" href="${url}" target="_blank" rel="noopener noreferrer">
+          Ver no Maps
+        </a>
+      </td>
     `;
     gTabelaPostos.appendChild(tr);
 
@@ -621,7 +659,6 @@
     `;
     gTabelaDesignacoes.appendChild(tr);
 
-    // Mensagem padrão para envio ao operador
     const mensagem = `
 Operador: ${opText}
 Posto designado: ${postoText}
@@ -633,12 +670,10 @@ ${window.location.origin}/sgo_mvp/
 
     desigMsg.textContent = 'Designação criada. Mensagem sugerida para envio ao operador foi copiada para a área de transferência (quando suportado).';
 
-    // Tenta copiar a mensagem
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(mensagem).catch(() => {});
     }
 
-    // Limpa escala
     document.getElementById('desig_escala').value = '';
   };
 </script>
