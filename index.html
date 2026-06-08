@@ -30,7 +30,7 @@
     }
 
     header {
-      padding: 18px 18px 10px;
+      padding: 18px 18px 6px;
       text-align: center;
     }
 
@@ -167,6 +167,7 @@
       height:6px;
       border-radius:999px;
       background:#34d399;
+      display:inline-block;
     }
 
     .dot-red {
@@ -206,87 +207,261 @@
       font-size: 32px;
       font-weight: 600;
     }
+
+    /* Abas */
+    .tabs-header {
+      display:flex;
+      gap:8px;
+      margin: 8px 14px 0;
+      max-width:480px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    .tab-button {
+      flex:1;
+      text-align:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    .tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .tab-panel {
+      display:none;
+    }
+
+    .tab-panel.active {
+      display:block;
+    }
+
+    /* Tabela de escala */
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      margin-top:6px;
+    }
+
+    th, td {
+      padding:6px 4px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+      vertical-align:middle;
+    }
+
+    th {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .check-cell {
+      text-align:center;
+    }
+
+    .check-cell input[type="checkbox"] {
+      width:14px;
+      height:14px;
+      accent-color: #22c55e;
+      cursor:pointer;
+    }
+
+    .escala-dia {
+      font-weight:500;
+    }
+
+    .escala-hora {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .escala-post {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
   </style>
 </head>
 <body>
 <header>
   <h1>SGO – Operador</h1>
-  <div class="subtitle">Registro de ponto com localização</div>
+  <div class="subtitle">Ponto e escala diária</div>
 </header>
 
+<!-- Abas -->
+<div class="tabs-header">
+  <button class="tab-button active" data-tab="tab-ponto">Ponto</button>
+  <button class="tab-button" data-tab="tab-escala">Escala</button>
+</div>
+
 <main>
-  <!-- Bloco de status principal -->
-  <section class="card">
-    <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div>
-        <div class="label">Situação atual</div>
-        <div id="statusTexto" class="time-big">Aguardando</div>
-        <div id="statusPill" class="status-pill status-warn">
-          <span class="dot dot-red"></span>
-          Fora da área de posto
+  <!-- Painel PONTO -->
+  <section id="tab-ponto" class="tab-panel active">
+    <!-- Bloco de status principal -->
+    <section class="card">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="label">Situação atual</div>
+          <div id="statusTexto" class="time-big">Aguardando</div>
+          <div id="statusPill" class="status-pill status-warn">
+            <span class="dot dot-red"></span>
+            Fora da área de posto
+          </div>
+          <div class="chip">
+            <span>Último registro:</span>
+            <span id="chipUltimoRegistro">Nenhum</span>
+          </div>
         </div>
-        <div class="chip">
-          <span>Último registro:</span>
-          <span id="chipUltimoRegistro">Nenhum</span>
+        <div style="text-align:right">
+          <div class="label">Hora</div>
+          <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
+          <div class="small" id="dataAtual">--/--/----</div>
         </div>
       </div>
-      <div style="text-align:right">
-        <div class="label">Hora</div>
-        <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
-        <div class="small" id="dataAtual">--/--/----</div>
+    </section>
+
+    <!-- Localização / posto -->
+    <section class="card">
+      <h2>Localização e posto</h2>
+      <div class="label">Posto designado</div>
+      <div id="postoAtual" class="badge-posto">
+        <span>Não definido (MVP)</span>
       </div>
-    </div>
+
+      <div class="map-placeholder" id="infoLocal">
+        Sem localização. Toque em “Capturar localização” para iniciar.
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="btnGeo" class="secondary" type="button" disabled>Capturar localização</button>
+        <button id="btnCheckin" class="primary" type="button" disabled>Check-in</button>
+        <button id="btnCheckout" class="secondary" type="button" disabled>Check-out</button>
+      </div>
+
+      <p class="small" style="margin-top:8px">
+        *Sua localização é usada apenas para validar se você está dentro do raio geográfico do posto na hora do registro, via API de geolocalização do navegador. [web:120][web:123]
+      </p>
+    </section>
+
+    <!-- Seleção de posto (mock) -->
+    <section class="card">
+      <h2>Postos disponíveis (MVP)</h2>
+      <p class="small">
+        Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API. [web:124][web:127]
+      </p>
+      <div class="label" style="margin-top:4px">Selecione o posto</div>
+      <select id="selectPosto">
+        <option value="">Selecione um posto</option>
+        <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
+        <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
+        <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
+      </select>
+    </section>
+
+    <!-- Histórico local -->
+    <section class="card">
+      <h2>Histórico local</h2>
+      <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API do sistema. [web:124][web:127]</p>
+      <ul id="histLista"></ul>
+    </section>
   </section>
 
-  <!-- Posto + localização -->
-  <section class="card">
-    <h2>Localização e posto</h2>
-    <div class="label">Posto designado</div>
-    <div id="postoAtual" class="badge-posto">
-      <span>Não definido (MVP)</span>
-    </div>
+  <!-- Painel ESCALA -->
+  <section id="tab-escala" class="tab-panel">
+    <section class="card">
+      <h2>Escala fornecida</h2>
+      <p class="small">
+        Esta tabela representa a escala enviada pelo gestor. O texto da jornada não é editável; você apenas marca os dias cumpridos, localmente, como uma checklist pessoal. [web:129][web:130]
+      </p>
 
-    <div class="map-placeholder" id="infoLocal">
-      Sem localização. Toque em “Capturar localização” para iniciar.
-    </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Dia</th>
+            <th>Horário</th>
+            <th>Posto</th>
+            <th class="check-cell">Cumprido</th>
+          </tr>
+        </thead>
+        <tbody id="escalaTabela">
+          <!-- Exemplo de escala mock; depois podemos substituir por dados reais JSON -->
+          <tr data-id="seg">
+            <td class="escala-dia">Segunda</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">UBS Centro</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="seg">
+            </td>
+          </tr>
+          <tr data-id="ter">
+            <td class="escala-dia">Terça</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">UBS Centro</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="ter">
+            </td>
+          </tr>
+          <tr data-id="qua">
+            <td class="escala-dia">Quarta</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Escola Zona Leste</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="qua">
+            </td>
+          </tr>
+          <tr data-id="qui">
+            <td class="escala-dia">Quinta</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Escola Zona Leste</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="qui">
+            </td>
+          </tr>
+          <tr data-id="sex">
+            <td class="escala-dia">Sexta</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Base Operacional Norte</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="sex">
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <div class="row" style="margin-top:10px">
-      <button id="btnGeo" class="secondary" type="button">Capturar localização</button>
-      <button id="btnCheckin" class="primary" type="button" disabled>Check-in</button>
-      <button id="btnCheckout" class="secondary" type="button" disabled>Check-out</button>
-    </div>
-
-    <p class="small" style="margin-top:8px">
-      *Sua localização é usada apenas para validar se você está dentro do raio geográfico do posto na hora do registro, usando a API de geolocalização do navegador. [web:120][web:123]
-    </p>
-  </section>
-
-  <!-- Seleção de posto (mock local) -->
-  <section class="card">
-    <h2>Postos disponíveis (MVP)</h2>
-    <p class="small">
-      Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API. [web:124][web:127]
-    </p>
-
-    <div class="label" style="margin-top:4px">Selecione o posto</div>
-    <select id="selectPosto">
-      <option value="">Selecione um posto</option>
-      <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
-      <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
-      <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
-    </select>
-  </section>
-
-  <!-- Histórico local -->
-  <section class="card">
-    <h2>Histórico local</h2>
-    <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API do sistema. [web:124][web:127]</p>
-    <ul id="histLista"></ul>
+      <p class="small" style="margin-top:8px">
+        *Na integração futura, esta escala virá diretamente do painel do gestor, e os checks poderão ser sincronizados com o sistema para conferência de jornadas.
+      </p>
+    </section>
   </section>
 </main>
 
 <script>
-  // Atualização de data/hora
+  // Abas
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanels  = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // Relógio
   function atualizarRelogio() {
     const agora = new Date();
     const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -297,7 +472,7 @@
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
 
-  // Postos mock (mesmos do painel do gestor)
+  // Postos mock (mesmos do gestor)
   const postosMock = [
     { nome: 'UBS Centro', lat: -3.132000, lng: -60.021000, raio: 100 },
     { nome: 'Escola Zona Leste', lat: -3.100500, lng: -60.005800, raio: 150 },
@@ -320,7 +495,7 @@
   const selectPosto = document.getElementById('selectPosto');
   const postoAtual = document.getElementById('postoAtual');
 
-  // Haversine: distância entre dois pontos (km) [web:125][web:128]
+  // Haversine [web:125][web:128]
   function distanciaKm(lat1, lon1, lat2, lon2) {
     function toRad(x) { return x * Math.PI / 180; }
     const R = 6371;
@@ -384,6 +559,7 @@
     if (!val) {
       postoSelecionado = null;
       postoAtual.innerHTML = '<span>Não definido (MVP)</span>';
+      btnGeo.disabled = true;
       btnCheckin.disabled = true;
       btnCheckout.disabled = true;
       return;
@@ -495,6 +671,33 @@
 
     adicionarHistorico('Check-out', postoSelecionado.nome, distMetros);
     statusTexto.textContent = 'Check-out realizado';
+  });
+
+  // Checklist de escala: salvar no localStorage (apenas no dispositivo)
+  const ESCALA_STORAGE_KEY = 'sgo_operador_escala_checks';
+
+  function carregarChecksEscala() {
+    try {
+      const raw = localStorage.getItem(ESCALA_STORAGE_KEY);
+      if (!raw) return {};
+      return JSON.parse(raw);
+    } catch(e) {
+      return {};
+    }
+  }
+
+  function salvarChecksEscala(map) {
+    localStorage.setItem(ESCALA_STORAGE_KEY, JSON.stringify(map));
+  }
+
+  const escalaChecks = carregarChecksEscala();
+  document.querySelectorAll('.esc-check').forEach(chk => {
+    const id = chk.dataset.id;
+    if (escalaChecks[id]) chk.checked = true;
+    chk.addEventListener('change', () => {
+      escalaChecks[id] = chk.checked;
+      salvarChecksEscala(escalaChecks);
+    });
   });
 </script>
 </body>
