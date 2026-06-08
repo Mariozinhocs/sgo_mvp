@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
   <title>SGO – Ponto Eletrônico</title>
-  <link rel="manifest" href="manifest.json">
+
+  <!-- Manifest e favicon -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+
   <style>
     :root {
       /* Tema LIGHT (padrão) */
@@ -24,14 +28,14 @@
       --status-inativo-text: #b91c1c;
     }
 
-    /* Tema DARK (cores inspiradas no logo) */
+    /* Tema DARK (inspirado no logo azul escuro) */
     body.theme-dark {
       --bg-body: #020826;        /* fundo quase preto azulado */
-      --bg-header: #020826;      /* igual ao fundo, estilo logo */
-      --bg-card: #050b35;        /* bloco um pouco mais claro */
+      --bg-header: #020826;
+      --bg-card: #050b35;
       --text-main: #f9fafb;
       --text-secondary: #9ca3af;
-      --primary: #2563eb;        /* azul vivo para ações */
+      --primary: #2563eb;
       --primary-contrast: #ffffff;
       --border-subtle: #1f2937;
 
@@ -54,7 +58,7 @@
       position: relative;
       background: var(--bg-header);
       color: #ffffff;
-      padding: 20px 24px;
+      padding: 20px 24px 32px;
       text-align: center;
     }
 
@@ -146,16 +150,36 @@
       position: absolute;
       top: 16px;
       right: 16px;
-      font-size: 12px;
+      font-size: 14px;
       padding: 6px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15,23,42,0.7);
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    body.theme-dark .theme-toggle {
+      background: rgba(15,23,42,0.9);
+    }
+
+    .theme-toggle span {
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 <header>
-  <h1>SGO – Sioux</h1>
+  <h1>SGO – Ponto Eletrônico</h1>
   <div class="small">Registro de presença georreferenciado</div>
-  <button id="btnTheme" class="secondary theme-toggle">Dark</button>
+
+  <!-- Ícone + texto para alternância de tema -->
+  <button id="btnTheme" class="theme-toggle">
+    <span id="themeIcon">🌙</span>
+    <span id="themeLabel">Dark</span>
+  </button>
 </header>
 
 <main>
@@ -220,6 +244,8 @@
   const btnCheckin   = document.getElementById('btnCheckin');
   const btnCheckout  = document.getElementById('btnCheckout');
   const btnTheme     = document.getElementById('btnTheme');
+  const themeIcon    = document.getElementById('themeIcon');
+  const themeLabel   = document.getElementById('themeLabel');
 
   let currentUser = null;
   let statusAtual = 'Inativo'; // 'Ativo' ou 'Inativo'
@@ -261,17 +287,25 @@
     const savedTheme = localStorage.getItem('sgo_theme');
     if (savedTheme === 'dark') {
       document.body.classList.add('theme-dark');
-      btnTheme.textContent = 'Light';
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
     } else {
       document.body.classList.remove('theme-dark');
-      btnTheme.textContent = 'Dark';
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
     }
   }
 
   btnTheme.onclick = () => {
     const isDark = document.body.classList.toggle('theme-dark');
     localStorage.setItem('sgo_theme', isDark ? 'dark' : 'light');
-    btnTheme.textContent = isDark ? 'Light' : 'Dark';
+    if (isDark) {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+    }
   };
 
   aplicarTemaInicial();
@@ -295,4 +329,73 @@
       loginMsg.textContent = 'Informe usuário e senha.';
       return;
     }
-    
+    currentUser = u;
+    localStorage.setItem('sgo_user', currentUser);
+    userNameEl.textContent = currentUser;
+    loginMsg.textContent = '';
+    atualizarStatus('Inativo');
+    addHistory('Login efetuado por ' + currentUser);
+    showScreen('ponto');
+  };
+
+  // Logout
+  document.getElementById('btnLogout').onclick = () => {
+    localStorage.removeItem('sgo_user');
+    currentUser = null;
+    historyEl.innerHTML = '';
+    lastMsg.textContent = 'Nenhum ponto registrado nesta sessão.';
+    atualizarStatus('Inativo');
+    showScreen('login');
+  };
+
+  // Captura localização e registra ponto (check-in ou check-out)
+  function registrarPonto(tipo) {
+    const now = new Date();
+    const dataHora = now.toLocaleString('pt-BR');
+
+    function finalizarRegistro(locStr) {
+      lastMsg.textContent = `${tipo} registrado em ${dataHora} – ${locStr}`;
+      addHistory(`${tipo} registrado – ${locStr}`);
+      // Futuro: enviar via fetch() para o backend com usuário, tipo, data/hora e coordenadas.
+    }
+
+    if (!navigator.geolocation) {
+      const locStr = 'Localização não capturada (geolocalização indisponível)';
+      finalizarRegistro(locStr);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      const locStr = `Lat ${lat}, Lng ${lng}`;
+      finalizarRegistro(locStr);
+    }, () => {
+      const locStr = 'Localização não capturada (erro ao obter posição)';
+      finalizarRegistro(locStr);
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  // Check-in
+  btnCheckin.onclick = () => {
+    if (!currentUser) return;
+    registrarPonto('Check-in');
+    atualizarStatus('Ativo');
+  };
+
+  // Check-out
+  btnCheckout.onclick = () => {
+    if (!currentUser) return;
+    registrarPonto('Check-out');
+    atualizarStatus('Inativo');
+  };
+
+  // Registro do service worker para PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js');
+    });
+  }
+</script>
+</body>
+</html>
