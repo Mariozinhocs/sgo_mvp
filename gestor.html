@@ -219,6 +219,48 @@
       padding: 4px 8px;
       border-radius: 999px;
     }
+
+    /* Abas */
+    .tabs-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tab-button {
+      flex: 1;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab-button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    body.theme-dark .tab-button {
+      background: #020826;
+    }
+
+    body.theme-dark .tab-button.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -318,147 +360,152 @@
         </div>
       </div>
 
-      <!-- Coluna direita: Operadores e Postos -->
+      <!-- Coluna direita: Abas Operadores / Postos -->
       <div>
-        <!-- Operadores -->
         <div class="card">
           <div class="section-title">
-            <h2>Operadores</h2>
-            <span class="tag">Cadastro básico</span>
+            <h2>Cadastros</h2>
+            <span class="tag">Operadores e Postos</span>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Matrícula</th>
-                <th>Situação</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="g_tabelaOperadores">
-              <tr>
-                <td>Ana Souza</td>
-                <td>00123</td>
-                <td><span class="badge">Ativo</span></td>
-                <td>
-                  <button class="secondary btn-small btn-edit-operador">Editar</button>
-                </td>
-              </tr>
-              <tr>
-                <td>João Lima</td>
-                <td>00456</td>
-                <td><span class="badge">Ativo</span></td>
-                <td>
-                  <button class="secondary btn-small btn-edit-operador">Editar</button>
-                </td>
-              </tr>
-              <tr>
-                <td>Maria Silva</td>
-                <td>00789</td>
-                <td><span class="badge">Inativo</span></td>
-                <td>
-                  <button class="secondary btn-small btn-edit-operador">Editar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
 
-          <div class="divider"></div>
+          <!-- Abas -->
+          <div class="tabs-header">
+            <button class="tab-button active" data-tab="tab-operadores">Operadores</button>
+            <button class="tab-button" data-tab="tab-postos">Postos</button>
+          </div>
 
-          <p class="small" style="margin-bottom:6px;">Adicionar operador (cadastro unitário)</p>
-          <div class="row" style="gap:8px;margin-bottom:8px">
-            <input id="op_nome" placeholder="Nome do operador" />
-          </div>
-          <div class="row" style="gap:8px;margin-bottom:8px">
-            <input id="op_matricula" placeholder="Matrícula" />
-            <input id="op_email" placeholder="E-mail (opcional)" />
-          </div>
-          <div class="row" style="gap:8px;margin-bottom:4px">
-            <button id="btnAddOperador" class="primary">Adicionar</button>
-            <button id="btnImportarOperadores" class="secondary" disabled>Importar lista (Fase 2)</button>
-          </div>
-          <p class="small">
-            *A importação em lote será implementada na Fase 2 via upload de arquivo (CSV/planilha).
-          </p>
-        </div>
+          <!-- Painel Operadores -->
+          <div id="tab-operadores" class="tab-panel active">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Matrícula</th>
+                  <th>Situação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="g_tabelaOperadores">
+                <tr>
+                  <td>Ana Souza</td>
+                  <td>00123</td>
+                  <td><span class="badge">Ativo</span></td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-operador">Editar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>João Lima</td>
+                  <td>00456</td>
+                  <td><span class="badge">Ativo</span></td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-operador">Editar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Maria Silva</td>
+                  <td>00789</td>
+                  <td><span class="badge">Inativo</span></td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-operador">Editar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-        <!-- Postos -->
-        <div class="card">
-          <div class="section-title">
-            <h2>Postos georreferenciados</h2>
-            <span class="tag">Cadastro + Google Maps</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Posto</th>
-                <th>Lat / Lng</th>
-                <th>Raio (m)</th>
-                <th>Mapa</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="g_tabelaPostos">
-              <tr>
-                <td>UBS Centro</td>
-                <td data-lat="-3.132000" data-lng="-60.021000">-3.132000, -60.021000</td>
-                <td>100</td>
-                <td>
-                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.132000,-60.021000" target="_blank" rel="noopener noreferrer">
-                    Ver no Maps
-                  </a>
-                </td>
-                <td>
-                  <button class="secondary btn-small btn-edit-posto">Editar</button>
-                </td>
-              </tr>
-              <tr>
-                <td>Escola Zona Leste</td>
-                <td data-lat="-3.100500" data-lng="-60.005800">-3.100500, -60.005800</td>
-                <td>150</td>
-                <td>
-                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.100500,-60.005800" target="_blank" rel="noopener noreferrer">
-                    Ver no Maps
-                  </a>
-                </td>
-                <td>
-                  <button class="secondary btn-small btn-edit-posto">Editar</button>
-                </td>
-              </tr>
-              <tr>
-                <td>Base Operacional Norte</td>
-                <td data-lat="-3.050000" data-lng="-60.010000">-3.050000, -60.010000</td>
-                <td>200</td>
-                <td>
-                  <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.050000,-60.010000" target="_blank" rel="noopener noreferrer">
-                    Ver no Maps
-                  </a>
-                </td>
-                <td>
-                  <button class="secondary btn-small btn-edit-posto">Editar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <div class="divider"></div>
 
-          <div class="divider"></div>
+            <p class="small" style="margin-bottom:6px;">Adicionar operador (cadastro unitário)</p>
+            <div class="row" style="gap:8px;margin-bottom:8px">
+              <input id="op_nome" placeholder="Nome do operador" />
+            </div>
+            <div class="row" style="gap:8px;margin-bottom:8px">
+              <input id="op_matricula" placeholder="Matrícula" />
+              <input id="op_email" placeholder="E-mail (opcional)" />
+            </div>
+            <div class="row" style="gap:8px;margin-bottom:4px">
+              <button id="btnAddOperador" class="primary">Adicionar</button>
+              <button id="btnImportarOperadores" class="secondary" disabled>Importar lista (Fase 2)</button>
+            </div>
+            <p class="small">
+              *A importação em lote será implementada na Fase 2 via upload de arquivo (CSV/planilha).
+            </p>
+          </div>
 
-          <p class="small" style="margin-bottom:6px;">Adicionar posto</p>
-          <div class="row" style="gap:8px;margin-bottom:8px">
-            <input id="po_nome" placeholder="Nome do posto" />
+          <!-- Painel Postos -->
+          <div id="tab-postos" class="tab-panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>Posto</th>
+                  <th>Lat / Lng</th>
+                  <th>Raio (m)</th>
+                  <th>Mapa</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="g_tabelaPostos">
+                <tr>
+                  <td>UBS Centro</td>
+                  <td data-lat="-3.132000" data-lng="-60.021000">-3.132000, -60.021000</td>
+                  <td>100</td>
+                  <td>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.132000,-60.021000" target="_blank" rel="noopener noreferrer">
+                      Ver no Maps
+                    </a>
+                  </td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-posto">Editar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Escola Zona Leste</td>
+                  <td data-lat="-3.100500" data-lng="-60.005800">-3.100500, -60.005800</td>
+                  <td>150</td>
+                  <td>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.100500,-60.005800" target="_blank" rel="noopener noreferrer">
+                      Ver no Maps
+                    </a>
+                  </td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-posto">Editar</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Base Operacional Norte</td>
+                  <td data-lat="-3.050000" data-lng="-60.010000">-3.050000, -60.010000</td>
+                  <td>200</td>
+                  <td>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.050000,-60.010000" target="_blank" rel="noopener noreferrer">
+                      Ver no Maps
+                    </a>
+                  </td>
+                  <td>
+                    <button class="secondary btn-small btn-edit-posto">Editar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="divider"></div>
+
+            <p class="small" style="margin-bottom:6px;">Adicionar posto</p>
+            <div class="row" style="gap:8px;margin-bottom:8px">
+              <input id="po_nome" placeholder="Nome do posto" />
+            </div>
+            <div class="row" style="gap:8px;margin-bottom:8px">
+              <input id="po_lat" placeholder="Latitude" />
+              <input id="po_lng" placeholder="Longitude" />
+              <input id="po_raio" placeholder="Raio (m)" />
+            </div>
+            <div class="row" style="gap:8px;margin-bottom:4px">
+              <button id="btnAddPosto" class="primary">Adicionar posto</button>
+              <button id="btnMapaPostos" class="secondary" disabled>Selecionar no mapa (Fase 2)</button>
+            </div>
+            <p class="small">
+              *Na Fase 2, o gestor poderá clicar em um mapa integrado para definir a coordenada; aqui usamos o link do Google Maps a partir de lat/lng.
+            </p>
           </div>
-          <div class="row" style="gap:8px;margin-bottom:8px">
-            <input id="po_lat" placeholder="Latitude" />
-            <input id="po_lng" placeholder="Longitude" />
-            <input id="po_raio" placeholder="Raio (m)" />
-          </div>
-          <div class="row" style="gap:8px;margin-bottom:4px">
-            <button id="btnAddPosto" class="primary">Adicionar posto</button>
-            <button id="btnMapaPostos" class="secondary" disabled>Selecionar no mapa (Fase 2)</button>
-          </div>
-          <p class="small">
-            *Na Fase 2, o gestor poderá clicar em um mapa integrado para definir a coordenada; aqui usamos o link do Google Maps a partir de lat/lng.
-          </p>
         </div>
       </div>
     </div>
@@ -532,7 +579,23 @@
   const gTabelaDesignacoes = document.getElementById('g_tabelaDesignacoes');
   const desigMsg           = document.getElementById('desig_msg');
 
+  const tabButtons   = document.querySelectorAll('.tab-button');
+  const tabPanels    = document.querySelectorAll('.tab-panel');
+
   let gestorLogado = false;
+
+  // Tabs simples (Operadores / Postos) [web:102][web:105]
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
 
   // Tema
   function aplicarTemaInicial() {
@@ -624,7 +687,7 @@
 
   // Helper para criar link do Google Maps a partir de lat/lng
   function criarLinkMaps(lat, lng) {
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`; // [web:78][web:84]
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
 
   // Adicionar posto (apenas na tabela, mock) + link "Ver no Maps"
@@ -673,7 +736,6 @@
     const sitTd  = tr.children[2];
 
     if (btn.dataset.mode !== 'edit') {
-      // Entrar em modo edição
       const nomeAtual = nomeTd.textContent.trim();
       const matAtual  = matTd.textContent.trim();
       const sitAtual  = sitTd.textContent.includes('Inativo') ? 'Inativo' : 'Ativo';
@@ -690,7 +752,6 @@
       btn.textContent = 'Salvar';
       btn.dataset.mode = 'edit';
     } else {
-      // Salvar edição
       const novoNome = nomeTd.querySelector('input').value.trim();
       const novaMat  = matTd.querySelector('input').value.trim();
       const novaSit  = sitTd.querySelector('select').value;
