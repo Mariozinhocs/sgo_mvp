@@ -9,6 +9,19 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" href="icon-512.png" />
 
+  <!-- Leaflet (mapa) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script> <!-- [web:340][web:343] -->
+
   <style>
     :root {
       --bg-body: #0f172a;
@@ -378,7 +391,7 @@
       color:var(--text-secondary);
     }
 
-    /* Aba navegação */
+    /* Abas */
     .tabs-header {
       display:flex;
       gap:6px;
@@ -415,7 +428,6 @@
       display:block;
     }
 
-    /* Responsivo */
     @media (max-width: 600px) {
       .row-between {
         flex-direction:column;
@@ -506,6 +518,15 @@
           Recarregar dados simulados
         </button>
       </div>
+    </section>
+
+    <!-- Mapa dos postos -->
+    <section class="card">
+      <h2>Mapa dos postos (MVP)</h2>
+      <p class="small">
+        Visualização geográfica dos postos com indicação de status operacional (dados simulados).
+      </p>
+      <div id="mapGestor" style="width:100%;height:280px;border-radius:14px;overflow:hidden;margin-top:6px;"></div>
     </section>
 
     <section class="card">
@@ -622,7 +643,7 @@
 </main>
 
 <script>
-  // ---------- Tema (mesmo esquema do index/operador) ----------
+  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
@@ -732,7 +753,6 @@
   setInterval(atualizarRelogio, 1000);
 
   // ---------- Dados simulados ----------
-  // Postos
   const postosMock = [
     {
       id: 1,
@@ -741,14 +761,18 @@
       operadoresEmPosto: 2,
       alerta: false,
       ultimoRegistro: 'Hoje 07:58',
+      lat: -3.089968,
+      lng: -60.009204,
     },
     {
       id: 2,
       nome: 'UBS Centro',
       operadoresPrevistos: 2,
       operadoresEmPosto: 1,
-      alerta: true,   // falta 1 operador
+      alerta: true,
       ultimoRegistro: 'Hoje 08:10',
+      lat: -3.132000,
+      lng: -60.021000,
     },
     {
       id: 3,
@@ -757,6 +781,8 @@
       operadoresEmPosto: 0,
       alerta: true,
       ultimoRegistro: 'Ontem 17:05',
+      lat: -3.100500,
+      lng: -60.005800,
     },
     {
       id: 4,
@@ -765,10 +791,11 @@
       operadoresEmPosto: 2,
       alerta: false,
       ultimoRegistro: 'Hoje 07:50',
+      lat: -3.050000,
+      lng: -60.010000,
     },
   ];
 
-  // Equipe
   const equipeMock = [
     {
       id: 1,
@@ -820,7 +847,6 @@
     },
   ];
 
-  // Registros de ponto (mock)
   let registrosMock = [
     { operador: 'Admin Demo', posto: 'Centro de Cooperação da Cidade', tipo: 'Check-in', hora: '07:58', dentroPosto: true },
     { operador: 'João Silva', posto: 'UBS Centro', tipo: 'Check-in', hora: '08:10', dentroPosto: true },
@@ -829,7 +855,6 @@
     { operador: 'Carlos Lima', posto: 'Escola Zona Leste', tipo: 'Ausência', hora: '—', dentroPosto: false },
   ];
 
-  // Ocorrências (simplesmente derivadas da equipe + registros)
   let ocorrenciasMock = [
     {
       id: 1,
@@ -851,7 +876,7 @@
     },
   ];
 
-  // ---------- Preencher resumo ----------
+  // ---------- Resumo ----------
   function atualizarResumo() {
     const totalPostos = postosMock.length;
     const postosComAlerta = postosMock.filter(p => p.alerta).length;
@@ -911,7 +936,7 @@
 
   renderPostos();
 
-  // ---------- Registros de ponto ----------
+  // ---------- Registros ----------
   const listaRegistros = document.getElementById('listaRegistros');
 
   function renderRegistros() {
@@ -944,7 +969,6 @@
   const filtroPostoEquipe = document.getElementById('filtroPostoEquipe');
   const filtroSituacaoEquipe = document.getElementById('filtroSituacaoEquipe');
 
-  // Popular filtro de posto
   const postosEquipeUnicos = [...new Set(equipeMock.map(o => o.postoPrincipal))];
   postosEquipeUnicos.forEach(p => {
     const opt = document.createElement('option');
@@ -1047,9 +1071,71 @@
     }
   });
 
+  // ---------- Mapa dos postos (Leaflet) ----------
+  let mapGestor;
+
+  function inicializarMapa() {
+    const mapDiv = document.getElementById('mapGestor');
+    if (!mapDiv) return;
+
+    mapGestor = L.map('mapGestor').setView([-3.09, -60.01], 12);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(mapGestor); // [web:340][web:343]
+
+    const iconOk = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    }); // [web:340][web:342]
+
+    const iconAlert = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    }); // [web:342][web:345]
+
+    postosMock.forEach(p => {
+      if (typeof p.lat !== 'number' || typeof p.lng !== 'number') return;
+
+      const icon = p.alerta ? iconAlert : iconOk;
+      const marker = L.marker([p.lat, p.lng], { icon }).addTo(mapGestor);
+
+      const statusLabel = p.alerta ? 'Posto com alerta' : 'Posto ok';
+      const statusColor = p.alerta ? '#fecaca' : '#bbf7d0';
+
+      marker.bindPopup(`
+        <div style="font-size:12px;">
+          <strong>${p.nome}</strong><br/>
+          <span style="font-size:11px;color:#9ca3af;">
+            ${p.operadoresEmPosto}/${p.operadoresPrevistos} operadores em posto
+          </span><br/>
+          <span style="font-size:11px;color:#9ca3af;">
+            Último registro: ${p.ultimoRegistro}
+          </span><br/>
+          <span style="font-size:11px;color:${statusColor};">
+            ${statusLabel}
+          </span>
+        </div>
+      `);
+    });
+  }
+
+  // Inicializa o mapa quando o DOM estiver pronto
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(inicializarMapa, 200);
+  });
+
   // ---------- Botão de recarregar mocks ----------
   document.getElementById('btnRecarregarMock').addEventListener('click', () => {
-    // Aqui dá para colocar qualquer lógica simples de "shuffle" dos dados
     registrosMock.push({
       operador: 'Admin Demo',
       posto: 'Centro de Cooperação da Cidade',
