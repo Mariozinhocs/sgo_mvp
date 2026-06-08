@@ -56,6 +56,12 @@
       flex-direction:column;
     }
 
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
     .btn-exit {
       font-size: 13px;
       border-radius: 999px;
@@ -71,6 +77,23 @@
     }
 
     .btn-exit span {
+      font-size:15px;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
       font-size:15px;
     }
 
@@ -455,10 +478,16 @@
     <h1>SGO – Operador</h1>
     <div class="subtitle" id="subtitleOperador">Perfil, ponto, escala e comunicação</div>
   </div>
-  <button class="btn-exit" type="button" id="btnSair">
-    <span>⏏</span>
-    Sair
-  </button>
+  <div class="header-right">
+    <button id="btnTheme" class="theme-toggle" type="button">
+      <span class="icon" id="themeIcon">☀️</span>
+      <span id="themeLabel">Light</span>
+    </button>
+    <button class="btn-exit" type="button" id="btnSair">
+      <span>⏏</span>
+      Sair
+    </button>
+  </div>
 </header>
 
 <div class="tabs-header">
@@ -486,6 +515,9 @@
             <span class="dot"></span>
             Ativo
           </div>
+          <div class="chip" id="perfilMockChip" style="display:none;">
+            Usuário de teste
+          </div>
         </div>
       </div>
 
@@ -512,7 +544,7 @@
         </div>
         <div class="perfil-info-item">
           <strong>Posto principal</strong>
-          <span id="perfilPostoPrincipal">UBS Centro</span>
+          <span id="perfilPostoPrincipal">Centro de Cooperação da Cidade</span>
         </div>
       </div>
 
@@ -544,7 +576,7 @@
           <div class="label">Nova senha</div>
           <input id="senhaNova" type="password" placeholder="Nova senha" autocomplete="new-password" />
           <p class="small">
-            Mínimo de 8 caracteres, com letras e números. A política exata será validada pelo servidor. [web:223][web:224][web:225][web:226]
+            Mínimo de 8 caracteres, com letras e números. A política exata será validada pelo servidor.
           </p>
         </div>
 
@@ -621,6 +653,9 @@
         <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
         <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
         <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
+        <option value="Centro de Cooperação da Cidade|-3.089968|-60.009204|120">
+          Centro de Cooperação da Cidade (120 m)
+        </option>
       </select>
     </section>
 
@@ -652,7 +687,7 @@
           <tr data-id="1">
             <td class="escala-dia">01</td>
             <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">UBS Centro</td>
+            <td class="escala-post">Centro de Cooperação da Cidade</td>
             <td class="check-cell">
               <input type="checkbox" class="esc-check" data-id="1">
             </td>
@@ -660,7 +695,7 @@
           <tr data-id="2">
             <td class="escala-dia">02</td>
             <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">UBS Centro</td>
+            <td class="escala-post">Centro de Cooperação da Cidade</td>
             <td class="check-cell">
               <input type="checkbox" class="esc-check" data-id="2">
             </td>
@@ -676,17 +711,9 @@
           <tr data-id="4">
             <td class="escala-dia">04</td>
             <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">Escola Zona Leste</td>
-            <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="4">
-            </td>
-          </tr>
-          <tr data-id="5">
-            <td class="escala-dia">05</td>
-            <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">Base Operacional Norte</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="5">
+              <input type="checkbox" class="esc-check" data-id="4">
             </td>
           </tr>
         </tbody>
@@ -732,7 +759,59 @@
 </main>
 
 <script>
-  // Abas
+  // ---------- Tema compartilhado com index ----------
+  const THEME_KEY = 'sgo_theme_login';
+  const btnTheme  = document.getElementById('btnTheme');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel= document.getElementById('themeLabel');
+
+  function aplicarTemaInicial() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+
+    if (saved === 'dark') {
+      document.body.classList.add('theme-dark');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else if (saved === 'light') {
+      document.body.classList.remove('theme-dark');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.body.classList.add('theme-dark');
+        themeIcon.textContent = '☀️';
+        themeLabel.textContent = 'Light';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+      } else {
+        document.body.classList.remove('theme-dark');
+        themeIcon.textContent = '🌙';
+        themeLabel.textContent = 'Dark';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+      }
+    }
+  }
+
+  aplicarTemaInicial();
+
+  btnTheme.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('theme-dark');
+    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
+    if (isDark) {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    }
+  });
+
+  // ---------- Abas ----------
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -746,29 +825,7 @@
     });
   });
 
-  // Botão Sair – limpa sessão local e volta para index
-  document.getElementById('btnSair').addEventListener('click', () => {
-    if (confirm('Deseja realmente sair?')) {
-      localStorage.removeItem('sgo_auth_token');
-      localStorage.removeItem('sgo_usuario');
-      // Também podemos limpar os checks locais, se você quiser:
-      // localStorage.removeItem('sgo_operador_escala_checks');
-      window.location.href = 'index.html';
-    }
-  });
-
-  // Relógio
-  function atualizarRelogio() {
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const data = agora.toLocaleDateString('pt-BR');
-    document.getElementById('horaAtual').textContent = hora;
-    document.getElementById('dataAtual').textContent = data;
-  }
-  atualizarRelogio();
-  setInterval(atualizarRelogio, 1000);
-
-  // Carregar dados do usuário autenticado (vindos do login em index.html)
+  // ---------- Sessão ----------
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -781,431 +838,220 @@
 
   const usuario = carregarUsuario();
   if (!usuario) {
-    // Se alguém acessou operador.html sem login, redireciona
     window.location.href = 'index.html';
   } else {
     const nome = usuario.nome || 'Operador';
     const matricula = usuario.matricula || '00000';
-    const username = usuario.username || 'nome.sobrenome';
-    const doc = usuario.documento || '000.000.000-00';
-    const tel = usuario.telefone || '(00) 00000-0000';
+    const username = usuario.username || '';
+    const documento = usuario.documento || '000.000.000-00';
+    const telefone = usuario.telefone || '(00) 00000-0000';
     const email = usuario.email || 'operador@empresa.com';
-    const posto = usuario.postoPrincipal || 'UBS Centro';
-    const situacao = usuario.situacao || 'Ativo';
+    const postoPrincipal = usuario.postoPrincipal || 'Centro de Cooperação da Cidade';
 
     document.getElementById('perfilNome').textContent = nome;
-    document.getElementById('perfilMatricula').textContent = 'Matrícula ' + matricula;
+    document.getElementById('perfilMatricula').textContent = `Matrícula ${matricula}`;
     document.getElementById('perfilMatriculaNum').textContent = matricula;
-    document.getElementById('perfilUsername').textContent = username;
-    document.getElementById('perfilDocumento').textContent = doc;
-    document.getElementById('perfilTelefone').textContent = tel;
+    document.getElementById('perfilUsername').textContent = username || '—';
+    document.getElementById('perfilDocumento').textContent = documento;
+    document.getElementById('perfilTelefone').textContent = telefone;
     document.getElementById('perfilEmail').textContent = email;
-    document.getElementById('perfilPostoPrincipal').textContent = posto;
+    document.getElementById('perfilPostoPrincipal').textContent = postoPrincipal;
     document.getElementById('subtitleOperador').textContent =
-      `Perfil, ponto e escala – ${nome}`;
+      `Operador logado – ${nome}`;
 
-    const situacaoChip = document.getElementById('perfilSituacaoChip');
-    situacaoChip.innerHTML = `
-      <span class="dot${situacao.toLowerCase() === 'inativo' ? ' dot-red' : ''}"></span>
-      ${situacao}
-    `;
+    // marcar usuário mock visualmente
+    if (username === 'admin.admin') {
+      document.getElementById('perfilMockChip').style.display = 'inline-flex';
+    }
 
-    // Poderíamos carregar uma URL de foto oficial de usuario.fotoUrl, se existir.
-    if (usuario.fotoUrl) {
-      const img = document.createElement('img');
-      img.src = usuario.fotoUrl;
-      const preview = document.getElementById('perfilFotoPreview');
-      preview.innerHTML = '';
-      preview.appendChild(img);
+    // Selecionar automaticamente o posto principal no select
+    const selectPosto = document.getElementById('selectPosto');
+    if (selectPosto && postoPrincipal) {
+      for (const opt of selectPosto.options) {
+        if (opt.value.startsWith(postoPrincipal + '|')) {
+          opt.selected = true;
+          document.getElementById('postoAtual').innerHTML =
+            `<span>${postoPrincipal}</span>`;
+          break;
+        }
+      }
     }
   }
 
-  // Foto oficial local (preview)
+  // ---------- Sair ----------
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      window.location.href = 'index.html';
+    }
+  });
+
+  // ---------- Relógio ----------
+  function atualizarRelogio() {
+    const agora = new Date();
+    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const data = agora.toLocaleDateString('pt-BR');
+    document.getElementById('horaAtual').textContent = hora;
+    document.getElementById('dataAtual').textContent = data;
+  }
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
+
+  // ---------- Ponto / Localização ----------
+  let currentPos = null;
+  const histLista = document.getElementById('histLista');
+
+  function addHist(text) {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+    li.textContent = new Date().toLocaleTimeString('pt-BR') + ' – ' + text;
+    histLista.prepend(li);
+  }
+
+  // habilitar botões básicos
+  document.getElementById('btnGeo').disabled = false;
+  document.getElementById('btnCheckin').disabled = false;
+  document.getElementById('btnCheckout').disabled = false;
+
+  document.getElementById('btnGeo').onclick = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalização indisponível');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(pos => {
+      currentPos = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+      document.getElementById('infoLocal').textContent =
+        `Local atual: Lat ${currentPos.lat.toFixed(6)} · Lng ${currentPos.lng.toFixed(6)} (mock, sem cálculo de distância)`;
+      addHist('Geolocalização capturada');
+    }, () => {
+      alert('Não foi possível obter a localização');
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  document.getElementById('btnCheckin').onclick = () => {
+    if (!currentPos) {
+      alert('Capture a geolocalização primeiro');
+      return;
+    }
+    document.getElementById('statusTexto').textContent = 'Em posto';
+    document.getElementById('statusPill').classList.remove('status-warn');
+    document.getElementById('statusPill').classList.add('status-ok');
+    document.getElementById('statusPill').innerHTML =
+      '<span class="dot"></span>Dentro do posto (mock)';
+    document.getElementById('chipUltimoRegistro').textContent = 'Check-in';
+    addHist('Check-in registrado');
+  };
+
+  document.getElementById('btnCheckout').onclick = () => {
+    document.getElementById('statusTexto').textContent = 'Fora de posto';
+    document.getElementById('statusPill').classList.remove('status-ok');
+    document.getElementById('statusPill').classList.add('status-warn');
+    document.getElementById('statusPill').innerHTML =
+      '<span class="dot dot-red"></span>Fora da área de posto';
+    document.getElementById('chipUltimoRegistro').textContent = 'Check-out';
+    addHist('Check-out registrado');
+  };
+
+  // ---------- Escala (checks locais) ----------
+  const escChecks = document.querySelectorAll('.esc-check');
+  escChecks.forEach(chk => {
+    chk.addEventListener('change', () => {
+      // poderia salvar em localStorage se quiser
+    });
+  });
+
+  // ---------- Mensagens ----------
+  const msgLista   = document.getElementById('msgLista');
+  const msgTexto   = document.getElementById('msgTexto');
+  const msgArquivo = document.getElementById('msgArquivo');
+  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
+
+  function addMensagem(texto, anexosCount) {
+    const item = document.createElement('div');
+    item.className = 'msg-item';
+
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+    meta.textContent = new Date().toLocaleString('pt-BR') +
+      (anexosCount ? ` · ${anexosCount} anexo(s)` : '');
+
+    const body = document.createElement('div');
+    body.className = 'msg-text';
+    body.textContent = texto;
+
+    item.appendChild(meta);
+    item.appendChild(body);
+    msgLista.prepend(item);
+  }
+
+  btnEnviarMsg.addEventListener('click', () => {
+    const texto = msgTexto.value.trim();
+    if (!texto) {
+      alert('Digite uma mensagem para enviar ao gestor.');
+      return;
+    }
+    const anexos = msgArquivo.files ? msgArquivo.files.length : 0;
+    addMensagem(texto, anexos);
+    msgTexto.value = '';
+    msgArquivo.value = '';
+  });
+
+  // ---------- Foto de perfil local ----------
   const perfilFotoInput = document.getElementById('perfilFotoInput');
   const perfilFotoPreview = document.getElementById('perfilFotoPreview');
 
-  perfilFotoInput.addEventListener('change', () => {
-    const file = perfilFotoInput.files[0];
+  perfilFotoInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = () => {
       perfilFotoPreview.innerHTML = '';
       const img = document.createElement('img');
-      img.src = e.target.result;
+      img.src = reader.result;
       perfilFotoPreview.appendChild(img);
     };
     reader.readAsDataURL(file);
   });
 
-  // Postos mock
-  const postosMock = [
-    { nome: 'UBS Centro', lat: -3.132000, lng: -60.021000, raio: 100 },
-    { nome: 'Escola Zona Leste', lat: -3.100500, lng: -60.005800, raio: 150 },
-    { nome: 'Base Operacional Norte', lat: -3.050000, lng: -60.010000, raio: 200 }
-  ];
-
-  let postoSelecionado = null;
-  let ultimaPosicao = null;
-  let historicoLocal = [];
-  let mensagensLocais = [];
-
-  const infoLocal = document.getElementById('infoLocal');
-  const statusTexto = document.getElementById('statusTexto');
-  const statusPill = document.getElementById('statusPill');
-  const chipUltimoRegistro = document.getElementById('chipUltimoRegistro');
-  const histLista = document.getElementById('histLista');
-
-  const btnGeo = document.getElementById('btnGeo');
-  const btnCheckin = document.getElementById('btnCheckin');
-  const btnCheckout = document.getElementById('btnCheckout');
-  const selectPosto = document.getElementById('selectPosto');
-  const postoAtual = document.getElementById('postoAtual');
-
-  // Haversine [web:125][web:128]
-  function distanciaKm(lat1, lon1, lat2, lon2) {
-    function toRad(x) { return x * Math.PI / 180; }
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  }
-
-  function renderHistorico() {
-    histLista.innerHTML = '';
-    historicoLocal.slice().reverse().forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'history-item';
-      li.innerHTML = `
-        <div>
-          <span class="dot ${item.tipo === 'Check-out' ? 'dot-red' : ''}"></span>
-          <strong style="margin-left:4px">${item.tipo}</strong>
-          <span class="small"> · ${item.posto}</span>
-          ${item.foraDaArea ? '<span class="small" style="color:#f97373;padding-left:4px;">(fora do posto)</span>' : ''}
-        </div>
-        <div class="small">
-          ${item.dataHora} · Distância: ${item.distancia.toFixed(1)} m
-        </div>
-      `;
-      histLista.appendChild(li);
-    });
-  }
-
-  function adicionarHistorico(tipo, posto, distanciaMetros, foraDaArea) {
-    const agora = new Date();
-    const dataHora = agora.toLocaleString('pt-BR');
-    historicoLocal.push({
-      tipo,
-      posto,
-      distancia: distanciaMetros,
-      dataHora,
-      foraDaArea: !!foraDaArea
-    });
-    chipUltimoRegistro.textContent = `${tipo} · ${dataHora}${foraDaArea ? ' (fora da área)' : ''}`;
-    renderHistorico();
-  }
-
-  function atualizarStatusDentroFora(dentro, distanciaMetros) {
-    if (dentro) {
-      statusTexto.textContent = 'Dentro da área';
-      statusPill.className = 'status-pill status-ok';
-      statusPill.innerHTML = `
-        <span class="dot"></span>
-        Dentro do raio do posto (${distanciaMetros.toFixed(1)} m)
-      `;
-    } else {
-      statusTexto.textContent = 'Fora da área';
-      statusPill.className = 'status-pill status-warn';
-      statusPill.innerHTML = `
-        <span class="dot dot-red"></span>
-        Fora do raio (${distanciaMetros.toFixed(1)} m)
-      `;
-    }
-  }
-
-  selectPosto.addEventListener('change', () => {
-    const val = selectPosto.value;
-    if (!val) {
-      postoSelecionado = null;
-      postoAtual.innerHTML = '<span>Não definido (MVP)</span>';
-      btnGeo.disabled = true;
-      btnCheckin.disabled = true;
-      btnCheckout.disabled = true;
-      return;
-    }
-    const [nome, lat, lng, raio] = val.split('|');
-    postoSelecionado = {
-      nome,
-      lat: parseFloat(lat),
-      lng: parseFloat(lng),
-      raio: parseFloat(raio)
-    };
-    postoAtual.innerHTML = `
-      <span>${postoSelecionado.nome}</span>
-      <span class="small">· Raio ${postoSelecionado.raio} m</span>
-    `;
-    btnGeo.disabled = false;
-  });
-
-  btnGeo.addEventListener('click', () => {
-    if (!postoSelecionado) {
-      alert('Selecione um posto antes de capturar a localização.');
-      return;
-    }
-
-    if (!navigator.geolocation) {
-      alert('Geolocalização não suportada neste dispositivo.');
-      return;
-    }
-
-    infoLocal.textContent = 'Capturando localização...';
-
-    navigator.geolocation.getCurrentPosition((pos) => {
-      ultimaPosicao = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        accuracy: pos.coords.accuracy
-      };
-
-      const distKm = distanciaKm(
-        ultimaPosicao.lat,
-        ultimaPosicao.lng,
-        postoSelecionado.lat,
-        postoSelecionado.lng
-      );
-      const distMetros = distKm * 1000;
-
-      const dentro = distMetros <= postoSelecionado.raio;
-
-      infoLocal.innerHTML = `
-        <div><strong>Lat:</strong> ${ultimaPosicao.lat.toFixed(6)} · <strong>Lng:</strong> ${ultimaPosicao.lng.toFixed(6)}</div>
-        <div class="small">Precisão: ~${Math.round(ultimaPosicao.accuracy)} m</div>
-        <div class="small">Distância até o posto: ~${distMetros.toFixed(1)} m (raio permitido: ${postoSelecionado.raio} m)</div>
-      `;
-
-      atualizarStatusDentroFora(dentro, distMetros);
-      btnCheckin.disabled = false;
-      btnCheckout.disabled = false;
-    }, (err) => {
-      infoLocal.textContent = 'Não foi possível obter sua localização. Verifique as permissões de localização do navegador.';
-      console.error(err);
-    }, {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0
-    });
-  });
-
-  btnCheckin.addEventListener('click', () => {
-    if (!postoSelecionado || !ultimaPosicao) {
-      alert('Capture a localização e selecione um posto antes de registrar.');
-      return;
-    }
-
-    const distKm = distanciaKm(
-      ultimaPosicao.lat,
-      ultimaPosicao.lng,
-      postoSelecionado.lat,
-      postoSelecionado.lng
-    );
-    const distMetros = distKm * 1000;
-    const foraDaArea = distMetros > postoSelecionado.raio;
-
-    if (foraDaArea) {
-      alert('Check-in registrado, mas fora do raio do posto. O gestor verá essa observação no painel.');
-    }
-
-    adicionarHistorico('Check-in', postoSelecionado.nome, distMetros, foraDaArea);
-    statusTexto.textContent = 'Check-in realizado';
-  });
-
-  btnCheckout.addEventListener('click', () => {
-    if (!postoSelecionado || !ultimaPosicao) {
-      alert('Capture a localização e selecione um posto antes de registrar.');
-      return;
-    }
-
-    const distKm = distanciaKm(
-      ultimaPosicao.lat,
-      ultimaPosicao.lng,
-      postoSelecionado.lat,
-      postoSelecionado.lng
-    );
-    const distMetros = distKm * 1000;
-    const foraDaArea = distMetros > postoSelecionado.raio;
-
-    if (foraDaArea) {
-      alert('Check-out registrado, mas fora do raio do posto. O gestor verá essa observação no painel.');
-    }
-
-    adicionarHistorico('Check-out', postoSelecionado.nome, distMetros, foraDaArea);
-    statusTexto.textContent = 'Check-out realizado';
-  });
-
-  // Checklist da escala – armazenamento local
-  const ESCALA_STORAGE_KEY = 'sgo_operador_escala_checks';
-
-  function carregarChecksEscala() {
-    try {
-      const raw = localStorage.getItem(ESCALA_STORAGE_KEY);
-      if (!raw) return {};
-      return JSON.parse(raw);
-    } catch(e) {
-      return {};
-    }
-  }
-
-  function salvarChecksEscala(map) {
-    localStorage.setItem(ESCALA_STORAGE_KEY, JSON.stringify(map));
-  }
-
-  const escalaChecks = carregarChecksEscala();
-  document.querySelectorAll('.esc-check').forEach(chk => {
-    const id = chk.dataset.id;
-    if (escalaChecks[id]) chk.checked = true;
-    chk.addEventListener('change', () => {
-      escalaChecks[id] = chk.checked;
-      salvarChecksEscala(escalaChecks);
-    });
-  });
-
-  // Mensagens (com anexos locais)
-  const msgLista = document.getElementById('msgLista');
-  const msgTexto = document.getElementById('msgTexto');
-  const msgArquivo = document.getElementById('msgArquivo');
-  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
-
-  function renderMensagens() {
-    msgLista.innerHTML = '';
-    mensagensLocais.slice().reverse().forEach(msg => {
-      const div = document.createElement('div');
-      div.className = 'msg-item';
-      const anexosTexto = msg.anexos.length
-        ? ' · ' + msg.anexos.length + ' anexo(s)'
-        : '';
-      div.innerHTML = `
-        <div class="msg-meta">${msg.dataHora}${anexosTexto}</div>
-        <div class="msg-text">${msg.texto}</div>
-      `;
-      msgLista.appendChild(div);
-    });
-  }
-
-  btnEnviarMsg.addEventListener('click', () => {
-    const texto = msgTexto.value.trim();
-    if (!texto && (!msgArquivo.files || msgArquivo.files.length === 0)) {
-      alert('Digite uma mensagem ou selecione ao menos um arquivo.');
-      return;
-    }
-
-    const anexos = [];
-    if (msgArquivo.files && msgArquivo.files.length > 0) {
-      for (let i = 0; i < msgArquivo.files.length; i++) {
-        const f = msgArquivo.files[i];
-        anexos.push({
-          nome: f.name,
-          tipo: f.type,
-          tamanho: f.size
-        });
-      }
-    }
-
-    const agora = new Date();
-    const dataHora = agora.toLocaleString('pt-BR');
-
-    mensagensLocais.push({
-      texto: texto || '(sem texto)',
-      dataHora,
-      anexos
-    });
-
-    msgTexto.value = '';
-    msgArquivo.value = '';
-    renderMensagens();
-
-    alert('Mensagem registrada localmente (MVP). Em produção, será enviada ao painel do gestor com os arquivos.');
-  });
-
-  renderMensagens();
-  renderHistorico();
-
-  // Alteração de senha – chamada de API
+  // ---------- Alterar senha (mock) ----------
   const btnAlterarSenha = document.getElementById('btnAlterarSenha');
-  const feedbackSenha = document.getElementById('feedbackSenha');
+  const feedbackSenha   = document.getElementById('feedbackSenha');
 
-  const API_CHANGE_PWD_URL = '/api/operador/alterar-senha'; // ajustar na integração real
+  btnAlterarSenha.addEventListener('click', () => {
+    const atual   = document.getElementById('senhaAtual').value;
+    const nova    = document.getElementById('senhaNova').value;
+    const confirma= document.getElementById('senhaNovaConfirma').value;
 
-  btnAlterarSenha.addEventListener('click', async () => {
     feedbackSenha.textContent = '';
     feedbackSenha.className = 'feedback';
 
-    const senhaAtual = document.getElementById('senhaAtual').value;
-    const senhaNova  = document.getElementById('senhaNova').value;
-    const senhaConf  = document.getElementById('senhaNovaConfirma').value;
-
-    if (!senhaAtual || !senhaNova || !senhaConf) {
+    if (!atual || !nova || !confirma) {
       feedbackSenha.textContent = 'Preencha todos os campos de senha.';
       feedbackSenha.classList.add('err');
       return;
     }
-
-    if (senhaNova !== senhaConf) {
-      feedbackSenha.textContent = 'A nova senha e a confirmação não conferem.';
+    if (nova !== confirma) {
+      feedbackSenha.textContent = 'A confirmação da nova senha não confere.';
       feedbackSenha.classList.add('err');
       return;
     }
-
-    if (senhaNova.length < 8) {
+    if (nova.length < 8) {
       feedbackSenha.textContent = 'A nova senha deve ter pelo menos 8 caracteres.';
       feedbackSenha.classList.add('err');
       return;
     }
 
-    btnAlterarSenha.disabled = true;
-    btnAlterarSenha.textContent = 'Alterando...';
-
-    try {
-      const token = localStorage.getItem('sgo_auth_token') || '';
-
-      const resp = await fetch(API_CHANGE_PWD_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token ? 'Bearer ' + token : ''
-        },
-        body: JSON.stringify({
-          senhaAtual,
-          senhaNova
-        })
-      });
-
-      if (!resp.ok) {
-        feedbackSenha.textContent = 'Não foi possível alterar a senha. Confirme a senha atual e tente novamente.';
-        feedbackSenha.classList.add('err');
-        btnAlterarSenha.disabled = false;
-        btnAlterarSenha.textContent = 'Alterar senha';
-        return;
-      }
-
-      feedbackSenha.textContent = 'Senha alterada com sucesso.';
-      feedbackSenha.classList.add('ok');
-
-      document.getElementById('senhaAtual').value = '';
-      document.getElementById('senhaNova').value = '';
-      document.getElementById('senhaNovaConfirma').value = '';
-    } catch (e) {
-      console.error(e);
-      feedbackSenha.textContent = 'Erro de comunicação ao tentar alterar a senha.';
-      feedbackSenha.classList.add('err');
-    } finally {
-      btnAlterarSenha.disabled = false;
-      btnAlterarSenha.textContent = 'Alterar senha';
-    }
+    // No MVP, não enviamos para backend. Apenas simulamos sucesso.
+    feedbackSenha.textContent = 'Senha alterada localmente (mock). Na versão completa, será enviada ao servidor.';
+    feedbackSenha.classList.add('ok');
   });
+
+  // Histórico inicial
+  addHist('Painel do operador iniciado');
 </script>
 </body>
 </html>
