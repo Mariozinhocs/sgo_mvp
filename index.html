@@ -4,128 +4,160 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
-  <title>SGO – Operador</title>
+  <title>SGO – Acesso</title>
 
-  <!-- Favicons na pasta "icons" -->
+  <!-- Ícones na pasta "icons" -->
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
   <style>
     :root {
-      --bg-body: #0f172a;
-      --bg-card: #020617;
-      --text-main: #e5e7eb;
-      --text-secondary: #9ca3af;
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #6b7280;
       --primary: #22c55e;
       --primary-soft: rgba(34,197,94,0.12);
+      --border-subtle: #e5e7eb;
       --danger: #ef4444;
-      --danger-soft: rgba(248,113,113,0.12);
+    }
+
+    body.theme-dark {
+      --bg-body: #020826;
+      --bg-card: #050b35;
+      --text-main: #f9fafb;
+      --text-secondary: #9ca3af;
+      --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.16);
       --border-subtle: #1f2937;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
 
     body {
+      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      background: radial-gradient(circle at top, #1d283a, #020617 58%);
-      color: var(--text-main);
       min-height: 100vh;
-    }
-
-    header {
-      padding: 14px 14px 6px;
+      background: radial-gradient(circle at top, #cbd5f5, #020617 58%);
+      color: var(--text-main);
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      justify-content:center;
+      padding:16px;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 20px;
+    body.theme-dark {
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
     }
 
-    header .subtitle {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    .header-left {
-      display:flex;
-      flex-direction:column;
-    }
-
-    .header-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .btn-exit {
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(248,113,113,0.6);
-      padding: 6px 10px;
-      background: rgba(127,29,29,0.9);
-      color: #fee2e2;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    .btn-exit span {
-      font-size:15px;
+    .card {
+      position: relative;
+      background: var(--bg-card);
+      max-width: 460px;
+      width:100%;
+      border-radius: 18px;
+      padding: 20px 18px 20px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.25);
+      text-align:center;
     }
 
     .theme-toggle {
+      position:absolute;
+      top:10px;
+      right:10px;
       font-size: 13px;
       padding: 4px 9px;
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      display:inline-flex;
+      background: rgba(15,23,42,0.04);
+      color:var(--text-secondary);
+      display:flex;
       align-items:center;
       gap:6px;
       cursor:pointer;
+    }
+
+    body.theme-dark .theme-toggle {
+      background: rgba(15,23,42,0.9);
+      color:#e5e7eb;
     }
 
     .theme-toggle span.icon {
       font-size:15px;
     }
 
-    main {
-      padding: 8px 14px 24px;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: linear-gradient(145deg, #020617, #020617);
-      border-radius: 18px;
-      padding: 14px 14px 16px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
-      margin-bottom: 14px;
-    }
-
-    h2 {
-      margin: 0 0 6px;
-      font-size: 17px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .row {
+    .logo-wrapper {
       display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:12px;
+      margin-top:12px;
+    }
+
+    .logo-img {
+      width:72px;
+      height:72px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,0.6);
+      background:#020617;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .logo-img img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    h1 {
+      margin:8px 0 0;
+      font-size:22px;
+    }
+
+    .subtitle {
+      font-size:13px;
+      color:var(--text-secondary);
+      margin-top:2px;
+    }
+
+    form {
+      margin-top:14px;
+      text-align:left;
+    }
+
+    label {
+      display:block;
+      font-size:12px;
+      margin-top:10px;
+      margin-bottom:4px;
+      color:var(--text-secondary);
+    }
+
+    input {
+      width:100%;
+      padding: 9px 11px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:#f9fafb;
+      color:var(--text-main);
+      font-size:14px;
+    }
+
+    body.theme-dark input {
+      background:#020617;
+      color:var(--text-main);
+      border-color: rgba(148,163,184,0.6);
+    }
+
+    input::placeholder {
+      color:var(--text-secondary);
     }
 
     button {
@@ -144,12 +176,16 @@
       background: var(--primary);
       color: #022c22;
       font-weight: 600;
+      width:100%;
+      margin-top:14px;
     }
 
     button.secondary {
       background: rgba(148,163,184,0.12);
       color: var(--text-main);
       border: 1px solid rgba(148,163,184,0.4);
+      width:100%;
+      margin-top:6px;
     }
 
     button:disabled {
@@ -157,672 +193,151 @@
       cursor:not-allowed;
     }
 
-    .status-pill {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin-top: 6px;
-    }
-
-    .status-ok {
-      background: var(--primary-soft);
-      color: #bbf7d0;
-      border: 1px solid rgba(34,197,94,0.5);
-    }
-
-    .status-warn {
-      background: var(--danger-soft);
-      color: #fecaca;
-      border: 1px solid rgba(248,113,113,0.55);
-    }
-
-    .badge-posto {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(148,163,184,0.14);
-      border: 1px solid rgba(148,163,184,0.45);
-    }
-
-    .map-placeholder {
-      border-radius: 14px;
-      border: 1px dashed rgba(148,163,184,0.4);
-      padding: 10px 10px;
-      margin-top:8px;
-      font-size:11px;
-      color: var(--text-secondary);
-    }
-
-    ul {
-      list-style:none;
-      padding:0;
-      margin:0;
-    }
-
-    li.history-item {
+    .small {
       font-size:12px;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(31,41,55,0.8);
-    }
-
-    li.history-item:last-child {
-      border-bottom:none;
-    }
-
-    .dot {
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:#34d399;
-      display:inline-block;
-    }
-
-    .dot-red {
-      background:#f97373;
-    }
-
-    .chip {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 8px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.18);
-      font-size:11px;
-      margin-top:4px;
-    }
-
-    .label {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-      margin-bottom:2px;
-    }
-
-    select, input, textarea {
-      width:100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:#020617;
-      color:var(--text-main);
-      font-size:13px;
-      resize:vertical;
-    }
-
-    input::placeholder, textarea::placeholder {
       color:var(--text-secondary);
     }
 
-    .time-big {
-      font-size: 32px;
-      font-weight: 600;
-    }
-
-    /* Abas principais */
-    .tabs-header {
-      display:flex;
-      gap:6px;
-      margin: 4px 14px 0;
-      max-width:520px;
-      margin-left:auto;
-      margin-right:auto;
-    }
-
-    .tab-button {
-      flex:1;
-      text-align:center;
-      padding:8px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.4);
-      background:rgba(15,23,42,0.85);
-      color:var(--text-secondary);
+    .error {
       font-size:12px;
-      cursor:pointer;
-    }
-
-    .tab-button.active {
-      background:var(--primary);
-      border-color:var(--primary);
-      color:#022c22;
-      font-weight:600;
-    }
-
-    .tab-panel {
-      display:none;
-    }
-
-    .tab-panel.active {
-      display:block;
-    }
-
-    /* Escala */
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
+      color:#fecaca;
       margin-top:6px;
-    }
-
-    th, td {
-      padding:6px 4px;
-      border-bottom:1px solid rgba(31,41,55,0.9);
-      text-align:left;
-      vertical-align:middle;
-    }
-
-    th {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    .check-cell {
-      text-align:center;
-    }
-
-    .check-cell input[type="checkbox"] {
-      width:14px;
-      height:14px;
-      accent-color: #22c55e;
-      cursor:pointer;
-    }
-
-    .escala-dia {
-      font-weight:500;
-    }
-
-    .escala-hora {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .escala-post {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    /* Perfil */
-    .perfil-header {
-      display:flex;
-      align-items:center;
-      gap:14px;
-      margin-bottom:10px;
-    }
-
-    .perfil-foto {
-      width:70px;
-      height:70px;
-      border-radius:50%;
-      background:#020617;
-      border:2px solid rgba(148,163,184,0.7);
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:26px;
-      color:#9ca3af;
-    }
-
-    .perfil-foto img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .perfil-nome {
-      font-size:18px;
-      font-weight:600;
-    }
-
-    .perfil-matricula {
-      font-size:12px;
-      color:var(--text-secondary);
-    }
-
-    .perfil-info-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:8px;
-    }
-
-    .perfil-info-item {
-      font-size:12px;
-    }
-
-    .perfil-info-item strong {
-      display:block;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    /* Mensagens */
-    .msg-tabs-header {
-      display:flex;
-      gap:6px;
-      margin-top:6px;
-    }
-
-    .msg-tab-button {
-      flex:1;
-      text-align:center;
-      padding:6px 6px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:rgba(15,23,42,0.85);
-      color:var(--text-secondary);
-      font-size:11px;
-      cursor:pointer;
-    }
-
-    .msg-tab-button.active {
-      background:var(--primary);
-      border-color:var(--primary);
-      color:#022c22;
-      font-weight:600;
-    }
-
-    .msg-tab-panel {
-      display:none;
-      margin-top:6px;
-    }
-
-    .msg-tab-panel.active {
-      display:block;
-    }
-
-    .msg-list {
-      max-height:220px;
-      overflow-y:auto;
-      margin-top:4px;
-    }
-
-    .msg-item {
-      font-size:12px;
-      padding:6px 8px;
+      background:rgba(248,113,113,0.18);
       border-radius:10px;
-      margin-bottom:6px;
-      background:rgba(15,23,42,0.9);
-      border:1px solid rgba(148,163,184,0.4);
+      padding:6px 8px;
+      border:1px solid rgba(248,113,113,0.5);
+      text-align:left;
     }
 
-    .msg-item.recebida {
-      border-color:rgba(59,130,246,0.6);
-    }
-
-    .msg-item.enviada {
-      border-color:rgba(34,197,94,0.6);
-    }
-
-    .msg-meta {
-      font-size:11px;
-      color:var(--text-secondary);
-      margin-bottom:2px;
-    }
-
-    .msg-text {
+    .success {
       font-size:12px;
-    }
-
-    .msg-form {
-      margin-top:8px;
-      border-top:1px solid rgba(31,41,55,0.9);
-      padding-top:8px;
-    }
-
-    .file-label {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .file-input {
-      font-size:11px;
-      padding:5px 0;
-      border:none;
-      background:transparent;
-      color:var(--text-main);
+      color:#bbf7d0;
+      margin-top:6px;
+      text-align:left;
     }
 
     .divider {
       height:1px;
+      background:rgba(31,41,55,0.15);
+      margin:12px 0;
+    }
+
+    body.theme-dark .divider {
       background:rgba(31,41,55,0.9);
-      margin:8px 0 10px;
     }
 
-    .feedback {
-      font-size:11px;
+    .role-actions {
       margin-top:4px;
+      text-align:left;
     }
 
-    .feedback.ok {
-      color:#bbf7d0;
+    .role-actions h2 {
+      font-size:14px;
+      margin:0 0 6px;
     }
 
-    .feedback.err {
-      color:#fecaca;
+    .badge-role {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.16);
+      font-size:11px;
+      margin:2px 4px 2px 0;
+    }
+
+    .badge-role span.kind {
+      font-size:11px;
+      color:#9ca3af;
+    }
+
+    .hint-users {
+      margin-top:6px;
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .hint-users code {
+      background:rgba(148,163,184,0.12);
+      padding:2px 4px;
+      border-radius:4px;
+      font-size:11px;
     }
   </style>
 </head>
 <body>
-<header>
-  <div class="header-left">
-    <h1>SGO – Operador</h1>
-    <div class="subtitle" id="subtitleOperador">Perfil, ponto, escala e comunicação</div>
-  </div>
-  <div class="header-right">
+  <div class="card">
     <button id="btnTheme" class="theme-toggle" type="button">
-      <span class="icon" id="themeIcon">☀️</span>
-      <span id="themeLabel">Light</span>
+      <span class="icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">Dark</span>
     </button>
-    <button class="btn-exit" type="button" id="btnSair">
-      <span>⏏</span>
-      Sair
-    </button>
+
+    <div class="logo-wrapper">
+      <div class="logo-img">
+        <!-- Logo vindo da pasta "icons" -->
+        <img src="icons/icon-512.png" alt="SGO" />
+      </div>
+      <h1>SGO</h1>
+      <div class="subtitle">Acesso ao sistema de gestão de operações</div>
+    </div>
+
+    <form id="formLogin">
+      <label for="identificador">Matrícula, usuário ou e-mail</label>
+      <input
+        id="identificador"
+        type="text"
+        required
+        placeholder="Ex: user.user, gestor.gestor ou admin.admin"
+        autocomplete="username" />
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        required
+        placeholder="Senha de teste: 123456"
+        autocomplete="current-password" />
+
+      <button id="btnEntrar" class="primary" type="submit">
+        Entrar
+      </button>
+
+      <p class="small" style="margin-top:8px;">
+        • Login de demonstração com usuários de teste (dados locais, sem backend).<br>
+        • Operador: <strong>user.user</strong> / <strong>123456</strong> (apenas painel do Operador).<br>
+        • Supervisor: <strong>gestor.gestor</strong> / <strong>123456</strong> (Operador + Gestor com escopo limitado de postos; não cria usuários).<br>
+        • Gerente de Operação: <strong>admin.admin</strong> / <strong>123456</strong> (Operador + Gestor global; no futuro terá visão de delegação, não criação direta de usuários).
+      </p>
+    </form>
+
+    <div id="msgErro" class="error" style="display:none"></div>
+    <div id="msgOk" class="success" style="display:none"></div>
+
+    <div class="divider"></div>
+
+    <div id="areaPerfis" class="role-actions" style="display:none">
+      <h2>Acessar painéis</h2>
+      <p class="small" id="textoUsuario"></p>
+      <div id="rolesBadges" style="margin-bottom:6px;"></div>
+
+      <button id="btnIrOperador" class="secondary" type="button" style="display:none">
+        Painel do Operador
+      </button>
+      <button id="btnIrGestor" class="secondary" type="button" style="display:none">
+        Painel do Gestor
+      </button>
+
+      <div class="hint-users" id="hintGestor" style="display:none;">
+        • Perfis de gestão neste dispositivo:
+        <br>– <code>gestor.gestor</code>: SUPERVISOR (vê apenas postos e equipes atribuídos; sem criação de usuários).
+        <br>– <code>admin.admin</code>: GERENTE_OPERACAO (vê todos os postos/supervisores; criação/atribuição/exclusão de usuários ficará em módulo específico no futuro).
+      </div>
+    </div>
   </div>
-</header>
-
-<div class="tabs-header">
-  <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
-  <button class="tab-button" data-tab="tab-ponto">Ponto</button>
-  <button class="tab-button" data-tab="tab-escala">Escala</button>
-  <button class="tab-button" data-tab="tab-msg">Mensagens</button>
-</div>
-
-<main>
-  <!-- PERFIL -->
-  <section id="tab-perfil" class="tab-panel active">
-    <section class="card">
-      <h2>Perfil do operador</h2>
-      <p class="small">Confira seus dados cadastrais, foto e altere sua senha de acesso.</p>
-
-      <div class="perfil-header">
-        <div class="perfil-foto" id="perfilFotoPreview">
-          <span>👤</span>
-        </div>
-        <div>
-          <div class="perfil-nome" id="perfilNome">Nome do Operador</div>
-          <div class="perfil-matricula" id="perfilMatricula">Matrícula 00000</div>
-          <div class="chip" id="perfilSituacaoChip">
-            <span class="dot"></span>
-            Ativo
-          </div>
-          <div class="chip" id="perfilMockChip" style="display:none;">
-            Usuário de teste
-          </div>
-        </div>
-      </div>
-
-      <div class="perfil-info-grid">
-        <div class="perfil-info-item">
-          <strong>Matrícula</strong>
-          <span id="perfilMatriculaNum">00000</span>
-        </div>
-        <div class="perfil-info-item">
-          <strong>Usuário</strong>
-          <span id="perfilUsername">nome.sobrenome</span>
-        </div>
-        <div class="perfil-info-item">
-          <strong>Documento</strong>
-          <span id="perfilDocumento">000.000.000-00</span>
-        </div>
-        <div class="perfil-info-item">
-          <strong>Telefone</strong>
-          <span id="perfilTelefone">(00) 00000-0000</span>
-        </div>
-        <div class="perfil-info-item">
-          <strong>E-mail</strong>
-          <span id="perfilEmail">operador@empresa.com</span>
-        </div>
-        <div class="perfil-info-item">
-          <strong>Posto principal</strong>
-          <span id="perfilPostoPrincipal">Centro de Cooperação da Cidade</span>
-        </div>
-      </div>
-
-      <div style="margin-top:10px">
-        <div class="label">Foto oficial</div>
-        <p class="small">
-          Esta é a foto utilizada para identificação interna. Caso esteja desatualizada, procure seu gestor para solicitar atualização.
-        </p>
-        <input id="perfilFotoInput" class="file-input" type="file" accept="image/*" />
-        <p class="small">
-          *No MVP, a foto é trocada apenas localmente neste dispositivo. Na integração futura, o envio será feito ao servidor.
-        </p>
-      </div>
-
-      <div class="divider"></div>
-
-      <div>
-        <h2 style="font-size:15px;margin-bottom:4px;">Alterar senha</h2>
-        <p class="small">
-          Por segurança, altere sua senha periodicamente. A senha inicial é fornecida pelo gestor.
-        </p>
-
-        <div style="margin-top:6px;">
-          <div class="label">Senha atual</div>
-          <input id="senhaAtual" type="password" placeholder="Digite sua senha atual" autocomplete="current-password" />
-        </div>
-
-        <div style="margin-top:6px;">
-          <div class="label">Nova senha</div>
-          <input id="senhaNova" type="password" placeholder="Nova senha" autocomplete="new-password" />
-          <p class="small">
-            Mínimo de 8 caracteres, com letras e números. A política exata será validada pelo servidor.
-          </p>
-        </div>
-
-        <div style="margin-top:6px;">
-          <div class="label">Confirmar nova senha</div>
-          <input id="senhaNovaConfirma" type="password" placeholder="Repita a nova senha" autocomplete="new-password" />
-        </div>
-
-        <div class="row" style="margin-top:8px;justify-content:flex-end">
-          <button id="btnAlterarSenha" class="primary" type="button">
-            Alterar senha
-          </button>
-        </div>
-
-        <p id="feedbackSenha" class="feedback"></p>
-      </div>
-    </section>
-  </section>
-
-  <!-- PONTO -->
-  <section id="tab-ponto" class="tab-panel">
-    <section class="card">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <div>
-          <div class="label">Situação atual</div>
-          <div id="statusTexto" class="time-big">Aguardando</div>
-          <div id="statusPill" class="status-pill status-warn">
-            <span class="dot dot-red"></span>
-            Fora da área de posto
-          </div>
-          <div class="chip">
-            <span>Último registro:</span>
-            <span id="chipUltimoRegistro">Nenhum</span>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div class="label">Hora</div>
-          <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
-          <div class="small" id="dataAtual">--/--/----</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Posto e localização</h2>
-      <div class="label">Posto designado</div>
-      <div id="postoAtual" class="badge-posto">
-        <span>Não definido (MVP)</span>
-      </div>
-
-      <div class="map-placeholder" id="infoLocal">
-        Sem localização. Toque em “Capturar localização” para iniciar.
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <button id="btnGeo" class="secondary" type="button" disabled>Capturar localização</button>
-        <button id="btnCheckin" class="primary" type="button" disabled>Check-in</button>
-        <button id="btnCheckout" class="secondary" type="button" disabled>Check-out</button>
-      </div>
-
-      <p class="small" style="margin-top:8px">
-        *Sempre que registrar o ponto, o sistema grava a distância até o posto designado. Se estiver fora do raio, o gestor verá essa observação no painel.
-      </p>
-    </section>
-
-    <section class="card">
-      <h2>Postos disponíveis (MVP)</h2>
-      <p class="small">
-        Nesta versão, os postos estão simulados localmente. Na integração real, a lista virá do painel do gestor (designações).
-      </p>
-      <div class="label" style="margin-top:4px">Selecione o posto</div>
-      <select id="selectPosto">
-        <option value="">Selecione um posto</option>
-        <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
-        <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
-        <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
-        <option value="Centro de Cooperação da Cidade|-3.089968|-60.009204|120">
-          Centro de Cooperação da Cidade (120 m)
-        </option>
-      </select>
-    </section>
-
-    <section class="card">
-      <h2>Histórico local</h2>
-      <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API.</p>
-      <ul id="histLista"></ul>
-    </section>
-  </section>
-
-  <!-- ESCALA -->
-  <section id="tab-escala" class="tab-panel">
-    <section class="card">
-      <h2>Escala do mês</h2>
-      <p class="small">
-        Escala mensal fornecida pelo gestor. As jornadas não são editáveis aqui; os checks são marcados automaticamente ou por você, para controle visual.
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Dia</th>
-            <th>Horário</th>
-            <th>Posto</th>
-            <th class="check-cell">Cumprido</th>
-          </tr>
-        </thead>
-        <tbody id="escalaTabela">
-          <tr data-id="1">
-            <td class="escala-dia">01</td>
-            <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">Centro de Cooperação da Cidade</td>
-            <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="1">
-            </td>
-          </tr>
-          <tr data-id="2">
-            <td class="escala-dia">02</td>
-            <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">Centro de Cooperação da Cidade</td>
-            <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="2">
-            </td>
-          </tr>
-          <tr data-id="3">
-            <td class="escala-dia">03</td>
-            <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">Escola Zona Leste</td>
-            <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="3">
-            </td>
-          </tr>
-          <tr data-id="4">
-            <td class="escala-dia">04</td>
-            <td class="escala-hora">08:00–17:00</td>
-            <td class="escala-post">Base Operacional Norte</td>
-            <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="4">
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="small" style="margin-top:8px">
-        *Na integração real, o sistema poderá marcar automaticamente os dias cumpridos conforme os registros de ponto forem batidos dentro do horário previsto.
-      </p>
-    </section>
-  </section>
-
-  <!-- MENSAGENS -->
-  <section id="tab-msg" class="tab-panel">
-    <section class="card">
-      <h2>Comunicação com o gestor</h2>
-      <p class="small">
-        Use este espaço para enviar mensagens, arquivos, documentos ou fotos ao seu gestor (justificativas, atestados, ocorrências)
-        e acompanhar respostas vindas da gestão.
-      </p>
-
-      <!-- Abas internas de mensagens -->
-      <div class="msg-tabs-header">
-        <button class="msg-tab-button active" data-msg-tab="msg-recebidas">Recebidas</button>
-        <button class="msg-tab-button" data-msg-tab="msg-enviadas">Enviadas</button>
-      </div>
-
-      <!-- Caixa de entrada: mensagens recebidas de gestores/superiores -->
-      <div id="msg-recebidas" class="msg-tab-panel active">
-        <p class="small">
-          Mensagens e documentos enviados pela gestão para você (MVP simulado neste dispositivo).
-        </p>
-        <div class="msg-list" id="msgListaRecebidas"></div>
-      </div>
-
-      <!-- Caixa de saída: mensagens enviadas pelo operador -->
-      <div id="msg-enviadas" class="msg-tab-panel">
-        <p class="small">
-          Histórico das mensagens que você enviou para o gestor/supervisor.
-        </p>
-        <div class="msg-list" id="msgListaEnviadas"></div>
-      </div>
-
-      <div class="msg-form">
-        <div class="label">Nova mensagem para o gestor</div>
-        <textarea id="msgTexto" rows="3" placeholder="Descreva sua mensagem para o gestor..."></textarea>
-
-        <div style="margin-top:6px">
-          <div class="file-label">Anexos para enviar (opcional)</div>
-          <input id="msgArquivo" class="file-input" type="file"
-                 multiple
-                 accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
-        </div>
-
-        <div class="row" style="margin-top:8px;justify-content:flex-end">
-          <button id="btnEnviarMsg" class="primary" type="button">Enviar ao gestor</button>
-        </div>
-
-        <p class="small" style="margin-top:6px">
-          *No MVP, as mensagens e anexos ficam registrados apenas neste dispositivo. Na Fase 2, serão integrados ao painel do gestor/supervisor.
-        </p>
-      </div>
-    </section>
-  </section>
-</main>
 
 <script>
-  // ---------- Tema compartilhado com index ----------
+  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
@@ -874,348 +389,234 @@
     }
   });
 
-  // ---------- Abas principais ----------
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabPanels  = document.querySelectorAll('.tab-panel');
+  // ---------- Login ----------
+  const API_LOGIN_URL = '/api/auth/login'; // para futuro backend
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
+  const formLogin  = document.getElementById('formLogin');
+  const btnEntrar  = document.getElementById('btnEntrar');
+  const msgErro    = document.getElementById('msgErro');
+  const msgOk      = document.getElementById('msgOk');
+  const areaPerfis   = document.getElementById('areaPerfis');
+  const textoUsuario = document.getElementById('textoUsuario');
+  const rolesBadges  = document.getElementById('rolesBadges');
+  const btnIrOperador = document.getElementById('btnIrOperador');
+  const btnIrGestor   = document.getElementById('btnIrGestor');
+  const hintGestor    = document.getElementById('hintGestor');
+
+  function limparMensagens() {
+    msgErro.style.display = 'none';
+    msgOk.style.display = 'none';
+  }
+
+  function mostrarErro(texto) {
+    msgErro.textContent = texto;
+    msgErro.style.display = 'block';
+    msgOk.style.display = 'none';
+  }
+
+  function mostrarOk(texto) {
+    msgOk.textContent = texto;
+    msgOk.style.display = 'block';
+    msgErro.style.display = 'none';
+  }
+
+  function popularPerfis(usuario) {
+    areaPerfis.style.display = 'block';
+    const ident = usuario.identificadorExibicao || usuario.email || usuario.username || usuario.matricula || '';
+    textoUsuario.textContent = `Autenticado como ${usuario.nome}${ident ? ' (' + ident + ')' : ''}.`;
+
+    rolesBadges.innerHTML = '';
+    const roles = usuario.roles || [];
+
+    roles.forEach(r => {
+      const span = document.createElement('span');
+      span.className = 'badge-role';
+      let label = r;
+      let tipo = '';
+      if (r === 'OPERADOR')          { label = 'Operador'; tipo = 'Campo'; }
+      if (r === 'SUPERVISOR')       { label = 'Supervisor'; tipo = 'Gestão parcial'; }
+      if (r === 'GERENTE_OPERACAO') { label = 'Gerente de Operação'; tipo = 'Gestão global'; }
+      span.innerHTML = `<strong>${label}</strong>${tipo ? '<span class="kind"> · ' + tipo + '</span>' : ''}`;
+      rolesBadges.appendChild(span);
     });
+
+    const temOperador = roles.includes('OPERADOR');
+    const temGestor   = roles.includes('SUPERVISOR') || roles.includes('GERENTE_OPERACAO');
+
+    btnIrOperador.style.display = temOperador ? 'inline-flex' : 'none';
+    btnIrGestor.style.display   = temGestor   ? 'inline-flex' : 'none';
+    hintGestor.style.display    = temGestor   ? 'block'      : 'none';
+  }
+
+  function criarUsuarioMock(identificador, senha) {
+    // Três usuários de teste locais:
+    // 1) user.user  -> apenas OPERADOR
+    // 2) gestor.gestor -> OPERADOR + SUPERVISOR (escopo limitado, sem criação de usuários)
+    // 3) admin.admin   -> OPERADOR + GERENTE_OPERACAO (escopo total, futura delegação)
+    if (senha !== '123456') return null;
+
+    if (identificador === 'user.user') {
+      return {
+        id: 2,
+        nome: 'Operador Demo',
+        email: 'user.user@empresa.com',
+        username: 'user.user',
+        matricula: '00002',
+        documento: '111.111.111-11',
+        telefone: '(00) 00000-0001',
+        postoPrincipal: 'UBS Centro',
+        postoPrincipalLat: -3.132000,
+        postoPrincipalLng: -60.021000,
+        situacao: 'Ativo',
+        deveTrocarSenha: false,
+        roles: ['OPERADOR'],
+        escopoPostos: [] // operador puro não tem escopo de gestão
+      };
+    }
+
+    if (identificador === 'gestor.gestor') {
+      return {
+        id: 3,
+        nome: 'Supervisor Demo',
+        email: 'gestor.gestor@empresa.com',
+        username: 'gestor.gestor',
+        matricula: '00003',
+        documento: '222.222.222-22',
+        telefone: '(00) 00000-0002',
+        postoPrincipal: 'UBS Centro',
+        postoPrincipalLat: -3.132000,
+        postoPrincipalLng: -60.021000,
+        situacao: 'Ativo',
+        deveTrocarSenha: false,
+        // Supervisor: vê apenas alguns postos e respectivas equipes; não cria usuários
+        roles: ['OPERADOR', 'SUPERVISOR'],
+        escopoPostos: [2, 3] // Exemplo: UBS Centro (2) e Escola Zona Leste (3)
+      };
+    }
+
+    if (identificador === 'admin.admin') {
+      return {
+        id: 1,
+        nome: 'Admin Demo',
+        email: 'admin.admin@empresa.com',
+        username: 'admin.admin',
+        matricula: '00001',
+        documento: '000.000.000-00',
+        telefone: '(00) 00000-0000',
+        postoPrincipal: 'Centro de Cooperação da Cidade',
+        postoPrincipalLat: -3.089968,
+        postoPrincipalLng: -60.009204,
+        situacao: 'Ativo',
+        deveTrocarSenha: true,
+        // Gerente de Operação: visão global de postos/supervisores/equipes.
+        // Criação/atribuição/exclusão de usuários será feita, no futuro,
+        // por um módulo específico (não pelo Supervisor).
+        roles: ['OPERADOR', 'GERENTE_OPERACAO'],
+        escopoPostos: 'TODOS'
+      };
+    }
+
+    return null;
+  }
+
+  formLogin.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    limparMensagens();
+
+    const identificador = document.getElementById('identificador').value.trim();
+    const senha         = document.getElementById('senha').value;
+
+    if (!identificador || !senha) {
+      mostrarErro('Informe o identificador (matrícula, usuário ou e-mail) e a senha.');
+      return;
+    }
+
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Validando...';
+
+    // ---- MOCK LOCAL: user.user, gestor.gestor, admin.admin ----
+    const usuarioMock = criarUsuarioMock(identificador, senha);
+    if (usuarioMock) {
+      localStorage.setItem('sgo_auth_token', 'token-mock-' + usuarioMock.username);
+      localStorage.setItem('sgo_usuario', JSON.stringify(usuarioMock));
+
+      if (usuarioMock.deveTrocarSenha) {
+        mostrarOk('Login de teste realizado. No primeiro acesso completo, será solicitada troca de senha.');
+      } else {
+        mostrarOk('Login de teste realizado.');
+      }
+
+      popularPerfis(usuarioMock);
+
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+      return;
+    }
+    // ---- FIM MOCK LOCAL ----
+
+    try {
+      const resp = await fetch(API_LOGIN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identificador, senha })
+      });
+
+      if (!resp.ok) {
+        mostrarErro('Dados inválidos ou falha de comunicação. Confirme o identificador e a senha.');
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar';
+        return;
+      }
+
+      const data = await resp.json();
+
+      if (!data || !data.usuario || !data.usuario.roles) {
+        mostrarErro('Resposta inesperada do servidor. Fale com o suporte.');
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar';
+        return;
+      }
+
+      localStorage.setItem('sgo_auth_token', data.token || '');
+      localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
+
+      if (data.usuario.deveTrocarSenha) {
+        mostrarOk('Login realizado. Altere sua senha no painel do operador no primeiro acesso.');
+      } else {
+        mostrarOk('Login realizado com sucesso.');
+      }
+
+      popularPerfis(data.usuario);
+
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+    } catch (err) {
+      console.error(err);
+      mostrarErro('Erro de rede ao tentar autenticar. Verifique sua conexão.');
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+    }
   });
 
-  // ---------- Sessão / roles ----------
-  function carregarUsuario() {
+  btnIrOperador.addEventListener('click', () => {
+    window.location.href = 'operador.html';
+  });
+
+  btnIrGestor.addEventListener('click', () => {
+    window.location.href = 'gestor.html';
+  });
+
+  // Se já existe usuário no localStorage, reaproveita
+  (function checkUsuarioLocal() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  const usuario = carregarUsuario();
-  if (!usuario) {
-    window.location.href = 'index.html';
-  } else {
-    const roles = usuario.roles || [];
-    const temOperador = roles.includes('OPERADOR');
-
-    if (!temOperador) {
-      window.location.href = 'gestor.html';
-    }
-
-    const nome = usuario.nome || 'Operador';
-    const matricula = usuario.matricula || '00000';
-    const username = usuario.username || '';
-    const documento = usuario.documento || '000.000.000-00';
-    const telefone = usuario.telefone || '(00) 00000-0000';
-    const email = usuario.email || 'operador@empresa.com';
-    const postoPrincipal = usuario.postoPrincipal || 'Centro de Cooperação da Cidade';
-
-    document.getElementById('perfilNome').textContent = nome;
-    document.getElementById('perfilMatricula').textContent = `Matrícula ${matricula}`;
-    document.getElementById('perfilMatriculaNum').textContent = matricula;
-    document.getElementById('perfilUsername').textContent = username || '—';
-    document.getElementById('perfilDocumento').textContent = documento;
-    document.getElementById('perfilTelefone').textContent = telefone;
-    document.getElementById('perfilEmail').textContent = email;
-    document.getElementById('perfilPostoPrincipal').textContent = postoPrincipal;
-    document.getElementById('subtitleOperador').textContent =
-      `Operador logado – ${nome}`;
-
-    if (username === 'admin.admin' || username === 'gestor.gestor' || username === 'user.user') {
-      document.getElementById('perfilMockChip').style.display = 'inline-flex';
-    }
-
-    const selectPosto = document.getElementById('selectPosto');
-    if (selectPosto && postoPrincipal) {
-      for (const opt of selectPosto.options) {
-        if (opt.value.startsWith(postoPrincipal + '|')) {
-          opt.selected = true;
-          document.getElementById('postoAtual').innerHTML =
-            `<span>${postoPrincipal}</span>`;
-          break;
-        }
+      if (!raw) return;
+      const usuario = JSON.parse(raw);
+      if (usuario && (usuario.email || usuario.username || usuario.matricula)) {
+        popularPerfis(usuario);
       }
-    }
-  }
-
-  // ---------- Sair ----------
-  document.getElementById('btnSair').addEventListener('click', () => {
-    if (confirm('Deseja realmente sair?')) {
-      localStorage.removeItem('sgo_auth_token');
-      localStorage.removeItem('sgo_usuario');
-      window.location.href = 'index.html';
-    }
-  });
-
-  // ---------- Relógio ----------
-  function atualizarRelogio() {
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const data = agora.toLocaleDateString('pt-BR');
-    document.getElementById('horaAtual').textContent = hora;
-    document.getElementById('dataAtual').textContent = data;
-  }
-  atualizarRelogio();
-  setInterval(atualizarRelogio, 1000);
-
-  // ---------- Ponto / Localização ----------
-  let currentPos = null;
-  const histLista = document.getElementById('histLista');
-
-  function addHist(text) {
-    const li = document.createElement('li');
-    li.className = 'history-item';
-    li.textContent = new Date().toLocaleTimeString('pt-BR') + ' – ' + text;
-    histLista.prepend(li);
-  }
-
-  document.getElementById('btnGeo').disabled = false;
-  document.getElementById('btnCheckin').disabled = false;
-  document.getElementById('btnCheckout').disabled = false;
-
-  document.getElementById('btnGeo').onclick = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocalização indisponível');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(pos => {
-      currentPos = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      };
-      document.getElementById('infoLocal').textContent =
-        `Local atual: Lat ${currentPos.lat.toFixed(6)} · Lng ${currentPos.lng.toFixed(6)} (mock, sem cálculo de distância)`;
-      addHist('Geolocalização capturada');
-    }, () => {
-      alert('Não foi possível obter a localização');
-    }, { enableHighAccuracy: true, timeout: 10000 });
-  };
-
-  document.getElementById('btnCheckin').onclick = () => {
-    if (!currentPos) {
-      alert('Capture a geolocalização primeiro');
-      return;
-    }
-    document.getElementById('statusTexto').textContent = 'Em posto';
-    document.getElementById('statusPill').classList.remove('status-warn');
-    document.getElementById('statusPill').classList.add('status-ok');
-    document.getElementById('statusPill').innerHTML =
-      '<span class="dot"></span>Dentro do posto (mock)';
-    document.getElementById('chipUltimoRegistro').textContent = 'Check-in';
-    addHist('Check-in registrado');
-  };
-
-  document.getElementById('btnCheckout').onclick = () => {
-    document.getElementById('statusTexto').textContent = 'Fora de posto';
-    document.getElementById('statusPill').classList.remove('status-ok');
-    document.getElementById('statusPill').classList.add('status-warn');
-    document.getElementById('statusPill').innerHTML =
-      '<span class="dot dot-red"></span>Fora da área de posto';
-    document.getElementById('chipUltimoRegistro').textContent = 'Check-out';
-    addHist('Check-out registrado');
-  };
-
-  // ---------- Escala ----------
-  const escChecks = document.querySelectorAll('.esc-check');
-  escChecks.forEach(chk => {
-    chk.addEventListener('change', () => {
-      // poderíamos salvar em localStorage se quiser
-    });
-  });
-
-  // ---------- Abas internas de mensagens ----------
-  const msgTabButtons = document.querySelectorAll('.msg-tab-button');
-  const msgTabPanels  = document.querySelectorAll('.msg-tab-panel');
-
-  msgTabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.msgTab;
-      msgTabButtons.forEach(b => b.classList.remove('active'));
-      msgTabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
-  // ---------- Mensagens (entrada e saída) ----------
-  const msgListaRecebidas = document.getElementById('msgListaRecebidas');
-  const msgListaEnviadas  = document.getElementById('msgListaEnviadas');
-  const msgTexto   = document.getElementById('msgTexto');
-  const msgArquivo = document.getElementById('msgArquivo');
-  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
-
-  let mensagensRecebidas = [
-    {
-      id: 1,
-      origem: 'Supervisor Demo',
-      cargoOrigem: 'Supervisor',
-      data: 'Hoje 08:15',
-      texto: 'Favor registrar justificativa de atraso no início do plantão.',
-      anexos: 0
-    },
-    {
-      id: 2,
-      origem: 'Gerente de Operação',
-      cargoOrigem: 'Gerente',
-      data: 'Ontem 17:40',
-      texto: 'Escala do próximo mês será publicada até sexta-feira.',
-      anexos: 1,
-      nomeAnexo: 'Comunicado_Escala.pdf'
-    }
-  ];
-
-  let mensagensEnviadas = [];
-
-  function renderMensagensRecebidas() {
-    msgListaRecebidas.innerHTML = '';
-    if (!mensagensRecebidas.length) {
-      const p = document.createElement('p');
-      p.className = 'small';
-      p.textContent = 'Nenhuma mensagem recebida ainda neste dispositivo.';
-      msgListaRecebidas.appendChild(p);
-      return;
-    }
-
-    mensagensRecebidas.forEach(m => {
-      const item = document.createElement('div');
-      item.className = 'msg-item recebida';
-
-      const meta = document.createElement('div');
-      meta.className = 'msg-meta';
-      const origem = m.cargoOrigem ? `${m.origem} (${m.cargoOrigem})` : m.origem;
-      meta.textContent = `${origem} · ${m.data}` +
-        (m.anexos ? ` · ${m.anexos} anexo(s)` : '');
-
-      const body = document.createElement('div');
-      body.className = 'msg-text';
-      body.textContent = m.texto;
-
-      if (m.nomeAnexo) {
-        const anexEl = document.createElement('div');
-        anexEl.className = 'small';
-        anexEl.textContent = `Anexo: ${m.nomeAnexo} (simulado)`;
-        body.appendChild(document.createElement('br'));
-        body.appendChild(anexEl);
-      }
-
-      item.appendChild(meta);
-      item.appendChild(body);
-      msgListaRecebidas.prepend(item);
-    });
-  }
-
-  function renderMensagensEnviadas() {
-    msgListaEnviadas.innerHTML = '';
-    if (!mensagensEnviadas.length) {
-      const p = document.createElement('p');
-      p.className = 'small';
-      p.textContent = 'Nenhuma mensagem enviada neste dispositivo ainda.';
-      msgListaEnviadas.appendChild(p);
-      return;
-    }
-
-    mensagensEnviadas.forEach(m => {
-      const item = document.createElement('div');
-      item.className = 'msg-item enviada';
-
-      const meta = document.createElement('div');
-      meta.className = 'msg-meta';
-      meta.textContent = `${m.data} · para gestor` +
-        (m.anexos ? ` · ${m.anexos} anexo(s)` : '');
-
-      const body = document.createElement('div');
-      body.className = 'msg-text';
-      body.textContent = m.texto;
-
-      item.appendChild(meta);
-      item.appendChild(body);
-      msgListaEnviadas.prepend(item);
-    });
-  }
-
-  btnEnviarMsg.addEventListener('click', () => {
-    const texto = msgTexto.value.trim();
-    if (!texto) {
-      alert('Digite uma mensagem para enviar ao gestor.');
-      return;
-    }
-    const anexosCount = msgArquivo.files ? msgArquivo.files.length : 0;
-
-    mensagensEnviadas.push({
-      id: Date.now(),
-      texto,
-      anexos: anexosCount,
-      data: new Date().toLocaleString('pt-BR')
-    });
-
-    renderMensagensEnviadas();
-
-    msgTexto.value = '';
-    msgArquivo.value = '';
-  });
-
-  renderMensagensRecebidas();
-  renderMensagensEnviadas();
-
-  // ---------- Foto de perfil local ----------
-  const perfilFotoInput = document.getElementById('perfilFotoInput');
-  const perfilFotoPreview = document.getElementById('perfilFotoPreview');
-
-  perfilFotoInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      perfilFotoPreview.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = reader.result;
-      perfilFotoPreview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // ---------- Alterar senha (mock) ----------
-  const btnAlterarSenha = document.getElementById('btnAlterarSenha');
-  const feedbackSenha   = document.getElementById('feedbackSenha');
-
-  btnAlterarSenha.addEventListener('click', () => {
-    const atual   = document.getElementById('senhaAtual').value;
-    const nova    = document.getElementById('senhaNova').value;
-    const confirma= document.getElementById('senhaNovaConfirma').value;
-
-    feedbackSenha.textContent = '';
-    feedbackSenha.className = 'feedback';
-
-    if (!atual || !nova || !confirma) {
-      feedbackSenha.textContent = 'Preencha todos os campos de senha.';
-      feedbackSenha.classList.add('err');
-      return;
-    }
-    if (nova !== confirma) {
-      feedbackSenha.textContent = 'A confirmação da nova senha não confere.';
-      feedbackSenha.classList.add('err');
-      return;
-    }
-    if (nova.length < 8) {
-      feedbackSenha.textContent = 'A nova senha deve ter pelo menos 8 caracteres.';
-      feedbackSenha.classList.add('err');
-      return;
-    }
-
-    feedbackSenha.textContent = 'Senha alterada localmente (mock). Na versão completa, será enviada ao servidor.';
-    feedbackSenha.classList.add('ok');
-  });
-
-  // Histórico inicial
-  addHist('Painel do operador iniciado');
+    } catch (e) {}
+  })();
 </script>
 </body>
 </html>
