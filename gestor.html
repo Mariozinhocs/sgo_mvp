@@ -6,896 +6,219 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Gestor</title>
 
-  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" href="icon-512.png" />
 
   <style>
     :root {
-      --bg-body: #f3f4f6;
-      --bg-header: #020826;
-      --bg-card: #ffffff;
-      --text-main: #111827;
-      --text-secondary: #6b7280;
-      --primary: #2563eb;
-      --primary-contrast: #ffffff;
-      --border-subtle: #e5e7eb;
-    }
-
-    body.theme-dark {
       --bg-body: #020826;
-      --bg-header: #020826;
       --bg-card: #050b35;
       --text-main: #f9fafb;
       --text-secondary: #9ca3af;
-      --primary: #2563eb;
-      --primary-contrast: #ffffff;
+      --primary: #22c55e;
       --border-subtle: #1f2937;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: var(--bg-body);
-      color: var(--text-main);
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      color:var(--text-main);
     }
 
     header {
-      position: relative;
-      background: var(--bg-header);
-      color: #ffffff;
-      padding: 20px 24px 32px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
 
-    header h1 { margin: 0; font-size: 22px; }
-    header .subtitle { font-size: 13px; color: #cbd5f5; }
+    h1 {
+      margin:0;
+      font-size:20px;
+    }
+
+    .subtitle {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .header-left {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .btn-exit {
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,113,113,0.6);
+      padding: 6px 10px;
+      background: rgba(127,29,29,0.9);
+      color: #fee2e2;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .btn-exit span { font-size:15px; }
 
     main {
-      padding: 20px;
-      max-width: 1100px;
-      margin: 0 auto 40px;
+      max-width:900px;
+      margin:0 auto;
+      padding:8px 16px 24px;
     }
 
     .card {
-      background: var(--bg-card);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.10);
-      margin-bottom: 16px;
-      border: 1px solid var(--border-subtle);
+      background:#050b35;
+      border-radius:18px;
+      padding:14px 16px;
+      border:1px solid var(--border-subtle);
+      box-shadow:0 18px 40px rgba(15,23,42,0.85);
+      margin-bottom:14px;
     }
 
-    .row { display:flex; gap:10px; flex-wrap:wrap; }
-
-    input, button, select, textarea {
-      font: inherit;
-      padding: 8px 10px;
-      border-radius: 8px;
+    h2 {
+      margin:0 0 6px;
+      font-size:17px;
     }
 
-    input, select, textarea {
-      border: 1px solid var(--border-subtle);
-      background: var(--bg-card);
-      color: var(--text-main);
-      width: 100%;
+    .small {
+      font-size:12px;
+      color:var(--text-secondary);
     }
 
-    input::placeholder, textarea::placeholder {
-      color: var(--text-secondary);
+    .chip {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.18);
+      font-size:11px;
+      margin-top:4px;
     }
 
-    button {
-      border: none;
-      cursor: pointer;
-    }
-
-    button.primary {
-      background: var(--primary);
-      color: var(--primary-contrast);
-    }
-
-    button.secondary {
-      background: #e5e7f0;
-      color: #111827;
-    }
-
-    body.theme-dark button.secondary {
-      background: #1f2937;
-      color: #e5e7eb;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .small { font-size: 12px; color: var(--text-secondary); }
-
-    h2 { margin-top: 0; font-size: 18px; }
-
-    .theme-toggle {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15,23,42,0.7);
-      color: #e5e7eb;
-      border: 1px solid rgba(148,163,184,0.4);
-    }
-
-    body.theme-dark .theme-toggle {
-      background: rgba(15,23,42,0.9);
-    }
-
-    .theme-toggle span { font-size: 16px; }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-
-    @media (min-width: 960px) {
-      .grid-2 {
-        grid-template-columns: 1.4fr 1fr;
-      }
+    .dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#34d399;
+      display:inline-block;
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      margin-top:6px;
     }
 
     th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border-subtle);
-      text-align: left;
-      vertical-align: middle;
+      padding:6px 4px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+      vertical-align:middle;
     }
 
     th {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-secondary);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    body.theme-dark .badge {
-      background: #111827;
-      color: #e5e7eb;
-    }
-
-    .section-title {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:8px;
-    }
-
-    .tag {
-      display:inline-block;
-      padding:2px 6px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.2);
-      color:var(--text-secondary);
       font-size:11px;
-    }
-
-    .divider {
-      height:1px;
-      background:var(--border-subtle);
-      margin:8px 0 12px;
-    }
-
-    a.map-link {
-      font-size: 12px;
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    a.map-link:hover {
-      text-decoration: underline;
-    }
-
-    .btn-small {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-    }
-
-    .tabs-header {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .tab-button {
-      flex: 1;
-      text-align: center;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .tab-button.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #ffffff;
-    }
-
-    body.theme-dark .tab-button {
-      background: #020826;
-    }
-
-    body.theme-dark .tab-button.active {
-      background: var(--primary);
-      color: #ffffff;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-
-    .tab-panel.active {
-      display: block;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
     }
   </style>
 </head>
 <body>
 <header>
-  <h1>SGO – Painel do Gestor</h1>
-  <div class="subtitle">Cadastro de operadores, postos e designações</div>
-
-  <button id="btnTheme" class="theme-toggle">
-    <span id="themeIcon">🌙</span>
-    <span id="themeLabel">Dark</span>
+  <div class="header-left">
+    <h1>SGO – Gestor</h1>
+    <div class="subtitle" id="subtitleGestor">Painel resumido do gestor</div>
+  </div>
+  <button class="btn-exit" type="button" id="btnSair">
+    <span>⏏</span>
+    Sair
   </button>
 </header>
 
 <main>
-  <section id="screen-login-gestor" class="card">
-    <h2>Login do gestor</h2>
-    <div class="row" style="flex-direction:column;gap:10px;margin-bottom:10px">
-      <input id="gestorUser" placeholder="Usuário (e-mail institucional)" />
-      <input id="gestorPass" type="password" placeholder="Senha" />
-      <div class="row" style="justify-content:space-between;gap:8px">
-        <button id="btnLoginGestor" class="primary">Entrar</button>
-        <span class="small">*Somente gestores autorizados devem acessar este painel.</span>
-      </div>
+  <section class="card">
+    <h2>Perfil do gestor</h2>
+    <p class="small">Informações básicas do usuário autenticado com papel de gestor.</p>
+    <div id="infoGestor" class="small"></div>
+    <div class="chip" id="chipRoles">
+      <span class="dot"></span>
+      <span id="textoRoles"></span>
     </div>
-    <p class="small" id="loginGestorMsg"></p>
   </section>
 
-  <section id="screen-gestor" style="display:none">
-    <div class="grid-2">
-      <div>
-        <div class="card">
-          <div class="section-title">
-            <h2>Visão geral</h2>
-            <span class="tag">MVP – dados ilustrativos</span>
-          </div>
-          <div class="row" style="flex-wrap:wrap">
-            <div style="flex:1 1 140px">
-              <div class="small">Operadores ativos</div>
-              <div style="font-size:24px;font-weight:bold" id="g_operadoresAtivos">12</div>
-            </div>
-            <div style="flex:1 1 140px">
-              <div class="small">Registros de ponto hoje</div>
-              <div style="font-size:24px;font-weight:bold" id="g_pontosHoje">34</div>
-            </div>
-            <div style="flex:1 1 140px">
-              <div class="small">Postos cadastrados</div>
-              <div style="font-size:24px;font-weight:bold" id="g_postos">5</div>
-            </div>
-          </div>
-          <p class="small" style="margin-top:8px">
-            *Nesta seção, na Fase 2, entra o dashboard com gráficos e filtros (por posto, período, operador).
-          </p>
-        </div>
-
-        <div class="card">
-          <div class="section-title">
-            <h2>Últimos registros de ponto</h2>
-            <span class="tag">Inclui flag fora do posto</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Operador</th>
-                <th>Tipo</th>
-                <th>Data/Hora</th>
-                <th>Local (lat, lng)</th>
-                <th>Obs.</th>
-              </tr>
-            </thead>
-            <tbody id="g_ultimosRegistros">
-              <tr>
-                <td>Ana Souza</td>
-                <td><span class="badge">Check-in</span></td>
-                <td>07/06/2026 08:02</td>
-                <td>-3.134500, -60.021300</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>João Lima</td>
-                <td><span class="badge">Check-out</span></td>
-                <td>07/06/2026 17:15</td>
-                <td>-3.098700, -60.012900</td>
-                <td><span class="small" style="color:#b91c1c;">Fora do posto</span></td>
-              </tr>
-              <tr>
-                <td>Maria Silva</td>
-                <td><span class="badge">Check-in</span></td>
-                <td>07/06/2026 07:55</td>
-                <td>-3.120000, -60.005000</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-          <p class="small">
-            *Quando o operador registrar ponto fora do raio do posto, a API poderá marcar o registro com essa observação para conferência.
-          </p>
-        </div>
-      </div>
-
-      <div>
-        <div class="card">
-          <div class="section-title">
-            <h2>Cadastros</h2>
-            <span class="tag">Operadores e Postos</span>
-          </div>
-
-          <div class="tabs-header">
-            <button class="tab-button active" data-tab="tab-operadores">Operadores</button>
-            <button class="tab-button" data-tab="tab-postos">Postos</button>
-          </div>
-
-          <div id="tab-operadores" class="tab-panel active">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Matrícula</th>
-                  <th>Situação</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="g_tabelaOperadores">
-                <tr>
-                  <td>Ana Souza</td>
-                  <td>00123</td>
-                  <td><span class="badge">Ativo</span></td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-operador">Editar</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>João Lima</td>
-                  <td>00456</td>
-                  <td><span class="badge">Ativo</span></td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-operador">Editar</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Maria Silva</td>
-                  <td>00789</td>
-                  <td><span class="badge">Inativo</span></td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-operador">Editar</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="divider"></div>
-
-            <p class="small" style="margin-bottom:6px;">Adicionar operador (cadastro unitário)</p>
-            <div class="row" style="gap:8px;margin-bottom:8px">
-              <input id="op_nome" placeholder="Nome do operador" />
-            </div>
-            <div class="row" style="gap:8px;margin-bottom:8px">
-              <input id="op_matricula" placeholder="Matrícula" />
-              <input id="op_email" placeholder="E-mail (opcional)" />
-            </div>
-            <div class="row" style="gap:8px;margin-bottom:4px">
-              <button id="btnAddOperador" class="primary">Adicionar</button>
-              <button id="btnImportarOperadores" class="secondary" disabled>Importar lista (Fase 2)</button>
-            </div>
-            <p class="small">
-              *A importação em lote será implementada na Fase 2 via upload de arquivo (CSV/planilha).
-            </p>
-          </div>
-
-          <div id="tab-postos" class="tab-panel">
-            <table>
-              <thead>
-                <tr>
-                  <th>Posto</th>
-                  <th>Lat / Lng</th>
-                  <th>Raio (m)</th>
-                  <th>Mapa</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="g_tabelaPostos">
-                <tr>
-                  <td>UBS Centro</td>
-                  <td data-lat="-3.132000" data-lng="-60.021000">-3.132000, -60.021000</td>
-                  <td>100</td>
-                  <td>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.132000,-60.021000" target="_blank" rel="noopener noreferrer">
-                      Ver no Maps
-                    </a>
-                  </td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-posto">Editar</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Escola Zona Leste</td>
-                  <td data-lat="-3.100500" data-lng="-60.005800">-3.100500, -60.005800</td>
-                  <td>150</td>
-                  <td>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.100500,-60.005800" target="_blank" rel="noopener noreferrer">
-                      Ver no Maps
-                    </a>
-                  </td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-posto">Editar</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Base Operacional Norte</td>
-                  <td data-lat="-3.050000" data-lng="-60.010000">-3.050000, -60.010000</td>
-                  <td>200</td>
-                  <td>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-3.050000,-60.010000" target="_blank" rel="noopener noreferrer">
-                      Ver no Maps
-                    </a>
-                  </td>
-                  <td>
-                    <button class="secondary btn-small btn-edit-posto">Editar</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="divider"></div>
-
-            <p class="small" style="margin-bottom:6px;">Adicionar posto</p>
-
-            <div class="row" style="gap:8px;margin-bottom:8px">
-              <input id="po_maps_url" placeholder="Cole aqui o link do Google Maps (opcional)" />
-              <button id="btnExtrairCoords" class="secondary btn-small" type="button">
-                Extrair coordenadas
-              </button>
-            </div>
-
-            <div class="row" style="gap:8px;margin-bottom:8px">
-              <input id="po_nome" placeholder="Nome do posto" />
-            </div>
-            <div class="row" style="gap:8px;margin-bottom:8px">
-              <input id="po_lat" placeholder="Latitude" />
-              <input id="po_lng" placeholder="Longitude" />
-              <input id="po_raio" placeholder="Raio (m)" />
-            </div>
-            <div class="row" style="gap:8px;margin-bottom:4px">
-              <button id="btnAddPosto" class="primary">Adicionar posto</button>
-              <button id="btnMapaPostos" class="secondary" disabled>Selecionar no mapa (Fase 2)</button>
-            </div>
-            <p class="small">
-              *Você pode colar o link do Google Maps, clicar em “Extrair coordenadas” e depois ajustar manualmente se precisar.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">
-        <h2>Designações de operadores a postos</h2>
-        <span class="tag">Operador → Posto + Escala</span>
-      </div>
-
-      <div class="row" style="gap:8px;margin-bottom:8px">
-        <select id="desig_operador">
-          <option value="">Selecione um operador</option>
-          <option value="00123">Ana Souza (00123)</option>
-          <option value="00456">João Lima (00456)</option>
-          <option value="00789">Maria Silva (00789)</option>
-        </select>
-        <select id="desig_posto">
-          <option value="">Selecione um posto</option>
-          <option value="UBS Centro">UBS Centro</option>
-          <option value="Escola Zona Leste">Escola Zona Leste</option>
-          <option value="Base Operacional Norte">Base Operacional Norte</option>
-        </select>
-      </div>
-      <div class="row" style="gap:8px;margin-bottom:8px">
-        <input id="desig_escala" placeholder="Escala (ex: Seg–Sex 08h–17h)" />
-      </div>
-      <div class="row" style="gap:8px;margin-bottom:4px">
-        <button id="btnAddDesignacao" class="primary">Criar designação</button>
-      </div>
-      <p class="small" id="desig_msg"></p>
-
-      <div class="divider"></div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Operador</th>
-            <th>Posto</th>
-            <th>Escala</th>
-          </tr>
-        </thead>
-        <tbody id="g_tabelaDesignacoes">
-          <tr>
-            <td>Ana Souza (00123)</td>
-            <td>UBS Centro</td>
-            <td>Seg–Sex 08h–17h</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="small" style="margin-top:8px">
-        *Após criar a designação, o sistema gera uma mensagem padrão para o operador com link do app, escala e posto designado.
-      </p>
-    </div>
+  <section class="card">
+    <h2>Resumo operacional (mock)</h2>
+    <p class="small">Dados estáticos apenas para validar o layout. Futuramente virão da API.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Operadores ativos</td>
+          <td>12</td>
+        </tr>
+        <tr>
+          <td>Check-ins hoje</td>
+          <td>35</td>
+        </tr>
+        <tr>
+          <td>Ocorrências abertas</td>
+          <td>4</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 </main>
 
 <script>
-  const btnTheme       = document.getElementById('btnTheme');
-  const themeIcon      = document.getElementById('themeIcon');
-  const themeLabel     = document.getElementById('themeLabel');
-
-  const screenLogin    = document.getElementById('screen-login-gestor');
-  const screenGestor   = document.getElementById('screen-gestor');
-  const loginGestorMsg = document.getElementById('loginGestorMsg');
-
-  const gTabelaOperadores  = document.getElementById('g_tabelaOperadores');
-  const gTabelaPostos      = document.getElementById('g_tabelaPostos');
-  const gTabelaDesignacoes = document.getElementById('g_tabelaDesignacoes');
-  const desigMsg           = document.getElementById('desig_msg');
-
-  const tabButtons   = document.querySelectorAll('.tab-button');
-  const tabPanels    = document.querySelectorAll('.tab-panel');
-
-  let gestorLogado = false;
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
-  function aplicarTemaInicial() {
-    const savedTheme = localStorage.getItem('sgo_theme_gestor');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('theme-dark');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-    } else {
-      document.body.classList.remove('theme-dark');
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-    }
-  }
-
-  btnTheme.onclick = () => {
-    const isDark = document.body.classList.toggle('theme-dark');
-    localStorage.setItem('sgo_theme_gestor', isDark ? 'dark' : 'light');
-    if (isDark) {
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-    } else {
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-    }
-  };
-
-  aplicarTemaInicial();
-
-  function mostrarPainelGestor() {
-    screenLogin.style.display = 'none';
-    screenGestor.style.display = 'block';
-  }
-
-  function mostrarLoginGestor() {
-    screenLogin.style.display = 'block';
-    screenGestor.style.display = 'none';
-  }
-
-  const savedGestor = localStorage.getItem('sgo_gestor_logado');
-  if (savedGestor === 'true') {
-    gestorLogado = true;
-    mostrarPainelGestor();
-  } else {
-    mostrarLoginGestor();
-  }
-
-  document.getElementById('btnLoginGestor').onclick = () => {
-    const u = document.getElementById('gestorUser').value.trim();
-    const p = document.getElementById('gestorPass').value.trim();
-    if (!u || !p) {
-      loginGestorMsg.textContent = 'Informe usuário e senha do gestor.';
-      return;
-    }
-    gestorLogado = true;
-    localStorage.setItem('sgo_gestor_logado', 'true');
-    loginGestorMsg.textContent = '';
-    mostrarPainelGestor();
-  };
-
-  document.getElementById('btnAddOperador').onclick = () => {
-    const nome = document.getElementById('op_nome').value.trim();
-    const matricula = document.getElementById('op_matricula').value.trim();
-    const email = document.getElementById('op_email').value.trim();
-
-    if (!nome || !matricula) {
-      alert('Informe pelo menos nome e matrícula do operador.');
-      return;
-    }
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${nome}</td>
-      <td>${matricula}</td>
-      <td><span class="badge">Ativo</span></td>
-      <td><button class="secondary btn-small btn-edit-operador">Editar</button></td>
-    `;
-    gTabelaOperadores.appendChild(tr);
-
-    document.getElementById('op_nome').value = '';
-    document.getElementById('op_matricula').value = '';
-    document.getElementById('op_email').value = '';
-
-    alert('Operador adicionado (MVP: apenas na interface, depois integraremos com o backend).');
-  };
-
-  function criarLinkMaps(lat, lng) {
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-  }
-
-  function extrairCoordsDeMapsUrl(url) {
-    if (!url) return null;
-    const matchArroba = url.match(/@(-?[\d.]+),(-?[\d.]+)/);
-    if (matchArroba) {
-      return { lat: matchArroba[1], lng: matchArroba[2] };
-    }
+  function carregarUsuario() {
     try {
-      const u = new URL(url);
-      const q = u.searchParams.get('q') || u.searchParams.get('query');
-      if (q) {
-        const coords = q.split(',');
-        if (coords.length >= 2 && !isNaN(parseFloat(coords[0])) && !isNaN(parseFloat(coords[1]))) {
-          return { lat: coords[0], lng: coords[1] };
-        }
-      }
-    } catch(e) {}
-    return null;
+      const raw = localStorage.getItem('sgo_usuario');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
   }
 
-  document.getElementById('btnExtrairCoords').onclick = () => {
-    const url = document.getElementById('po_maps_url').value.trim();
-    if (!url) {
-      alert('Cole primeiro o link do Google Maps.');
-      return;
-    }
-
-    const coords = extrairCoordsDeMapsUrl(url);
-    if (!coords) {
-      alert('Não consegui extrair latitude/longitude desse link. Tente abrir no navegador e copiar um link completo.');
-      return;
-    }
-
-    document.getElementById('po_lat').value = coords.lat;
-    document.getElementById('po_lng').value = coords.lng;
-
-    alert('Coordenadas extraídas do link. Confira Lat/Lng antes de salvar o posto.');
-  };
-
-  document.getElementById('btnAddPosto').onclick = () => {
-    const nome = document.getElementById('po_nome').value.trim();
-    const lat  = document.getElementById('po_lat').value.trim();
-    const lng  = document.getElementById('po_lng').value.trim();
-    const raio = document.getElementById('po_raio').value.trim();
-
-    if (!nome || !lat || !lng || !raio) {
-      alert('Preencha nome, latitude, longitude e raio.');
-      return;
-    }
-
-    const url = criarLinkMaps(lat, lng);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${nome}</td>
-      <td data-lat="${lat}" data-lng="${lng}">${lat}, ${lng}</td>
-      <td>${raio}</td>
-      <td>
-        <a class="map-link" href="${url}" target="_blank" rel="noopener noreferrer">
-          Ver no Maps
-        </a>
-      </td>
-      <td><button class="secondary btn-small btn-edit-posto">Editar</button></td>
-    `;
-    gTabelaPostos.appendChild(tr);
-
-    document.getElementById('po_nome').value = '';
-    document.getElementById('po_lat').value  = '';
-    document.getElementById('po_lng').value  = '';
-    document.getElementById('po_raio').value = '';
-    document.getElementById('po_maps_url').value = '';
-
-    alert('Posto adicionado (MVP: apenas na interface, depois integraremos com o backend).');
-  };
-
-  gTabelaOperadores.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('btn-edit-operador')) return;
-
-    const btn = e.target;
-    const tr = btn.closest('tr');
-    const nomeTd = tr.children[0];
-    const matTd  = tr.children[1];
-    const sitTd  = tr.children[2];
-
-    if (btn.dataset.mode !== 'edit') {
-      const nomeAtual = nomeTd.textContent.trim();
-      const matAtual  = matTd.textContent.trim();
-      const sitAtual  = sitTd.textContent.includes('Inativo') ? 'Inativo' : 'Ativo';
-
-      nomeTd.innerHTML = `<input value="${nomeAtual}">`;
-      matTd.innerHTML  = `<input value="${matAtual}">`;
-      sitTd.innerHTML  = `
-        <select>
-          <option value="Ativo"${sitAtual === 'Ativo' ? ' selected' : ''}>Ativo</option>
-          <option value="Inativo"${sitAtual === 'Inativo' ? ' selected' : ''}>Inativo</option>
-        </select>
-      `;
-
-      btn.textContent = 'Salvar';
-      btn.dataset.mode = 'edit';
+  const usuario = carregarUsuario();
+  if (!usuario) {
+    window.location.href = 'index.html';
+  } else {
+    const roles = usuario.roles || [];
+    if (!roles.includes('GESTOR')) {
+      alert('Este usuário não possui acesso ao painel de gestor.');
+      window.location.href = 'index.html';
     } else {
-      const novoNome = nomeTd.querySelector('input').value.trim();
-      const novaMat  = matTd.querySelector('input').value.trim();
-      const novaSit  = sitTd.querySelector('select').value;
+      const ident = usuario.email || usuario.username || usuario.matricula || '';
+      const info = document.getElementById('infoGestor');
+      info.textContent = `${usuario.nome} (${ident}) – ID ${usuario.id}`;
+      document.getElementById('textoRoles').textContent = 'Perfis: ' + roles.join(', ');
+      document.getElementById('subtitleGestor').textContent =
+        `Gestor logado – ${usuario.nome}`;
+    }
+  }
 
-      if (!novoNome || !novaMat) {
-        alert('Nome e matrícula são obrigatórios.');
-        return;
-      }
-
-      nomeTd.textContent = novoNome;
-      matTd.textContent  = novaMat;
-      sitTd.innerHTML    = `<span class="badge">${novaSit}</span>`;
-
-      btn.textContent = 'Editar';
-      btn.dataset.mode = '';
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      window.location.href = 'index.html';
     }
   });
-
-  gTabelaPostos.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('btn-edit-posto')) return;
-
-    const btn = e.target;
-    const tr = btn.closest('tr');
-    const nomeTd = tr.children[0];
-    const coordTd = tr.children[1];
-    const raioTd  = tr.children[2];
-    const mapaTd  = tr.children[3];
-
-    if (btn.dataset.mode !== 'edit') {
-      const nomeAtual = nomeTd.textContent.trim();
-      const latAtual  = coordTd.dataset.lat || coordTd.textContent.split(',')[0].trim();
-      const lngAtual  = coordTd.dataset.lng || coordTd.textContent.split(',')[1].trim();
-      const raioAtual = raioTd.textContent.trim();
-
-      nomeTd.innerHTML = `<input value="${nomeAtual}">`;
-      coordTd.innerHTML = `
-        <input style="margin-bottom:4px" placeholder="Latitude" value="${latAtual}">
-        <input placeholder="Longitude" value="${lngAtual}">
-      `;
-      raioTd.innerHTML = `<input value="${raioAtual}">`;
-      mapaTd.innerHTML = `<span class="small">Atualize lat/lng e salve para recriar o link.</span>`;
-
-      btn.textContent = 'Salvar';
-      btn.dataset.mode = 'edit';
-    } else {
-      const novoNome = nomeTd.querySelector('input').value.trim();
-      const inputsCoord = coordTd.querySelectorAll('input');
-      const novaLat  = inputsCoord[0].value.trim();
-      const novaLng  = inputsCoord[1].value.trim();
-      const novoRaio = raioTd.querySelector('input').value.trim();
-
-      if (!novoNome || !novaLat || !novaLng || !novoRaio) {
-        alert('Nome, lat, lng e raio são obrigatórios.');
-        return;
-      }
-
-      nomeTd.textContent = novoNome;
-      coordTd.textContent = `${novaLat}, ${novaLng}`;
-      coordTd.dataset.lat = novaLat;
-      coordTd.dataset.lng = novaLng;
-      raioTd.textContent  = novoRaio;
-
-      const url = criarLinkMaps(novaLat, novaLng);
-      mapaTd.innerHTML = `
-        <a class="map-link" href="${url}" target="_blank" rel="noopener noreferrer">
-          Ver no Maps
-        </a>
-      `;
-
-      btn.textContent = 'Editar';
-      btn.dataset.mode = '';
-    }
-  });
-
-  document.getElementById('btnAddDesignacao').onclick = () => {
-    const op   = document.getElementById('desig_operador').value;
-    const posto  = document.getElementById('desig_posto').value;
-    const escala = document.getElementById('desig_escala').value.trim();
-
-    if (!op || !posto || !escala) {
-      desigMsg.textContent = 'Selecione operador, posto e informe a escala.';
-      return;
-    }
-
-    const opText = document.getElementById('desig_operador')
-      .options[document.getElementById('desig_operador').selectedIndex].text;
-    const postoText = document.getElementById('desig_posto')
-      .options[document.getElementById('desig_posto').selectedIndex].text;
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${opText}</td>
-      <td>${postoText}</td>
-      <td>${escala}</td>
-    `;
-    gTabelaDesignacoes.appendChild(tr);
-
-    const mensagem = `
-Operador: ${opText}
-Posto designado: ${postoText}
-Escala: ${escala}
-
-Acesse o app de ponto do operador em:
-${window.location.origin}/sgo_mvp/
-    `.trim();
-
-    desigMsg.textContent = 'Designação criada. Mensagem sugerida foi copiada para a área de transferência (quando suportado).';
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(mensagem).catch(() => {});
-    }
-
-    document.getElementById('desig_escala').value = '';
-  };
 </script>
 </body>
 </html>
