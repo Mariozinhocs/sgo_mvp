@@ -6,6 +6,10 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Operador</title>
 
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" href="icon-512.png" />
+
   <style>
     :root {
       --bg-body: #0f172a;
@@ -126,8 +130,8 @@
     }
 
     button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      opacity:0.6;
+      cursor:not-allowed;
     }
 
     .status-pill {
@@ -424,13 +428,32 @@
       background:transparent;
       color:var(--text-main);
     }
+
+    .divider {
+      height:1px;
+      background:rgba(31,41,55,0.9);
+      margin:8px 0 10px;
+    }
+
+    .feedback {
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .feedback.ok {
+      color:#bbf7d0;
+    }
+
+    .feedback.err {
+      color:#fecaca;
+    }
   </style>
 </head>
 <body>
 <header>
   <div class="header-left">
     <h1>SGO – Operador</h1>
-    <div class="subtitle">Perfil, ponto, escala e comunicação</div>
+    <div class="subtitle" id="subtitleOperador">Perfil, ponto, escala e comunicação</div>
   </div>
   <button class="btn-exit" type="button" id="btnSair">
     <span>⏏</span>
@@ -450,7 +473,7 @@
   <section id="tab-perfil" class="tab-panel active">
     <section class="card">
       <h2>Perfil do operador</h2>
-      <p class="small">Confira seus dados cadastrais e a foto oficial utilizada para identificação.</p>
+      <p class="small">Confira seus dados cadastrais, foto e altere sua senha de acesso.</p>
 
       <div class="perfil-header">
         <div class="perfil-foto" id="perfilFotoPreview">
@@ -467,6 +490,14 @@
       </div>
 
       <div class="perfil-info-grid">
+        <div class="perfil-info-item">
+          <strong>Matrícula</strong>
+          <span id="perfilMatriculaNum">00000</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Usuário</strong>
+          <span id="perfilUsername">nome.sobrenome</span>
+        </div>
         <div class="perfil-info-item">
           <strong>Documento</strong>
           <span id="perfilDocumento">000.000.000-00</span>
@@ -494,6 +525,41 @@
         <p class="small">
           *No MVP, a foto é trocada apenas localmente neste dispositivo. Na integração futura, o envio será feito ao servidor.
         </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <h2 style="font-size:15px;margin-bottom:4px;">Alterar senha</h2>
+        <p class="small">
+          Por segurança, altere sua senha periodicamente. A senha inicial é fornecida pelo gestor.
+        </p>
+
+        <div style="margin-top:6px;">
+          <div class="label">Senha atual</div>
+          <input id="senhaAtual" type="password" placeholder="Digite sua senha atual" autocomplete="current-password" />
+        </div>
+
+        <div style="margin-top:6px;">
+          <div class="label">Nova senha</div>
+          <input id="senhaNova" type="password" placeholder="Nova senha" autocomplete="new-password" />
+          <p class="small">
+            Mínimo de 8 caracteres, com letras e números. A política exata será validada pelo servidor. [web:223][web:224][web:225][web:226]
+          </p>
+        </div>
+
+        <div style="margin-top:6px;">
+          <div class="label">Confirmar nova senha</div>
+          <input id="senhaNovaConfirma" type="password" placeholder="Repita a nova senha" autocomplete="new-password" />
+        </div>
+
+        <div class="row" style="margin-top:8px;justify-content:flex-end">
+          <button id="btnAlterarSenha" class="primary" type="button">
+            Alterar senha
+          </button>
+        </div>
+
+        <p id="feedbackSenha" class="feedback"></p>
       </div>
     </section>
   </section>
@@ -583,7 +649,6 @@
           </tr>
         </thead>
         <tbody id="escalaTabela">
-          <!-- Exemplo fixo para o MVP; depois virá de JSON do gestor -->
           <tr data-id="1">
             <td class="escala-dia">01</td>
             <td class="escala-hora">08:00–17:00</td>
@@ -641,9 +706,7 @@
         Use este espaço para enviar mensagens, arquivos, documentos ou fotos ao seu gestor (como justificativas, atestados, registros de ocorrência).
       </p>
 
-      <div class="msg-list" id="msgLista">
-        <!-- Mensagens locais (MVP) -->
-      </div>
+      <div class="msg-list" id="msgLista"></div>
 
       <div class="msg-form">
         <div class="label">Mensagem</div>
@@ -654,7 +717,6 @@
           <input id="msgArquivo" class="file-input" type="file"
                  multiple
                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
-          <!-- accept restringe os tipos permitidos (imagens, PDFs, docs) [web:162][web:164][web:166] -->
         </div>
 
         <div class="row" style="margin-top:8px;justify-content:flex-end">
@@ -670,7 +732,7 @@
 </main>
 
 <script>
-  // Abas principais [web:158][web:160][web:165]
+  // Abas
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -684,13 +746,14 @@
     });
   });
 
-  // Botão Sair – no MVP, apenas limpa storage local e volta a uma "tela limpa"
+  // Botão Sair – limpa sessão local e volta para index
   document.getElementById('btnSair').addEventListener('click', () => {
-    if (confirm('Deseja realmente sair? Os dados locais de sessão poderão ser limpos.')) {
-      // Aqui você pode redirecionar para uma tela de login ou página inicial
-      // window.location.href = 'login_operador.html';
-      localStorage.removeItem('sgo_operador_escala_checks');
-      alert('Sessão encerrada (MVP). Em produção, redirecionar para tela de login.');
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      // Também podemos limpar os checks locais, se você quiser:
+      // localStorage.removeItem('sgo_operador_escala_checks');
+      window.location.href = 'index.html';
     }
   });
 
@@ -705,22 +768,57 @@
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
 
-  // Dados de perfil mock – depois podem vir do backend
-  const perfil = {
-    nome: 'Ana Souza',
-    matricula: '00123',
-    documento: '123.456.789-00',
-    telefone: '(92) 99999-0000',
-    email: 'ana.souza@empresa.com',
-    postoPrincipal: 'UBS Centro',
-    situacao: 'Ativo'
-  };
-  document.getElementById('perfilNome').textContent = perfil.nome;
-  document.getElementById('perfilMatricula').textContent = 'Matrícula ' + perfil.matricula;
-  document.getElementById('perfilDocumento').textContent = perfil.documento;
-  document.getElementById('perfilTelefone').textContent = perfil.telefone;
-  document.getElementById('perfilEmail').textContent = perfil.email;
-  document.getElementById('perfilPostoPrincipal').textContent = perfil.postoPrincipal;
+  // Carregar dados do usuário autenticado (vindos do login em index.html)
+  function carregarUsuario() {
+    try {
+      const raw = localStorage.getItem('sgo_usuario');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const usuario = carregarUsuario();
+  if (!usuario) {
+    // Se alguém acessou operador.html sem login, redireciona
+    window.location.href = 'index.html';
+  } else {
+    const nome = usuario.nome || 'Operador';
+    const matricula = usuario.matricula || '00000';
+    const username = usuario.username || 'nome.sobrenome';
+    const doc = usuario.documento || '000.000.000-00';
+    const tel = usuario.telefone || '(00) 00000-0000';
+    const email = usuario.email || 'operador@empresa.com';
+    const posto = usuario.postoPrincipal || 'UBS Centro';
+    const situacao = usuario.situacao || 'Ativo';
+
+    document.getElementById('perfilNome').textContent = nome;
+    document.getElementById('perfilMatricula').textContent = 'Matrícula ' + matricula;
+    document.getElementById('perfilMatriculaNum').textContent = matricula;
+    document.getElementById('perfilUsername').textContent = username;
+    document.getElementById('perfilDocumento').textContent = doc;
+    document.getElementById('perfilTelefone').textContent = tel;
+    document.getElementById('perfilEmail').textContent = email;
+    document.getElementById('perfilPostoPrincipal').textContent = posto;
+    document.getElementById('subtitleOperador').textContent =
+      `Perfil, ponto e escala – ${nome}`;
+
+    const situacaoChip = document.getElementById('perfilSituacaoChip');
+    situacaoChip.innerHTML = `
+      <span class="dot${situacao.toLowerCase() === 'inativo' ? ' dot-red' : ''}"></span>
+      ${situacao}
+    `;
+
+    // Poderíamos carregar uma URL de foto oficial de usuario.fotoUrl, se existir.
+    if (usuario.fotoUrl) {
+      const img = document.createElement('img');
+      img.src = usuario.fotoUrl;
+      const preview = document.getElementById('perfilFotoPreview');
+      preview.innerHTML = '';
+      preview.appendChild(img);
+    }
+  }
 
   // Foto oficial local (preview)
   const perfilFotoInput = document.getElementById('perfilFotoInput');
@@ -1034,6 +1132,80 @@
 
   renderMensagens();
   renderHistorico();
+
+  // Alteração de senha – chamada de API
+  const btnAlterarSenha = document.getElementById('btnAlterarSenha');
+  const feedbackSenha = document.getElementById('feedbackSenha');
+
+  const API_CHANGE_PWD_URL = '/api/operador/alterar-senha'; // ajustar na integração real
+
+  btnAlterarSenha.addEventListener('click', async () => {
+    feedbackSenha.textContent = '';
+    feedbackSenha.className = 'feedback';
+
+    const senhaAtual = document.getElementById('senhaAtual').value;
+    const senhaNova  = document.getElementById('senhaNova').value;
+    const senhaConf  = document.getElementById('senhaNovaConfirma').value;
+
+    if (!senhaAtual || !senhaNova || !senhaConf) {
+      feedbackSenha.textContent = 'Preencha todos os campos de senha.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+
+    if (senhaNova !== senhaConf) {
+      feedbackSenha.textContent = 'A nova senha e a confirmação não conferem.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+
+    if (senhaNova.length < 8) {
+      feedbackSenha.textContent = 'A nova senha deve ter pelo menos 8 caracteres.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+
+    btnAlterarSenha.disabled = true;
+    btnAlterarSenha.textContent = 'Alterando...';
+
+    try {
+      const token = localStorage.getItem('sgo_auth_token') || '';
+
+      const resp = await fetch(API_CHANGE_PWD_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? 'Bearer ' + token : ''
+        },
+        body: JSON.stringify({
+          senhaAtual,
+          senhaNova
+        })
+      });
+
+      if (!resp.ok) {
+        feedbackSenha.textContent = 'Não foi possível alterar a senha. Confirme a senha atual e tente novamente.';
+        feedbackSenha.classList.add('err');
+        btnAlterarSenha.disabled = false;
+        btnAlterarSenha.textContent = 'Alterar senha';
+        return;
+      }
+
+      feedbackSenha.textContent = 'Senha alterada com sucesso.';
+      feedbackSenha.classList.add('ok');
+
+      document.getElementById('senhaAtual').value = '';
+      document.getElementById('senhaNova').value = '';
+      document.getElementById('senhaNovaConfirma').value = '';
+    } catch (e) {
+      console.error(e);
+      feedbackSenha.textContent = 'Erro de comunicação ao tentar alterar a senha.';
+      feedbackSenha.classList.add('err');
+    } finally {
+      btnAlterarSenha.disabled = false;
+      btnAlterarSenha.textContent = 'Alterar senha';
+    }
+  });
 </script>
 </body>
 </html>
