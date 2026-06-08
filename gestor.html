@@ -11,63 +11,72 @@
 
   <style>
     :root {
-      --bg-body: #f3f4f6;
-      --bg-card: #ffffff;
-      --text-main: #111827;
-      --text-secondary: #6b7280;
-      --primary: #22c55e;
-      --primary-soft: rgba(34,197,94,0.12);
-      --border-subtle: #e5e7eb;
-      --danger: #ef4444;
-    }
-
-    body.theme-dark {
-      --bg-body: #020826;
-      --bg-card: #050b35;
-      --text-main: #f9fafb;
+      --bg-body: #0f172a;
+      --bg-card: #020617;
+      --text-main: #e5e7eb;
       --text-secondary: #9ca3af;
       --primary: #22c55e;
-      --primary-soft: rgba(34,197,94,0.16);
-      --border-subtle: #1f2937;
+      --primary-soft: rgba(34,197,94,0.12);
       --danger: #ef4444;
+      --danger-soft: rgba(248,113,113,0.12);
+      --border-subtle: #1f2937;
+      --info-soft: rgba(59,130,246,0.14);
     }
 
     * { box-sizing: border-box; }
 
     body {
-      margin:0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height:100vh;
-      background: radial-gradient(circle at top, #cbd5f5, #020617 58%);
-      color:var(--text-main);
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    body.theme-dark {
+      margin: 0;
+      min-height: 100vh;
       background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      color: var(--text-main);
     }
 
     header {
-      padding:14px 16px 8px;
+      padding: 14px 14px 6px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
     }
 
-    h1 {
-      margin:0;
-      font-size:20px;
-    }
-
-    .subtitle {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
     .header-left {
       display:flex;
       flex-direction:column;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header .subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
     }
 
     .btn-exit {
@@ -84,176 +93,38 @@
       white-space:nowrap;
     }
 
-    .btn-exit span { font-size:15px; }
-
-    .theme-toggle {
-      margin-left:8px;
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.04);
-      color: var(--text-secondary);
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    body.theme-dark .theme-toggle {
-      background: rgba(15,23,42,0.9);
-      color:#e5e7eb;
-    }
-
-    .theme-toggle span.icon {
+    .btn-exit span {
       font-size:15px;
     }
 
-    .header-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
     main {
-      max-width:1024px;
-      margin:0 auto;
-      padding:4px 16px 24px;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns:1fr;
-      gap:14px;
-    }
-
-    @media (min-width: 900px) {
-      .grid {
-        grid-template-columns: 1.4fr 1fr;
-      }
-    }
-
-    .card {
-      background:var(--bg-card);
-      border-radius:18px;
-      padding:14px 16px;
-      border:1px solid var(--border-subtle);
-      box-shadow:0 18px 40px rgba(15,23,42,0.25);
-      margin-bottom:4px;
-    }
-
-    h2 {
-      margin:0 0 6px;
-      font-size:17px;
+      padding: 8px 14px 24px;
+      max-width: 960px;
+      margin: 0 auto 32px;
     }
 
     .small {
-      font-size:12px;
-      color:var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-secondary);
     }
 
-    .chip {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 8px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.14);
-      font-size:11px;
-      margin-top:4px;
+    .card {
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 12px 14px 14px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      margin-bottom: 14px;
     }
 
-    .dot {
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:#34d399;
-      display:inline-block;
+    h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
     }
 
-    .dot-red {
-      background:#f97373;
-    }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-      margin-top:6px;
-    }
-
-    th, td {
-      padding:6px 4px;
-      border-bottom:1px solid rgba(31,41,55,0.15);
-      text-align:left;
-      vertical-align:middle;
-    }
-
-    body.theme-dark th, body.theme-dark td {
-      border-bottom:1px solid rgba(31,41,55,0.9);
-    }
-
-    th {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    .kpi-row {
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:6px;
-    }
-
-    .kpi-card {
-      flex:1;
-      min-width:120px;
-      border-radius:14px;
-      border:1px solid var(--border-subtle);
-      padding:8px 10px;
-      background:rgba(15,23,42,0.02);
-    }
-
-    body.theme-dark .kpi-card {
-      background:rgba(15,23,42,0.75);
-    }
-
-    .kpi-label {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .kpi-value {
-      font-size:18px;
-      font-weight:600;
-    }
-
-    .kpi-sub {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .pill {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:3px 7px;
-      border-radius:999px;
-      background:var(--primary-soft);
-      color:#166534;
-      font-size:11px;
-    }
-
-    body.theme-dark .pill {
-      color:#bbf7d0;
-    }
-
-    .row {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
     }
 
     button {
@@ -266,7 +137,6 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size:13px;
     }
 
     button.primary {
@@ -281,38 +151,196 @@
       border: 1px solid rgba(148,163,184,0.4);
     }
 
+    button.ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px dashed rgba(148,163,184,0.5);
+    }
+
     button:disabled {
-      opacity:.6;
+      opacity:0.6;
       cursor:not-allowed;
     }
 
-    select, input, textarea {
-      width:100%;
-      padding: 7px 9px;
-      border-radius: 10px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:#f9fafb;
-      color:var(--text-main);
-      font-size:13px;
-      resize:vertical;
+    .grid-3 {
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:8px;
     }
 
-    body.theme-dark select,
-    body.theme-dark input,
-    body.theme-dark textarea {
-      background:#020617;
-      color:var(--text-main);
-      border-color:rgba(148,163,184,0.6);
+    @media (max-width: 768px) {
+      .grid-3 {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
     }
 
-    input::placeholder, textarea::placeholder {
+    @media (max-width: 520px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-card {
+      border-radius: 14px;
+      padding: 10px 10px;
+      background: rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.4);
+    }
+
+    .summary-label {
+      font-size:11px;
       color:var(--text-secondary);
+      text-transform:uppercase;
+      letter-spacing:0.06em;
     }
 
-    .label {
+    .summary-value {
+      margin-top:2px;
+      font-size:20px;
+      font-weight:600;
+    }
+
+    .summary-sub {
+      font-size:11px;
+      color:var(--text-secondary);
+      margin-top:2px;
+    }
+
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:11px;
+    }
+
+    .pill-ok {
+      background:var(--primary-soft);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,0.5);
+    }
+
+    .pill-warn {
+      background:var(--danger-soft);
+      color:#fecaca;
+      border:1px solid rgba(248,113,113,0.5);
+    }
+
+    .pill-info {
+      background:var(--info-soft);
+      color:#bfdbfe;
+      border:1px solid rgba(59,130,246,0.4);
+    }
+
+    .dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#22c55e;
+      display:inline-block;
+    }
+
+    .dot-red {
+      background:#f97373;
+    }
+
+    .dot-blue {
+      background:#3b82f6;
+    }
+
+    .row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .row-between {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .divider {
+      height:1px;
+      background:rgba(31,41,55,0.9);
+      margin:8px 0;
+    }
+
+    /* Tabelas */
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      margin-top:6px;
+    }
+
+    th, td {
+      padding:6px 4px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+    }
+
+    th {
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .tag {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 7px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(148,163,184,0.16);
+      border:1px solid rgba(148,163,184,0.45);
+    }
+
+    .tag-small {
+      font-size:10px;
+      padding:1px 6px;
+    }
+
+    .tag-green {
+      background:var(--primary-soft);
+      border-color:rgba(34,197,94,0.5);
+      color:#bbf7d0;
+    }
+
+    .tag-red {
+      background:var(--danger-soft);
+      border-color:rgba(248,113,113,0.5);
+      color:#fecaca;
+    }
+
+    .tag-blue {
+      background:var(--info-soft);
+      border-color:rgba(59,130,246,0.4);
+      color:#bfdbfe;
+    }
+
+    /* Listas scrolláveis */
+    .scroll-list {
+      max-height:240px;
+      overflow-y:auto;
+      margin-top:4px;
+    }
+
+    .occ-item {
+      padding:6px 8px;
+      border-radius:10px;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.4);
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .occ-meta {
+      font-size:11px;
       color:var(--text-secondary);
       margin-bottom:2px;
     }
@@ -323,40 +351,88 @@
       gap:4px;
       padding:3px 8px;
       border-radius:999px;
-      background:rgba(148,163,184,0.16);
+      background:rgba(148,163,184,0.18);
       font-size:11px;
       margin-right:4px;
     }
 
-    .divider {
-      height:1px;
-      background:rgba(31,41,55,0.15);
-      margin:8px 0;
-    }
-
-    body.theme-dark .divider {
-      background:rgba(31,41,55,0.9);
-    }
-
-    .feedback {
+    .label {
       font-size:11px;
-      margin-top:4px;
+      color:var(--text-secondary);
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      margin-bottom:2px;
     }
 
-    .feedback.ok { color:#16a34a; }
-    .feedback.err { color:#dc2626; }
+    input, select {
+      width:100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#020617;
+      color:var(--text-main);
+      font-size:12px;
+    }
+
+    input::placeholder {
+      color:var(--text-secondary);
+    }
+
+    /* Aba navegação */
+    .tabs-header {
+      display:flex;
+      gap:6px;
+      margin: 4px 14px 0;
+      max-width:960px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    .tab-button {
+      flex:1;
+      text-align:center;
+      padding:8px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .tab-panel {
+      display:none;
+    }
+
+    .tab-panel.active {
+      display:block;
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+      .row-between {
+        flex-direction:column;
+      }
+    }
   </style>
 </head>
 <body>
 <header>
   <div class="header-left">
     <h1>SGO – Gestor</h1>
-    <div class="subtitle" id="subtitleGestor">Painel de gestão operacional</div>
+    <div class="subtitle" id="subtitleGestor">Painel de supervisão</div>
   </div>
   <div class="header-right">
     <button id="btnTheme" class="theme-toggle" type="button">
-      <span class="icon" id="themeIcon">🌙</span>
-      <span id="themeLabel">Dark</span>
+      <span class="icon" id="themeIcon">☀️</span>
+      <span id="themeLabel">Light</span>
     </button>
     <button class="btn-exit" type="button" id="btnSair">
       <span>⏏</span>
@@ -365,183 +441,188 @@
   </div>
 </header>
 
+<div class="tabs-header">
+  <button class="tab-button active" data-tab="tab-visao">Visão geral</button>
+  <button class="tab-button" data-tab="tab-postos">Postos</button>
+  <button class="tab-button" data-tab="tab-equipe">Equipe</button>
+  <button class="tab-button" data-tab="tab-ocorr">Ocorrências</button>
+</div>
+
 <main>
-  <div class="grid">
-    <!-- Coluna esquerda: KPIs + mapa de postos -->
-    <div>
-      <section class="card">
-        <h2>Resumo da operação</h2>
-        <p class="small">Indicadores gerais das equipes em campo (dados mock para MVP).</p>
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-label">Operadores ativos</div>
-            <div class="kpi-value" id="kpiAtivos">12</div>
-            <div class="kpi-sub">logados nas últimas 24h</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Check-ins hoje</div>
-            <div class="kpi-value" id="kpiCheckins">35</div>
-            <div class="kpi-sub">em todos os postos</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Ocorrências abertas</div>
-            <div class="kpi-value" id="kpiOcorrencias">4</div>
-            <div class="kpi-sub">aguardando retorno</div>
-          </div>
+  <!-- VISÃO GERAL -->
+  <section id="tab-visao" class="tab-panel active">
+    <section class="card">
+      <div class="row-between">
+        <div>
+          <h2>Resumo da operação</h2>
+          <p class="small">
+            Visão em tempo quase real dos postos, operadores e registros de ponto (dados simulados neste MVP).
+          </p>
+          <div id="infoUsuarioGestor" class="small"></div>
         </div>
-        <div class="chip">
-          <span class="dot"></span>
-          Atualizado localmente · Mock admin.admin
+        <div style="text-align:right">
+          <div class="label">Data / hora</div>
+          <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
+          <div id="dataAtual" class="small">--/--/----</div>
         </div>
-      </section>
+      </div>
 
-      <section class="card">
-        <h2>Postos monitorados</h2>
-        <p class="small">Lista dos postos principais com status geral de presença.</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Posto</th>
-              <th>Operadores</th>
-              <th>Presentes</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaPostos">
-            <tr>
-              <td>UBS Centro</td>
-              <td>5</td>
-              <td>5</td>
-              <td>
-                <span class="pill">
-                  <span class="dot"></span>
-                  Completo
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td>Escola Zona Leste</td>
-              <td>4</td>
-              <td>3</td>
-              <td>
-                <span class="pill">
-                  <span class="dot dot-red"></span>
-                  1 falta
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td>Base Operacional Norte</td>
-              <td>3</td>
-              <td>3</td>
-              <td>
-                <span class="pill">
-                  <span class="dot"></span>
-                  Completo
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </div>
-
-    <!-- Coluna direita: perfil gestor + designações + mensagens -->
-    <div>
-      <section class="card">
-        <h2>Perfil do gestor</h2>
-        <p class="small">Informações básicas do usuário autenticado com papel de gestor.</p>
-        <div class="label">Usuário logado</div>
-        <p class="small" id="infoGestor">Carregando...</p>
-        <div id="rolesBadges"></div>
-      </section>
-
-      <section class="card">
-        <h2>Designar operador a posto</h2>
-        <p class="small">Simulação local de designação para testar o fluxo. Na versão real, isso grava no backend.</p>
-
-        <div class="label">Operador</div>
-        <select id="selOperador">
-          <option value="">Selecione um operador</option>
-          <option value="00001|Admin Demo">00001 – Admin Demo (mock)</option>
-          <option value="00002|Maria Silva">00002 – Maria Silva</option>
-          <option value="00003|João Souza">00003 – João Souza</option>
-        </select>
-
-        <div class="label" style="margin-top:6px">Posto</div>
-        <select id="selPosto">
-          <option value="">Selecione um posto</option>
-          <option value="UBS Centro">UBS Centro</option>
-          <option value="Escola Zona Leste">Escola Zona Leste</option>
-          <option value="Base Operacional Norte">Base Operacional Norte</option>
-        </select>
-
-        <div class="label" style="margin-top:6px">Turno</div>
-        <select id="selTurno">
-          <option value="">Selecione um turno</option>
-          <option value="08:00–17:00">08:00–17:00</option>
-          <option value="07:00–13:00">07:00–13:00</option>
-          <option value="13:00–19:00">13:00–19:00</option>
-        </select>
-
-        <div class="row" style="margin-top:8px;justify-content:flex-end">
-          <button id="btnDesignar" class="primary" type="button">Designar</button>
+      <div class="grid-3" style="margin-top:10px">
+        <div class="summary-card">
+          <div class="summary-label">Postos</div>
+          <div class="summary-value" id="cardPostosTotal">4</div>
+          <div class="summary-sub" id="cardPostosDetalhe">0 ativos · 0 com alerta</div>
         </div>
+        <div class="summary-card">
+          <div class="summary-label">Operadores</div>
+          <div class="summary-value" id="cardOpsTotal">0</div>
+          <div class="summary-sub" id="cardOpsDetalhe">0 em posto · 0 ausentes</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Registros hoje</div>
+          <div class="summary-value" id="cardRegistrosHoje">0</div>
+          <div class="summary-sub" id="cardRegistrosDetalhe">check-in / check-out (mock)</div>
+        </div>
+      </div>
 
-        <p id="feedbackDesignacao" class="feedback"></p>
+      <div class="divider"></div>
 
-        <div class="divider"></div>
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="row" style="flex-wrap:wrap">
+          <span class="pill pill-ok">
+            <span class="dot"></span>
+            Dentro de posto
+          </span>
+          <span class="pill pill-warn">
+            <span class="dot dot-red"></span>
+            Fora do posto / sem registro
+          </span>
+          <span class="pill pill-info">
+            <span class="dot dot-blue"></span>
+            Ocorrências pendentes
+          </span>
+        </div>
+        <button class="ghost" type="button" id="btnRecarregarMock">
+          Recarregar dados simulados
+        </button>
+      </div>
+    </section>
 
-        <div class="label">Últimas designações (MVP local)</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Operador</th>
-              <th>Posto</th>
-              <th>Turno</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaDesignacoes"></tbody>
-        </table>
-      </section>
+    <section class="card">
+      <h2>Últimos registros de ponto (mock)</h2>
+      <p class="small">
+        Lista de registros recentes de operadores. No MVP, os dados são gerados localmente apenas para demonstração.
+      </p>
 
-      <section class="card">
-        <h2>Mensagens de operadores</h2>
-        <p class="small">Nesta versão, a lista é apenas ilustrativa. Depois será ligada às mensagens enviadas pelo painel do operador.</p>
+      <div class="scroll-list" id="listaRegistros"></div>
+    </section>
+  </section>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Operador</th>
-              <th>Resumo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>08/06 07:45</td>
-              <td>00002 – Maria</td>
-              <td>Justificativa de atraso (trânsito)</td>
-            </tr>
-            <tr>
-              <td>08/06 10:10</td>
-              <td>00003 – João</td>
-              <td>Registro de ocorrência leve</td>
-            </tr>
-            <tr>
-              <td>07/06 18:05</td>
-              <td>00001 – Admin Demo</td>
-              <td>Envio de relatório de turno</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </div>
-  </div>
+  <!-- POSTOS -->
+  <section id="tab-postos" class="tab-panel">
+    <section class="card">
+      <div class="row-between">
+        <div>
+          <h2>Postos de serviço</h2>
+          <p class="small">
+            Acompanhe status dos postos, operadores previstos e se há registros recentes.
+          </p>
+        </div>
+        <button class="secondary" type="button" id="btnNovoPosto" disabled>
+          + Novo posto (futuro)
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Posto</th>
+            <th>Operadores</th>
+            <th>Situação</th>
+            <th>Último registro</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaPostos"></tbody>
+      </table>
+      <p class="small" style="margin-top:6px">
+        *Na integração real, estes dados virão da base com geolocalização e escala associada a cada posto.
+      </p>
+    </section>
+  </section>
+
+  <!-- EQUIPE -->
+  <section id="tab-equipe" class="tab-panel">
+    <section class="card">
+      <div class="row-between">
+        <div>
+          <h2>Equipe sob supervisão</h2>
+          <p class="small">
+            Lista de operadores, posto principal, situação e último movimento. Neste MVP os dados são simulados.
+          </p>
+        </div>
+        <button class="secondary" type="button" disabled>
+          Importar da base (futuro)
+        </button>
+      </div>
+
+      <div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:160px">
+          <div class="label">Filtrar por posto</div>
+          <select id="filtroPostoEquipe">
+            <option value="">Todos os postos</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:140px">
+          <div class="label">Filtrar por situação</div>
+          <select id="filtroSituacaoEquipe">
+            <option value="">Todas</option>
+            <option value="em_posto">Em posto</option>
+            <option value="ausente">Sem registro</option>
+            <option value="ocorrencia">Com ocorrência</option>
+          </select>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Operador</th>
+            <th>Posto principal</th>
+            <th>Situação</th>
+            <th>Último mov.</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaEquipe"></tbody>
+      </table>
+    </section>
+  </section>
+
+  <!-- OCORRÊNCIAS -->
+  <section id="tab-ocorr" class="tab-panel">
+    <section class="card">
+      <div class="row-between">
+        <div>
+          <h2>Ocorrências e mensagens</h2>
+          <p class="small">
+            Central simples para acompanhar mensagens enviadas pelos operadores (simuladas a partir de dados locais).
+          </p>
+        </div>
+        <button class="ghost" type="button" id="btnLimparOcorrencias">
+          Limpar lista local
+        </button>
+      </div>
+
+      <div class="scroll-list" id="listaOcorrencias"></div>
+
+      <p class="small" style="margin-top:6px">
+        *Na Fase 2, estas ocorrências virão diretamente dos envios da tela de operador, com anexos e status de tratativa.
+      </p>
+    </section>
+  </section>
 </main>
 
 <script>
-  // ---------- Tema compartilhado ----------
+  // ---------- Tema (mesmo esquema do index/operador) ----------
   const THEME_KEY = 'sgo_theme_login';
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
@@ -593,38 +674,42 @@
     }
   });
 
-  // ---------- Sessão / papel gestor ----------
+  // ---------- Abas ----------
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanels  = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // ---------- Usuário / sessão ----------
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   }
 
   const usuario = carregarUsuario();
   if (!usuario) {
     window.location.href = 'index.html';
   } else {
+    const nome = usuario.nome || 'Gestor';
+    const username = usuario.username || '';
     const roles = usuario.roles || [];
-    if (!roles.includes('GESTOR')) {
-      alert('Este usuário não possui acesso ao painel de gestor.');
-      window.location.href = 'index.html';
-    } else {
-      const ident = usuario.email || usuario.username || usuario.matricula || '';
-      const info = document.getElementById('infoGestor');
-      info.textContent = `${usuario.nome} (${ident}) – ID ${usuario.id || '-'} `;
-      document.getElementById('subtitleGestor').textContent =
-        `Gestor logado – ${usuario.nome}`;
-
-      const rolesBadges = document.getElementById('rolesBadges');
-      roles.forEach(r => {
-        const span = document.createElement('span');
-        span.className = 'badge-role';
-        span.textContent = r;
-        rolesBadges.appendChild(span);
-      });
-    }
+    document.getElementById('subtitleGestor').textContent =
+      `Gestor logado – ${nome}`;
+    document.getElementById('infoUsuarioGestor').textContent =
+      `Usuário: ${username || '—'} · Perfis: ${(roles || []).join(', ') || '—'}`;
   }
 
   document.getElementById('btnSair').addEventListener('click', () => {
@@ -635,53 +720,346 @@
     }
   });
 
-  // ---------- Designações (mock local) ----------
-  const selOperador = document.getElementById('selOperador');
-  const selPosto    = document.getElementById('selPosto');
-  const selTurno    = document.getElementById('selTurno');
-  const btnDesignar = document.getElementById('btnDesignar');
-  const tabelaDesignacoes = document.getElementById('tabelaDesignacoes');
-  const feedbackDesignacao = document.getElementById('feedbackDesignacao');
+  // ---------- Relógio ----------
+  function atualizarRelogio() {
+    const agora = new Date();
+    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const data = agora.toLocaleDateString('pt-BR');
+    document.getElementById('horaAtual').textContent = hora;
+    document.getElementById('dataAtual').textContent = data;
+  }
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
 
-  let designacoes = [];
+  // ---------- Dados simulados ----------
+  // Postos
+  const postosMock = [
+    {
+      id: 1,
+      nome: 'Centro de Cooperação da Cidade',
+      operadoresPrevistos: 3,
+      operadoresEmPosto: 2,
+      alerta: false,
+      ultimoRegistro: 'Hoje 07:58',
+    },
+    {
+      id: 2,
+      nome: 'UBS Centro',
+      operadoresPrevistos: 2,
+      operadoresEmPosto: 1,
+      alerta: true,   // falta 1 operador
+      ultimoRegistro: 'Hoje 08:10',
+    },
+    {
+      id: 3,
+      nome: 'Escola Zona Leste',
+      operadoresPrevistos: 1,
+      operadoresEmPosto: 0,
+      alerta: true,
+      ultimoRegistro: 'Ontem 17:05',
+    },
+    {
+      id: 4,
+      nome: 'Base Operacional Norte',
+      operadoresPrevistos: 2,
+      operadoresEmPosto: 2,
+      alerta: false,
+      ultimoRegistro: 'Hoje 07:50',
+    },
+  ];
 
-  function renderDesignacoes() {
-    tabelaDesignacoes.innerHTML = '';
-    designacoes.slice().reverse().forEach(d => {
+  // Equipe
+  const equipeMock = [
+    {
+      id: 1,
+      nome: 'Admin Demo',
+      username: 'admin.admin',
+      postoPrincipal: 'Centro de Cooperação da Cidade',
+      situacao: 'em_posto',
+      ultimoMov: 'Check-in 07:58',
+    },
+    {
+      id: 2,
+      nome: 'João Silva',
+      username: 'joao.silva',
+      postoPrincipal: 'UBS Centro',
+      situacao: 'em_posto',
+      ultimoMov: 'Check-in 08:10',
+    },
+    {
+      id: 3,
+      nome: 'Maria Souza',
+      username: 'maria.souza',
+      postoPrincipal: 'UBS Centro',
+      situacao: 'ausente',
+      ultimoMov: 'Sem registro hoje',
+    },
+    {
+      id: 4,
+      nome: 'Carlos Lima',
+      username: 'carlos.lima',
+      postoPrincipal: 'Escola Zona Leste',
+      situacao: 'ocorrencia',
+      ultimoMov: 'Mensagem às 07:30',
+    },
+    {
+      id: 5,
+      nome: 'Ana Pereira',
+      username: 'ana.pereira',
+      postoPrincipal: 'Base Operacional Norte',
+      situacao: 'em_posto',
+      ultimoMov: 'Check-in 07:50',
+    },
+    {
+      id: 6,
+      nome: 'Rafael Costa',
+      username: 'rafael.costa',
+      postoPrincipal: 'Base Operacional Norte',
+      situacao: 'em_posto',
+      ultimoMov: 'Check-in 07:51',
+    },
+  ];
+
+  // Registros de ponto (mock)
+  let registrosMock = [
+    { operador: 'Admin Demo', posto: 'Centro de Cooperação da Cidade', tipo: 'Check-in', hora: '07:58', dentroPosto: true },
+    { operador: 'João Silva', posto: 'UBS Centro', tipo: 'Check-in', hora: '08:10', dentroPosto: true },
+    { operador: 'Ana Pereira', posto: 'Base Operacional Norte', tipo: 'Check-in', hora: '07:50', dentroPosto: true },
+    { operador: 'Rafael Costa', posto: 'Base Operacional Norte', tipo: 'Check-in', hora: '07:51', dentroPosto: true },
+    { operador: 'Carlos Lima', posto: 'Escola Zona Leste', tipo: 'Ausência', hora: '—', dentroPosto: false },
+  ];
+
+  // Ocorrências (simplesmente derivadas da equipe + registros)
+  let ocorrenciasMock = [
+    {
+      id: 1,
+      operador: 'Carlos Lima',
+      posto: 'Escola Zona Leste',
+      tipo: 'Justificativa',
+      texto: 'Atraso por problema de transporte. Solicito avaliação.',
+      data: 'Hoje 07:30',
+      status: 'Pendente',
+    },
+    {
+      id: 2,
+      operador: 'Maria Souza',
+      posto: 'UBS Centro',
+      tipo: 'Ausência',
+      texto: 'Sem registro de entrada até 08:30.',
+      data: 'Hoje 08:30',
+      status: 'Em análise',
+    },
+  ];
+
+  // ---------- Preencher resumo ----------
+  function atualizarResumo() {
+    const totalPostos = postosMock.length;
+    const postosComAlerta = postosMock.filter(p => p.alerta).length;
+
+    const totalOps = equipeMock.length;
+    const emPosto  = equipeMock.filter(o => o.situacao === 'em_posto').length;
+    const ausentes = equipeMock.filter(o => o.situacao === 'ausente').length;
+
+    const registrosHoje = registrosMock.length;
+
+    document.getElementById('cardPostosTotal').textContent = totalPostos;
+    document.getElementById('cardPostosDetalhe').textContent =
+      `${totalPostos - postosComAlerta} ok · ${postosComAlerta} com alerta`;
+
+    document.getElementById('cardOpsTotal').textContent = totalOps;
+    document.getElementById('cardOpsDetalhe').textContent =
+      `${emPosto} em posto · ${ausentes} ausentes`;
+
+    document.getElementById('cardRegistrosHoje').textContent = registrosHoje;
+    document.getElementById('cardRegistrosDetalhe').textContent =
+      `${registrosHoje} registro(s) simulado(s) hoje`;
+  }
+
+  atualizarResumo();
+
+  // ---------- Tabela de postos ----------
+  const tbodyPostos = document.getElementById('tabelaPostos');
+
+  function renderPostos() {
+    tbodyPostos.innerHTML = '';
+    postosMock.forEach(p => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${d.operador}</td>
-        <td>${d.posto}</td>
-        <td>${d.turno}</td>
-      `;
-      tabelaDesignacoes.appendChild(tr);
+
+      const tdNome = document.createElement('td');
+      tdNome.textContent = p.nome;
+
+      const tdOps = document.createElement('td');
+      tdOps.textContent = `${p.operadoresEmPosto}/${p.operadoresPrevistos}`;
+
+      const tdSit = document.createElement('td');
+      const span = document.createElement('span');
+      span.className = 'tag tag-small ' + (p.alerta ? 'tag-red' : 'tag-green');
+      span.innerHTML = `<span class="dot ${p.alerta ? 'dot-red' : ''}"></span>${p.alerta ? 'Alerta' : 'Ok'}`;
+      tdSit.appendChild(span);
+
+      const tdUlt = document.createElement('td');
+      tdUlt.textContent = p.ultimoRegistro;
+
+      tr.appendChild(tdNome);
+      tr.appendChild(tdOps);
+      tr.appendChild(tdSit);
+      tr.appendChild(tdUlt);
+
+      tbodyPostos.appendChild(tr);
     });
   }
 
-  btnDesignar.addEventListener('click', () => {
-    feedbackDesignacao.textContent = '';
-    feedbackDesignacao.className = 'feedback';
+  renderPostos();
 
-    if (!selOperador.value || !selPosto.value || !selTurno.value) {
-      feedbackDesignacao.textContent = 'Selecione operador, posto e turno.';
-      feedbackDesignacao.classList.add('err');
+  // ---------- Registros de ponto ----------
+  const listaRegistros = document.getElementById('listaRegistros');
+
+  function renderRegistros() {
+    listaRegistros.innerHTML = '';
+    registrosMock.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'occ-item';
+
+      const meta = document.createElement('div');
+      meta.className = 'occ-meta';
+      meta.innerHTML =
+        `<span class="tag tag-small ${r.dentroPosto ? 'tag-green' : 'tag-red'}">
+          <span class="dot ${r.dentroPosto ? '' : 'dot-red'}"></span>
+          ${r.dentroPosto ? 'Dentro do posto' : 'Fora do posto'}
+        </span> · ${r.hora} · ${r.posto}`;
+
+      const text = document.createElement('div');
+      text.textContent = `${r.operador} – ${r.tipo}`;
+
+      div.appendChild(meta);
+      div.appendChild(text);
+      listaRegistros.appendChild(div);
+    });
+  }
+
+  renderRegistros();
+
+  // ---------- Equipe ----------
+  const tabelaEquipe = document.getElementById('tabelaEquipe');
+  const filtroPostoEquipe = document.getElementById('filtroPostoEquipe');
+  const filtroSituacaoEquipe = document.getElementById('filtroSituacaoEquipe');
+
+  // Popular filtro de posto
+  const postosEquipeUnicos = [...new Set(equipeMock.map(o => o.postoPrincipal))];
+  postosEquipeUnicos.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    filtroPostoEquipe.appendChild(opt);
+  });
+
+  function renderEquipe() {
+    const posto = filtroPostoEquipe.value;
+    const situ = filtroSituacaoEquipe.value;
+
+    tabelaEquipe.innerHTML = '';
+
+    equipeMock
+      .filter(o => !posto || o.postoPrincipal === posto)
+      .filter(o => !situ || o.situacao === situ)
+      .forEach(o => {
+        const tr = document.createElement('tr');
+
+        const tdOp = document.createElement('td');
+        tdOp.innerHTML = `<strong>${o.nome}</strong><br><span class="small">@${o.username}</span>`;
+
+        const tdPosto = document.createElement('td');
+        tdPosto.textContent = o.postoPrincipal;
+
+        const tdSit = document.createElement('td');
+        const span = document.createElement('span');
+        span.className = 'tag tag-small ' + (
+          o.situacao === 'em_posto' ? 'tag-green' :
+          o.situacao === 'ocorrencia' ? 'tag-blue' : 'tag-red'
+        );
+        let label = '—';
+        if (o.situacao === 'em_posto') label = 'Em posto';
+        else if (o.situacao === 'ausente') label = 'Sem registro';
+        else if (o.situacao === 'ocorrencia') label = 'Com ocorrência';
+        span.textContent = label;
+        tdSit.appendChild(span);
+
+        const tdUlt = document.createElement('td');
+        tdUlt.textContent = o.ultimoMov;
+
+        tr.appendChild(tdOp);
+        tr.appendChild(tdPosto);
+        tr.appendChild(tdSit);
+        tr.appendChild(tdUlt);
+
+        tabelaEquipe.appendChild(tr);
+      });
+  }
+
+  filtroPostoEquipe.addEventListener('change', renderEquipe);
+  filtroSituacaoEquipe.addEventListener('change', renderEquipe);
+
+  renderEquipe();
+
+  // ---------- Ocorrências ----------
+  const listaOcorrencias = document.getElementById('listaOcorrencias');
+
+  function renderOcorrencias() {
+    listaOcorrencias.innerHTML = '';
+    if (!ocorrenciasMock.length) {
+      const p = document.createElement('p');
+      p.className = 'small';
+      p.textContent = 'Nenhuma ocorrência simulada no momento.';
+      listaOcorrencias.appendChild(p);
       return;
     }
 
-    const [mat, nome] = selOperador.value.split('|');
-    designacoes.push({
-      operador: `${mat} – ${nome}`,
-      posto: selPosto.value,
-      turno: selTurno.value
+    ocorrenciasMock.forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'occ-item';
+
+      const meta = document.createElement('div');
+      meta.className = 'occ-meta';
+      const badge = document.createElement('span');
+      badge.className = 'tag tag-small ' +
+        (o.status === 'Pendente' ? 'tag-blue' : 'tag-green');
+      badge.textContent = o.status;
+
+      meta.appendChild(badge);
+      meta.insertAdjacentText('beforeend', ` · ${o.data} · ${o.posto} · ${o.operador}`);
+
+      const text = document.createElement('div');
+      text.textContent = `${o.tipo}: ${o.texto}`;
+
+      div.appendChild(meta);
+      div.appendChild(text);
+      listaOcorrencias.appendChild(div);
     });
+  }
 
-    renderDesignacoes();
+  renderOcorrencias();
 
-    feedbackDesignacao.textContent = 'Designação registrada localmente (MVP). Em produção, será enviada ao backend.';
-    feedbackDesignacao.classList.add('ok');
+  document.getElementById('btnLimparOcorrencias').addEventListener('click', () => {
+    if (!ocorrenciasMock.length) return;
+    if (confirm('Limpar ocorrências simuladas desta visualização?')) {
+      ocorrenciasMock = [];
+      renderOcorrencias();
+    }
   });
 
-  renderDesignacoes();
+  // ---------- Botão de recarregar mocks ----------
+  document.getElementById('btnRecarregarMock').addEventListener('click', () => {
+    // Aqui dá para colocar qualquer lógica simples de "shuffle" dos dados
+    registrosMock.push({
+      operador: 'Admin Demo',
+      posto: 'Centro de Cooperação da Cidade',
+      tipo: 'Check-out',
+      hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+      dentroPosto: true,
+    });
+    atualizarResumo();
+    renderRegistros();
+  });
 </script>
 </body>
 </html>
