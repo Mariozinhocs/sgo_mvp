@@ -11,12 +11,25 @@
 
   <style>
     :root {
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #6b7280;
+      --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.12);
+      --border-subtle: #e5e7eb;
+      --danger: #ef4444;
+    }
+
+    body.theme-dark {
       --bg-body: #020826;
       --bg-card: #050b35;
       --text-main: #f9fafb;
       --text-secondary: #9ca3af;
       --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.16);
       --border-subtle: #1f2937;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
@@ -25,12 +38,17 @@
       margin:0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height:100vh;
-      background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      background: radial-gradient(circle at top, #cbd5f5, #020617 58%);
       color:var(--text-main);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    body.theme-dark {
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
     }
 
     header {
-      padding:14px 16px;
+      padding:14px 16px 8px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -68,19 +86,60 @@
 
     .btn-exit span { font-size:15px; }
 
+    .theme-toggle {
+      margin-left:8px;
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.04);
+      color: var(--text-secondary);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    body.theme-dark .theme-toggle {
+      background: rgba(15,23,42,0.9);
+      color:#e5e7eb;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
     main {
-      max-width:900px;
+      max-width:1024px;
       margin:0 auto;
-      padding:8px 16px 24px;
+      padding:4px 16px 24px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1.4fr 1fr;
+      }
     }
 
     .card {
-      background:#050b35;
+      background:var(--bg-card);
       border-radius:18px;
       padding:14px 16px;
       border:1px solid var(--border-subtle);
-      box-shadow:0 18px 40px rgba(15,23,42,0.85);
-      margin-bottom:14px;
+      box-shadow:0 18px 40px rgba(15,23,42,0.25);
+      margin-bottom:4px;
     }
 
     h2 {
@@ -99,7 +158,7 @@
       gap:6px;
       padding:4px 8px;
       border-radius:999px;
-      background:rgba(148,163,184,0.18);
+      background:rgba(148,163,184,0.14);
       font-size:11px;
       margin-top:4px;
     }
@@ -112,6 +171,10 @@
       display:inline-block;
     }
 
+    .dot-red {
+      background:#f97373;
+    }
+
     table {
       width:100%;
       border-collapse:collapse;
@@ -121,9 +184,13 @@
 
     th, td {
       padding:6px 4px;
-      border-bottom:1px solid rgba(31,41,55,0.9);
+      border-bottom:1px solid rgba(31,41,55,0.15);
       text-align:left;
       vertical-align:middle;
+    }
+
+    body.theme-dark th, body.theme-dark td {
+      border-bottom:1px solid rgba(31,41,55,0.9);
     }
 
     th {
@@ -132,60 +199,401 @@
       letter-spacing:0.06em;
       color:var(--text-secondary);
     }
+
+    .kpi-row {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    .kpi-card {
+      flex:1;
+      min-width:120px;
+      border-radius:14px;
+      border:1px solid var(--border-subtle);
+      padding:8px 10px;
+      background:rgba(15,23,42,0.02);
+    }
+
+    body.theme-dark .kpi-card {
+      background:rgba(15,23,42,0.75);
+    }
+
+    .kpi-label {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .kpi-sub {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:var(--primary-soft);
+      color:#166534;
+      font-size:11px;
+    }
+
+    body.theme-dark .pill {
+      color:#bbf7d0;
+    }
+
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    button {
+      font: inherit;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size:13px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: rgba(148,163,184,0.12);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    button:disabled {
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    select, input, textarea {
+      width:100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#f9fafb;
+      color:var(--text-main);
+      font-size:13px;
+      resize:vertical;
+    }
+
+    body.theme-dark select,
+    body.theme-dark input,
+    body.theme-dark textarea {
+      background:#020617;
+      color:var(--text-main);
+      border-color:rgba(148,163,184,0.6);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color:var(--text-secondary);
+    }
+
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      margin-bottom:2px;
+    }
+
+    .badge-role {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.16);
+      font-size:11px;
+      margin-right:4px;
+    }
+
+    .divider {
+      height:1px;
+      background:rgba(31,41,55,0.15);
+      margin:8px 0;
+    }
+
+    body.theme-dark .divider {
+      background:rgba(31,41,55,0.9);
+    }
+
+    .feedback {
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .feedback.ok { color:#16a34a; }
+    .feedback.err { color:#dc2626; }
   </style>
 </head>
 <body>
 <header>
   <div class="header-left">
     <h1>SGO – Gestor</h1>
-    <div class="subtitle" id="subtitleGestor">Painel resumido do gestor</div>
+    <div class="subtitle" id="subtitleGestor">Painel de gestão operacional</div>
   </div>
-  <button class="btn-exit" type="button" id="btnSair">
-    <span>⏏</span>
-    Sair
-  </button>
+  <div class="header-right">
+    <button id="btnTheme" class="theme-toggle" type="button">
+      <span class="icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">Dark</span>
+    </button>
+    <button class="btn-exit" type="button" id="btnSair">
+      <span>⏏</span>
+      Sair
+    </button>
+  </div>
 </header>
 
 <main>
-  <section class="card">
-    <h2>Perfil do gestor</h2>
-    <p class="small">Informações básicas do usuário autenticado com papel de gestor.</p>
-    <div id="infoGestor" class="small"></div>
-    <div class="chip" id="chipRoles">
-      <span class="dot"></span>
-      <span id="textoRoles"></span>
-    </div>
-  </section>
+  <div class="grid">
+    <!-- Coluna esquerda: KPIs + mapa de postos -->
+    <div>
+      <section class="card">
+        <h2>Resumo da operação</h2>
+        <p class="small">Indicadores gerais das equipes em campo (dados mock para MVP).</p>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">Operadores ativos</div>
+            <div class="kpi-value" id="kpiAtivos">12</div>
+            <div class="kpi-sub">logados nas últimas 24h</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Check-ins hoje</div>
+            <div class="kpi-value" id="kpiCheckins">35</div>
+            <div class="kpi-sub">em todos os postos</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ocorrências abertas</div>
+            <div class="kpi-value" id="kpiOcorrencias">4</div>
+            <div class="kpi-sub">aguardando retorno</div>
+          </div>
+        </div>
+        <div class="chip">
+          <span class="dot"></span>
+          Atualizado localmente · Mock admin.admin
+        </div>
+      </section>
 
-  <section class="card">
-    <h2>Resumo operacional (mock)</h2>
-    <p class="small">Dados estáticos apenas para validar o layout. Futuramente virão da API.</p>
-    <table>
-      <thead>
-        <tr>
-          <th>Métrica</th>
-          <th>Valor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Operadores ativos</td>
-          <td>12</td>
-        </tr>
-        <tr>
-          <td>Check-ins hoje</td>
-          <td>35</td>
-        </tr>
-        <tr>
-          <td>Ocorrências abertas</td>
-          <td>4</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+      <section class="card">
+        <h2>Postos monitorados</h2>
+        <p class="small">Lista dos postos principais com status geral de presença.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Posto</th>
+              <th>Operadores</th>
+              <th>Presentes</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaPostos">
+            <tr>
+              <td>UBS Centro</td>
+              <td>5</td>
+              <td>5</td>
+              <td>
+                <span class="pill">
+                  <span class="dot"></span>
+                  Completo
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td>Escola Zona Leste</td>
+              <td>4</td>
+              <td>3</td>
+              <td>
+                <span class="pill">
+                  <span class="dot dot-red"></span>
+                  1 falta
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td>Base Operacional Norte</td>
+              <td>3</td>
+              <td>3</td>
+              <td>
+                <span class="pill">
+                  <span class="dot"></span>
+                  Completo
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Coluna direita: perfil gestor + designações + mensagens -->
+    <div>
+      <section class="card">
+        <h2>Perfil do gestor</h2>
+        <p class="small">Informações básicas do usuário autenticado com papel de gestor.</p>
+        <div class="label">Usuário logado</div>
+        <p class="small" id="infoGestor">Carregando...</p>
+        <div id="rolesBadges"></div>
+      </section>
+
+      <section class="card">
+        <h2>Designar operador a posto</h2>
+        <p class="small">Simulação local de designação para testar o fluxo. Na versão real, isso grava no backend.</p>
+
+        <div class="label">Operador</div>
+        <select id="selOperador">
+          <option value="">Selecione um operador</option>
+          <option value="00001|Admin Demo">00001 – Admin Demo (mock)</option>
+          <option value="00002|Maria Silva">00002 – Maria Silva</option>
+          <option value="00003|João Souza">00003 – João Souza</option>
+        </select>
+
+        <div class="label" style="margin-top:6px">Posto</div>
+        <select id="selPosto">
+          <option value="">Selecione um posto</option>
+          <option value="UBS Centro">UBS Centro</option>
+          <option value="Escola Zona Leste">Escola Zona Leste</option>
+          <option value="Base Operacional Norte">Base Operacional Norte</option>
+        </select>
+
+        <div class="label" style="margin-top:6px">Turno</div>
+        <select id="selTurno">
+          <option value="">Selecione um turno</option>
+          <option value="08:00–17:00">08:00–17:00</option>
+          <option value="07:00–13:00">07:00–13:00</option>
+          <option value="13:00–19:00">13:00–19:00</option>
+        </select>
+
+        <div class="row" style="margin-top:8px;justify-content:flex-end">
+          <button id="btnDesignar" class="primary" type="button">Designar</button>
+        </div>
+
+        <p id="feedbackDesignacao" class="feedback"></p>
+
+        <div class="divider"></div>
+
+        <div class="label">Últimas designações (MVP local)</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Operador</th>
+              <th>Posto</th>
+              <th>Turno</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaDesignacoes"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Mensagens de operadores</h2>
+        <p class="small">Nesta versão, a lista é apenas ilustrativa. Depois será ligada às mensagens enviadas pelo painel do operador.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Operador</th>
+              <th>Resumo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>08/06 07:45</td>
+              <td>00002 – Maria</td>
+              <td>Justificativa de atraso (trânsito)</td>
+            </tr>
+            <tr>
+              <td>08/06 10:10</td>
+              <td>00003 – João</td>
+              <td>Registro de ocorrência leve</td>
+            </tr>
+            <tr>
+              <td>07/06 18:05</td>
+              <td>00001 – Admin Demo</td>
+              <td>Envio de relatório de turno</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
 </main>
 
 <script>
+  // ---------- Tema compartilhado ----------
+  const THEME_KEY = 'sgo_theme_login';
+  const btnTheme  = document.getElementById('btnTheme');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel= document.getElementById('themeLabel');
+
+  function aplicarTemaInicial() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+
+    if (saved === 'dark') {
+      document.body.classList.add('theme-dark');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else if (saved === 'light') {
+      document.body.classList.remove('theme-dark');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.body.classList.add('theme-dark');
+        themeIcon.textContent = '☀️';
+        themeLabel.textContent = 'Light';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+      } else {
+        document.body.classList.remove('theme-dark');
+        themeIcon.textContent = '🌙';
+        themeLabel.textContent = 'Dark';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+      }
+    }
+  }
+
+  aplicarTemaInicial();
+
+  btnTheme.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('theme-dark');
+    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
+    if (isDark) {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    }
+  });
+
+  // ---------- Sessão / papel gestor ----------
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -205,10 +613,17 @@
     } else {
       const ident = usuario.email || usuario.username || usuario.matricula || '';
       const info = document.getElementById('infoGestor');
-      info.textContent = `${usuario.nome} (${ident}) – ID ${usuario.id}`;
-      document.getElementById('textoRoles').textContent = 'Perfis: ' + roles.join(', ');
+      info.textContent = `${usuario.nome} (${ident}) – ID ${usuario.id || '-'} `;
       document.getElementById('subtitleGestor').textContent =
         `Gestor logado – ${usuario.nome}`;
+
+      const rolesBadges = document.getElementById('rolesBadges');
+      roles.forEach(r => {
+        const span = document.createElement('span');
+        span.className = 'badge-role';
+        span.textContent = r;
+        rolesBadges.appendChild(span);
+      });
     }
   }
 
@@ -219,6 +634,54 @@
       window.location.href = 'index.html';
     }
   });
+
+  // ---------- Designações (mock local) ----------
+  const selOperador = document.getElementById('selOperador');
+  const selPosto    = document.getElementById('selPosto');
+  const selTurno    = document.getElementById('selTurno');
+  const btnDesignar = document.getElementById('btnDesignar');
+  const tabelaDesignacoes = document.getElementById('tabelaDesignacoes');
+  const feedbackDesignacao = document.getElementById('feedbackDesignacao');
+
+  let designacoes = [];
+
+  function renderDesignacoes() {
+    tabelaDesignacoes.innerHTML = '';
+    designacoes.slice().reverse().forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${d.operador}</td>
+        <td>${d.posto}</td>
+        <td>${d.turno}</td>
+      `;
+      tabelaDesignacoes.appendChild(tr);
+    });
+  }
+
+  btnDesignar.addEventListener('click', () => {
+    feedbackDesignacao.textContent = '';
+    feedbackDesignacao.className = 'feedback';
+
+    if (!selOperador.value || !selPosto.value || !selTurno.value) {
+      feedbackDesignacao.textContent = 'Selecione operador, posto e turno.';
+      feedbackDesignacao.classList.add('err');
+      return;
+    }
+
+    const [mat, nome] = selOperador.value.split('|');
+    designacoes.push({
+      operador: `${mat} – ${nome}`,
+      posto: selPosto.value,
+      turno: selTurno.value
+    });
+
+    renderDesignacoes();
+
+    feedbackDesignacao.textContent = 'Designação registrada localmente (MVP). Em produção, será enviada ao backend.';
+    feedbackDesignacao.classList.add('ok');
+  });
+
+  renderDesignacoes();
 </script>
 </body>
 </html>
