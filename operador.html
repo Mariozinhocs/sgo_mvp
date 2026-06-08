@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Operador</title>
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="icon" type="image/png" href="icon-512.png" />
+  <!-- Favicons na pasta "icons" -->
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+  <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
   <style>
     :root {
@@ -859,12 +859,10 @@
     document.getElementById('subtitleOperador').textContent =
       `Operador logado – ${nome}`;
 
-    // marcar usuário mock visualmente
     if (username === 'admin.admin') {
       document.getElementById('perfilMockChip').style.display = 'inline-flex';
     }
 
-    // Selecionar automaticamente o posto principal no select
     const selectPosto = document.getElementById('selectPosto');
     if (selectPosto && postoPrincipal) {
       for (const opt of selectPosto.options) {
@@ -909,7 +907,6 @@
     histLista.prepend(li);
   }
 
-  // habilitar botões básicos
   document.getElementById('btnGeo').disabled = false;
   document.getElementById('btnCheckin').disabled = false;
   document.getElementById('btnCheckout').disabled = false;
@@ -956,11 +953,11 @@
     addHist('Check-out registrado');
   };
 
-  // ---------- Escala (checks locais) ----------
+  // ---------- Escala ----------
   const escChecks = document.querySelectorAll('.esc-check');
   escChecks.forEach(chk => {
     chk.addEventListener('change', () => {
-      // poderia salvar em localStorage se quiser
+      // poderíamos salvar em localStorage se quiser
     });
   });
 
@@ -1045,7 +1042,6 @@
       return;
     }
 
-    // No MVP, não enviamos para backend. Apenas simulamos sucesso.
     feedbackSenha.textContent = 'Senha alterada localmente (mock). Na versão completa, será enviada ao servidor.';
     feedbackSenha.classList.add('ok');
   });
