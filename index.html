@@ -30,8 +30,11 @@
     }
 
     header {
-      padding: 18px 18px 6px;
-      text-align: center;
+      padding: 14px 14px 6px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
 
     header h1 {
@@ -40,13 +43,36 @@
     }
 
     header .subtitle {
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text-secondary);
     }
 
+    .header-left {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .btn-exit {
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,113,113,0.6);
+      padding: 6px 10px;
+      background: rgba(127,29,29,0.9);
+      color: #fee2e2;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .btn-exit span {
+      font-size:15px;
+    }
+
     main {
-      padding: 10px 14px 24px;
-      max-width: 480px;
+      padding: 8px 14px 24px;
+      max-width: 520px;
       margin: 0 auto;
     }
 
@@ -193,14 +219,19 @@
       margin-bottom:2px;
     }
 
-    select {
+    select, input, textarea {
       width:100%;
       padding: 8px 10px;
-      border-radius: 999px;
+      border-radius: 10px;
       border:1px solid rgba(148,163,184,0.45);
       background:#020617;
       color:var(--text-main);
       font-size:13px;
+      resize:vertical;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color:var(--text-secondary);
     }
 
     .time-big {
@@ -208,12 +239,12 @@
       font-weight: 600;
     }
 
-    /* Abas */
+    /* Abas principais */
     .tabs-header {
       display:flex;
-      gap:8px;
-      margin: 8px 14px 0;
-      max-width:480px;
+      gap:6px;
+      margin: 4px 14px 0;
+      max-width:520px;
       margin-left:auto;
       margin-right:auto;
     }
@@ -221,12 +252,12 @@
     .tab-button {
       flex:1;
       text-align:center;
-      padding:8px 10px;
+      padding:8px 8px;
       border-radius:999px;
       border:1px solid rgba(148,163,184,0.4);
       background:rgba(15,23,42,0.85);
       color:var(--text-secondary);
-      font-size:13px;
+      font-size:12px;
       cursor:pointer;
     }
 
@@ -291,22 +322,184 @@
       font-size:11px;
       color:var(--text-secondary);
     }
+
+    /* Perfil */
+    .perfil-header {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:10px;
+    }
+
+    .perfil-foto {
+      width:70px;
+      height:70px;
+      border-radius:50%;
+      background:#020617;
+      border:2px solid rgba(148,163,184,0.7);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:26px;
+      color:#9ca3af;
+    }
+
+    .perfil-foto img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .perfil-nome {
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .perfil-matricula {
+      font-size:12px;
+      color:var(--text-secondary);
+    }
+
+    .perfil-info-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .perfil-info-item {
+      font-size:12px;
+    }
+
+    .perfil-info-item strong {
+      display:block;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    /* Mensagens */
+    .msg-list {
+      max-height:220px;
+      overflow-y:auto;
+      margin-top:6px;
+    }
+
+    .msg-item {
+      font-size:12px;
+      padding:6px 8px;
+      border-radius:10px;
+      margin-bottom:6px;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.4);
+    }
+
+    .msg-meta {
+      font-size:11px;
+      color:var(--text-secondary);
+      margin-bottom:2px;
+    }
+
+    .msg-text {
+      font-size:12px;
+    }
+
+    .msg-form {
+      margin-top:8px;
+      border-top:1px solid rgba(31,41,55,0.9);
+      padding-top:8px;
+    }
+
+    .file-label {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .file-input {
+      font-size:11px;
+      padding:5px 0;
+      border:none;
+      background:transparent;
+      color:var(--text-main);
+    }
   </style>
 </head>
 <body>
 <header>
-  <h1>SGO – Operador</h1>
-  <div class="subtitle">Ponto e escala diária</div>
+  <div class="header-left">
+    <h1>SGO – Operador</h1>
+    <div class="subtitle">Perfil, ponto, escala e comunicação</div>
+  </div>
+  <button class="btn-exit" type="button" id="btnSair">
+    <span>⏏</span>
+    Sair
+  </button>
 </header>
 
 <div class="tabs-header">
-  <button class="tab-button active" data-tab="tab-ponto">Ponto</button>
+  <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
+  <button class="tab-button" data-tab="tab-ponto">Ponto</button>
   <button class="tab-button" data-tab="tab-escala">Escala</button>
+  <button class="tab-button" data-tab="tab-msg">Mensagens</button>
 </div>
 
 <main>
+  <!-- PERFIL -->
+  <section id="tab-perfil" class="tab-panel active">
+    <section class="card">
+      <h2>Perfil do operador</h2>
+      <p class="small">Confira seus dados cadastrais e a foto oficial utilizada para identificação.</p>
+
+      <div class="perfil-header">
+        <div class="perfil-foto" id="perfilFotoPreview">
+          <span>👤</span>
+        </div>
+        <div>
+          <div class="perfil-nome" id="perfilNome">Nome do Operador</div>
+          <div class="perfil-matricula" id="perfilMatricula">Matrícula 00000</div>
+          <div class="chip" id="perfilSituacaoChip">
+            <span class="dot"></span>
+            Ativo
+          </div>
+        </div>
+      </div>
+
+      <div class="perfil-info-grid">
+        <div class="perfil-info-item">
+          <strong>Documento</strong>
+          <span id="perfilDocumento">000.000.000-00</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Telefone</strong>
+          <span id="perfilTelefone">(00) 00000-0000</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>E-mail</strong>
+          <span id="perfilEmail">operador@empresa.com</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Posto principal</strong>
+          <span id="perfilPostoPrincipal">UBS Centro</span>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="label">Foto oficial</div>
+        <p class="small">
+          Esta é a foto utilizada para identificação interna. Caso esteja desatualizada, procure seu gestor para solicitar atualização.
+        </p>
+        <input id="perfilFotoInput" class="file-input" type="file" accept="image/*" />
+        <p class="small">
+          *No MVP, a foto é trocada apenas localmente neste dispositivo. Na integração futura, o envio será feito ao servidor.
+        </p>
+      </div>
+    </section>
+  </section>
+
   <!-- PONTO -->
-  <section id="tab-ponto" class="tab-panel active">
+  <section id="tab-ponto" class="tab-panel">
     <section class="card">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
@@ -330,7 +523,7 @@
     </section>
 
     <section class="card">
-      <h2>Localização e posto</h2>
+      <h2>Posto e localização</h2>
       <div class="label">Posto designado</div>
       <div id="postoAtual" class="badge-posto">
         <span>Não definido (MVP)</span>
@@ -347,14 +540,14 @@
       </div>
 
       <p class="small" style="margin-top:8px">
-        *Sua localização é usada para registrar o ponto com distância até o posto, e o gestor consegue ver quando você estava fora da área designada. [web:151][web:153][web:157]
+        *Sempre que registrar o ponto, o sistema grava a distância até o posto designado. Se estiver fora do raio, o gestor verá essa observação no painel.
       </p>
     </section>
 
     <section class="card">
       <h2>Postos disponíveis (MVP)</h2>
       <p class="small">
-        Nesta versão, os postos estão simulados localmente. Na integração real, o app vai buscar a lista de designações do operador na API.
+        Nesta versão, os postos estão simulados localmente. Na integração real, a lista virá do painel do gestor (designações).
       </p>
       <div class="label" style="margin-top:4px">Selecione o posto</div>
       <select id="selectPosto">
@@ -375,9 +568,9 @@
   <!-- ESCALA -->
   <section id="tab-escala" class="tab-panel">
     <section class="card">
-      <h2>Escala fornecida</h2>
+      <h2>Escala do mês</h2>
       <p class="small">
-        Escala enviada pelo gestor. Você não altera os horários aqui, apenas marca os dias cumpridos como checklist local.
+        Escala mensal fornecida pelo gestor. As jornadas não são editáveis aqui; os checks são marcados automaticamente ou por você, para controle visual.
       </p>
 
       <table>
@@ -390,58 +583,94 @@
           </tr>
         </thead>
         <tbody id="escalaTabela">
-          <tr data-id="seg">
-            <td class="escala-dia">Segunda</td>
+          <!-- Exemplo fixo para o MVP; depois virá de JSON do gestor -->
+          <tr data-id="1">
+            <td class="escala-dia">01</td>
             <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">UBS Centro</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="seg">
+              <input type="checkbox" class="esc-check" data-id="1">
             </td>
           </tr>
-          <tr data-id="ter">
-            <td class="escala-dia">Terça</td>
+          <tr data-id="2">
+            <td class="escala-dia">02</td>
             <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">UBS Centro</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="ter">
+              <input type="checkbox" class="esc-check" data-id="2">
             </td>
           </tr>
-          <tr data-id="qua">
-            <td class="escala-dia">Quarta</td>
+          <tr data-id="3">
+            <td class="escala-dia">03</td>
             <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">Escola Zona Leste</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="qua">
+              <input type="checkbox" class="esc-check" data-id="3">
             </td>
           </tr>
-          <tr data-id="qui">
-            <td class="escala-dia">Quinta</td>
+          <tr data-id="4">
+            <td class="escala-dia">04</td>
             <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">Escola Zona Leste</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="qui">
+              <input type="checkbox" class="esc-check" data-id="4">
             </td>
           </tr>
-          <tr data-id="sex">
-            <td class="escala-dia">Sexta</td>
+          <tr data-id="5">
+            <td class="escala-dia">05</td>
             <td class="escala-hora">08:00–17:00</td>
             <td class="escala-post">Base Operacional Norte</td>
             <td class="check-cell">
-              <input type="checkbox" class="esc-check" data-id="sex">
+              <input type="checkbox" class="esc-check" data-id="5">
             </td>
           </tr>
         </tbody>
       </table>
 
       <p class="small" style="margin-top:8px">
-        *No futuro, essa escala vem diretamente do painel do gestor, e os checks podem ser sincronizados para conferência de jornada.
+        *Na integração real, o sistema poderá marcar automaticamente os dias cumpridos conforme os registros de ponto forem batidos dentro do horário previsto.
       </p>
+    </section>
+  </section>
+
+  <!-- MENSAGENS -->
+  <section id="tab-msg" class="tab-panel">
+    <section class="card">
+      <h2>Comunicação com o gestor</h2>
+      <p class="small">
+        Use este espaço para enviar mensagens, arquivos, documentos ou fotos ao seu gestor (como justificativas, atestados, registros de ocorrência).
+      </p>
+
+      <div class="msg-list" id="msgLista">
+        <!-- Mensagens locais (MVP) -->
+      </div>
+
+      <div class="msg-form">
+        <div class="label">Mensagem</div>
+        <textarea id="msgTexto" rows="3" placeholder="Descreva sua mensagem para o gestor..."></textarea>
+
+        <div style="margin-top:6px">
+          <div class="file-label">Anexos (opcional)</div>
+          <input id="msgArquivo" class="file-input" type="file"
+                 multiple
+                 accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+          <!-- accept restringe os tipos permitidos (imagens, PDFs, docs) [web:162][web:164][web:166] -->
+        </div>
+
+        <div class="row" style="margin-top:8px;justify-content:flex-end">
+          <button id="btnEnviarMsg" class="primary" type="button">Enviar ao gestor</button>
+        </div>
+
+        <p class="small" style="margin-top:6px">
+          *No MVP, as mensagens e anexos ficam registrados apenas neste dispositivo como histórico. Na Fase 2, serão enviados para o painel do gestor.
+        </p>
+      </div>
     </section>
   </section>
 </main>
 
 <script>
-  // Abas
+  // Abas principais [web:158][web:160][web:165]
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -455,6 +684,16 @@
     });
   });
 
+  // Botão Sair – no MVP, apenas limpa storage local e volta a uma "tela limpa"
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair? Os dados locais de sessão poderão ser limpos.')) {
+      // Aqui você pode redirecionar para uma tela de login ou página inicial
+      // window.location.href = 'login_operador.html';
+      localStorage.removeItem('sgo_operador_escala_checks');
+      alert('Sessão encerrada (MVP). Em produção, redirecionar para tela de login.');
+    }
+  });
+
   // Relógio
   function atualizarRelogio() {
     const agora = new Date();
@@ -466,6 +705,40 @@
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
 
+  // Dados de perfil mock – depois podem vir do backend
+  const perfil = {
+    nome: 'Ana Souza',
+    matricula: '00123',
+    documento: '123.456.789-00',
+    telefone: '(92) 99999-0000',
+    email: 'ana.souza@empresa.com',
+    postoPrincipal: 'UBS Centro',
+    situacao: 'Ativo'
+  };
+  document.getElementById('perfilNome').textContent = perfil.nome;
+  document.getElementById('perfilMatricula').textContent = 'Matrícula ' + perfil.matricula;
+  document.getElementById('perfilDocumento').textContent = perfil.documento;
+  document.getElementById('perfilTelefone').textContent = perfil.telefone;
+  document.getElementById('perfilEmail').textContent = perfil.email;
+  document.getElementById('perfilPostoPrincipal').textContent = perfil.postoPrincipal;
+
+  // Foto oficial local (preview)
+  const perfilFotoInput = document.getElementById('perfilFotoInput');
+  const perfilFotoPreview = document.getElementById('perfilFotoPreview');
+
+  perfilFotoInput.addEventListener('change', () => {
+    const file = perfilFotoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      perfilFotoPreview.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      perfilFotoPreview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+
   // Postos mock
   const postosMock = [
     { nome: 'UBS Centro', lat: -3.132000, lng: -60.021000, raio: 100 },
@@ -476,6 +749,7 @@
   let postoSelecionado = null;
   let ultimaPosicao = null;
   let historicoLocal = [];
+  let mensagensLocais = [];
 
   const infoLocal = document.getElementById('infoLocal');
   const statusTexto = document.getElementById('statusTexto');
@@ -616,7 +890,6 @@
       `;
 
       atualizarStatusDentroFora(dentro, distMetros);
-      // Agora sempre permite registrar; check-in fora do raio apenas será marcado
       btnCheckin.disabled = false;
       btnCheckout.disabled = false;
     }, (err) => {
@@ -675,7 +948,7 @@
     statusTexto.textContent = 'Check-out realizado';
   });
 
-  // Checklist da escala no localStorage
+  // Checklist da escala – armazenamento local
   const ESCALA_STORAGE_KEY = 'sgo_operador_escala_checks';
 
   function carregarChecksEscala() {
@@ -701,6 +974,66 @@
       salvarChecksEscala(escalaChecks);
     });
   });
+
+  // Mensagens (com anexos locais)
+  const msgLista = document.getElementById('msgLista');
+  const msgTexto = document.getElementById('msgTexto');
+  const msgArquivo = document.getElementById('msgArquivo');
+  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
+
+  function renderMensagens() {
+    msgLista.innerHTML = '';
+    mensagensLocais.slice().reverse().forEach(msg => {
+      const div = document.createElement('div');
+      div.className = 'msg-item';
+      const anexosTexto = msg.anexos.length
+        ? ' · ' + msg.anexos.length + ' anexo(s)'
+        : '';
+      div.innerHTML = `
+        <div class="msg-meta">${msg.dataHora}${anexosTexto}</div>
+        <div class="msg-text">${msg.texto}</div>
+      `;
+      msgLista.appendChild(div);
+    });
+  }
+
+  btnEnviarMsg.addEventListener('click', () => {
+    const texto = msgTexto.value.trim();
+    if (!texto && (!msgArquivo.files || msgArquivo.files.length === 0)) {
+      alert('Digite uma mensagem ou selecione ao menos um arquivo.');
+      return;
+    }
+
+    const anexos = [];
+    if (msgArquivo.files && msgArquivo.files.length > 0) {
+      for (let i = 0; i < msgArquivo.files.length; i++) {
+        const f = msgArquivo.files[i];
+        anexos.push({
+          nome: f.name,
+          tipo: f.type,
+          tamanho: f.size
+        });
+      }
+    }
+
+    const agora = new Date();
+    const dataHora = agora.toLocaleString('pt-BR');
+
+    mensagensLocais.push({
+      texto: texto || '(sem texto)',
+      dataHora,
+      anexos
+    });
+
+    msgTexto.value = '';
+    msgArquivo.value = '';
+    renderMensagens();
+
+    alert('Mensagem registrada localmente (MVP). Em produção, será enviada ao painel do gestor com os arquivos.');
+  });
+
+  renderMensagens();
+  renderHistorico();
 </script>
 </body>
 </html>
