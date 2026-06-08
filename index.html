@@ -11,7 +11,6 @@
 
   <style>
     :root {
-      /* Padrão claro (equivalente ao gestor sem theme-dark) */
       --bg-body: #f3f4f6;
       --bg-card: #ffffff;
       --text-main: #111827;
@@ -23,7 +22,6 @@
     }
 
     body.theme-dark {
-      /* Mesmo padrão dark do gestor.html adaptado para login */
       --bg-body: #020826;
       --bg-card: #050b35;
       --text-main: #f9fafb;
@@ -258,7 +256,7 @@
 
     <div class="logo-wrapper">
       <div class="logo-img">
-        <img src="icons/icon-512.png" alt="SGO" />
+        <img src="icon-512.png" alt="SGO" />
       </div>
       <h1>SGO</h1>
       <div class="subtitle">Acesso ao sistema de gestão de operações</div>
@@ -287,7 +285,7 @@
 
       <p class="small" style="margin-top:8px;">
         • Login aceita matrícula, nome de usuário (nome.sobrenome) ou e-mail institucional, conforme configurado pelo gestor.<br>
-        • A senha inicial é fornecida pelo gestor e poderá ser alterada no painel do operador, após o primeiro acesso.
+        • Usuário de teste: <strong>admin.admin</strong> / <strong>123456</strong> (acesso Operador + Gestor). [web:242][web:245]
       </p>
     </form>
 
@@ -311,7 +309,7 @@
   </div>
 
 <script>
-  // ---------- Tema (mesma ideia do gestor, persistido por dispositivo) ----------
+  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
@@ -319,9 +317,7 @@
 
   function aplicarTemaInicial() {
     let saved = null;
-    try {
-      saved = localStorage.getItem(THEME_KEY);
-    } catch(e) {}
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
 
     if (saved === 'dark') {
       document.body.classList.add('theme-dark');
@@ -334,7 +330,6 @@
       themeLabel.textContent = 'Dark';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
     } else {
-      // Se não houver preferência salva, pode usar preferência do sistema como base. [web:209][web:213][web:222]
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) {
         document.body.classList.add('theme-dark');
@@ -354,9 +349,7 @@
 
   btnTheme.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('theme-dark');
-    try {
-      localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
-    } catch(e) {}
+    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
     if (isDark) {
       themeIcon.textContent = '☀️';
       themeLabel.textContent = 'Light';
@@ -369,7 +362,7 @@
   });
 
   // ---------- Login ----------
-  const API_LOGIN_URL = '/api/auth/login'; // ajustar na integração real
+  const API_LOGIN_URL = '/api/auth/login'; // para futuro backend
 
   const formLogin  = document.getElementById('formLogin');
   const btnEntrar  = document.getElementById('btnEntrar');
@@ -431,6 +424,34 @@
     btnEntrar.disabled = true;
     btnEntrar.textContent = 'Validando...';
 
+    // ---- MOCK LOCAL admin.admin / 123456 ---- [web:242][web:245]
+    if (identificador === 'admin.admin' && senha === '123456') {
+      const usuarioMock = {
+        id: 1,
+        nome: 'Admin Demo',
+        email: 'admin.admin@empresa.com',
+        username: 'admin.admin',
+        matricula: '00001',
+        documento: '000.000.000-00',
+        telefone: '(00) 00000-0000',
+        postoPrincipal: 'UBS Centro',
+        situacao: 'Ativo',
+        deveTrocarSenha: true,
+        roles: ['OPERADOR', 'GESTOR']
+      };
+
+      localStorage.setItem('sgo_auth_token', 'token-mock-admin');
+      localStorage.setItem('sgo_usuario', JSON.stringify(usuarioMock));
+
+      mostrarOk('Login de teste realizado (admin.admin).');
+      popularPerfis(usuarioMock);
+
+      btnEntrar.disabled = false;
+      btnEntrar.textContent = 'Entrar';
+      return;
+    }
+    // ---- FIM MOCK ----
+
     try {
       const resp = await fetch(API_LOGIN_URL, {
         method: 'POST',
@@ -454,12 +475,11 @@
         return;
       }
 
-      // Em produção, considere usar cookies HttpOnly para token; aqui mantemos simples. [web:178][web:183][web:194][web:204]
       localStorage.setItem('sgo_auth_token', data.token || '');
       localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
 
       if (data.usuario.deveTrocarSenha) {
-        mostrarOk('Login realizado. Por segurança, altere sua senha no painel do operador no primeiro acesso.');
+        mostrarOk('Login realizado. Altere sua senha no painel do operador no primeiro acesso.');
       } else {
         mostrarOk('Login realizado com sucesso.');
       }
@@ -484,7 +504,6 @@
     window.location.href = 'gestor.html';
   });
 
-  // Se já houver usuário salvo, reapresenta perfis.
   (function checkUsuarioLocal() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
