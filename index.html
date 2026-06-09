@@ -19,6 +19,29 @@
       --border-subtle: #1f2937;
     }
 
+    /* Tema claro */
+    body.theme-light {
+      background: #f3f4f6;
+      color: #020617;
+    }
+
+    body.theme-light .card {
+      background: #ffffff;
+      border-color: #d1d5db;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.12);
+    }
+
+    body.theme-light input {
+      background:#ffffff;
+      color:#020617;
+      border-color:#d1d5db;
+    }
+
+    body.theme-light .logo-img {
+      background:#f9fafb;
+      border-color:#d1d5db;
+    }
+
     * { box-sizing: border-box; }
 
     body {
@@ -28,9 +51,91 @@
       color: var(--text-main);
       min-height: 100vh;
       display:flex;
+      flex-direction:column;
       align-items:center;
-      justify-content:center;
+      justify-content:flex-start;
       padding:16px;
+    }
+
+    header {
+      width:100%;
+      max-width:400px;
+      padding: 0 0 8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .header-left {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .logo-box {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo-img {
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      object-fit:contain;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.5);
+      padding:4px;
+    }
+
+    .logo-text {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .logo-title {
+      font-size:16px;
+      font-weight:600;
+    }
+
+    .logo-subtitle {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .subtitle-header {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
+    body.theme-light .theme-toggle {
+      background:#e5e7eb;
+      color:#020617;
+      border-color:#9ca3af;
     }
 
     .card {
@@ -110,8 +215,29 @@
   </style>
 </head>
 <body>
+  <header>
+    <div class="header-left">
+      <div class="logo-box">
+        <img src="icons/logo-sgo.svg" alt="Logo SGO" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-title">SGO</span>
+          <span class="logo-subtitle">Sistema de Gestão de Operações</span>
+        </div>
+      </div>
+      <div class="subtitle-header">
+        Acesso ao sistema (MVP)
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="btnTheme" class="theme-toggle" type="button">
+        <span class="icon" id="themeIcon">☀️</span>
+        <span id="themeLabel">Light</span>
+      </button>
+    </div>
+  </header>
+
   <section class="card">
-    <h1>SGO – Acesso</h1>
+    <h1>Login</h1>
     <p class="small">
       Informe usuário e senha para acessar o painel (MVP com usuários de teste).
     </p>
@@ -137,13 +263,52 @@
   </section>
 
 <script>
+  const THEME_KEY = 'sgo_theme_login';
+
+  const btnTheme  = document.getElementById('btnTheme');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel= document.getElementById('themeLabel');
+
+  function aplicarTemaInicial() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+
+    if (saved === 'light') {
+      document.body.classList.add('theme-light');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      // padrão: dark
+      document.body.classList.remove('theme-light');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  }
+
+  aplicarTemaInicial();
+
+  btnTheme.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('theme-light');
+    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
+    if (isLight) {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  });
+
   // Se já estiver logado, manda direto para operador.html (MVP)
   (function redirectIfLogged() {
     try {
       const token = localStorage.getItem('sgo_auth_token');
       const usuarioRaw = localStorage.getItem('sgo_usuario');
       if (!token || !usuarioRaw) return;
-      // MVP: sempre operador
       window.location.href = 'operador.html';
     } catch (e) {
       // se der erro, segue no login
@@ -215,9 +380,7 @@
         roles: encontrado.roles,
         postoPrincipal: encontrado.postoPrincipal
       }));
-    } catch (e) {
-      // se falhar, ainda assim tentamos seguir
-    }
+    } catch (e) {}
 
     // Captura geolocalização logo após login e antes do redirect
     if (navigator.geolocation) {
@@ -231,23 +394,18 @@
               lng: pos.coords.longitude,
               ts: Date.now()
             }));
-          } catch (e) {
-            // se não conseguir salvar, segue mesmo assim
-          }
+          } catch (e) {}
           feedback.textContent = '';
-          // MVP: sempre painel de operador
           window.location.href = 'operador.html';
         },
         (err) => {
           console.warn('Erro geolocalização após login:', err);
-          // Mesmo que o usuário negue a permissão ou dê erro, segue
           feedback.textContent = '';
           window.location.href = 'operador.html';
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     } else {
-      // Se geolocalização não for suportada
       window.location.href = 'operador.html';
     }
   });
