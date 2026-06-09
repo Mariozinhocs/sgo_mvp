@@ -159,6 +159,39 @@
       margin: 0 auto;
     }
 
+    .tabs-header {
+      display:flex;
+      gap:6px;
+      margin: 4px 0 10px;
+    }
+
+    .tab-button {
+      flex:1;
+      text-align:center;
+      padding:8px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .tab-panel {
+      display:none;
+    }
+
+    .tab-panel.active {
+      display:block;
+    }
+
     .card {
       background: linear-gradient(145deg, #020617, #020617);
       border-radius: 18px;
@@ -285,37 +318,62 @@
 </header>
 
 <main>
-  <section class="card">
-    <h2>Ponto do operador</h2>
-    <p class="small">
-      Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
-    </p>
+  <!-- Abas -->
+  <div class="tabs-header">
+    <button class="tab-button active" data-tab="tab-ponto">Ponto</button>
+    <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
+  </div>
 
-    <div class="info-box">
-      <div class="info-label">Operador</div>
-      <div class="info-value" id="infoOperador">—</div>
+  <!-- ABA PONTO (apenas check-in / intervalo / checkout, sem capturar localização) -->
+  <section id="tab-ponto" class="tab-panel active">
+    <section class="card">
+      <h2>Ponto</h2>
+      <p class="small">
+        Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
+      </p>
 
-      <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
-      <div class="info-value" id="infoLocal">Localização não disponível.</div>
-    </div>
+      <div class="info-box">
+        <div class="info-label">Operador</div>
+        <div class="info-value" id="infoOperador">—</div>
 
-    <div class="row" style="margin-top:10px;">
-      <button id="btnCheckin" class="primary" type="button">
-        Check-in
-      </button>
-      <button id="btnIntervalo" class="secondary" type="button" disabled>
-        Intervalo
-      </button>
-      <button id="btnCheckout" class="secondary" type="button" disabled>
-        Checkout
-      </button>
-    </div>
+        <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
+        <div class="info-value" id="infoLocal">Localização não disponível.</div>
+      </div>
 
-    <div style="margin-top:10px;">
-      <span class="status-badge off" id="statusPonto">
-        Status: Fora do expediente
-      </span>
-    </div>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnCheckin" class="primary" type="button">
+          Check-in
+        </button>
+        <button id="btnIntervalo" class="secondary" type="button" disabled>
+          Intervalo
+        </button>
+        <button id="btnCheckout" class="secondary" type="button" disabled>
+          Checkout
+        </button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <span class="status-badge off" id="statusPonto">
+          Status: Fora do expediente
+        </span>
+      </div>
+    </section>
+  </section>
+
+  <!-- ABA MENSAGENS (exemplo; mantenha/ajuste conforme seu painel anterior) -->
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card">
+      <h2>Mensagens</h2>
+      <p class="small">
+        Aqui você pode visualizar mensagens internas (MVP ilustrativo).
+      </p>
+      <div class="info-box">
+        <div class="info-label">Mensagens recentes</div>
+        <div class="info-value">
+          Nenhuma mensagem recebida ainda.
+        </div>
+      </div>
+    </section>
   </section>
 </main>
 
@@ -357,6 +415,20 @@
       themeLabel.textContent = 'Light';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
     }
+  });
+
+  // Tabs
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanels  = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
   });
 
   // Carrega usuário do localStorage
@@ -423,7 +495,7 @@
     }
   })();
 
-  // Lógica de ponto: check-in, intervalo, checkout (sem botão de localização)
+  // Lógica de ponto: check-in, intervalo, checkout
   const btnCheckin   = document.getElementById('btnCheckin');
   const btnIntervalo = document.getElementById('btnIntervalo');
   const btnCheckout  = document.getElementById('btnCheckout');
