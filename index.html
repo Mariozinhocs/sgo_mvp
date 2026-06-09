@@ -141,9 +141,7 @@
   </section>
 
 <script>
-  const THEME_KEY = 'sgo_theme_login';
-
-  // Se já estiver logado, redireciona imediatamente
+  // Se já estiver logado, redireciona imediatamente conforme role
   (function redirectIfLogged() {
     try {
       const token = localStorage.getItem('sgo_auth_token');
@@ -152,7 +150,6 @@
 
       const usuario = JSON.parse(usuarioRaw);
       const roles = usuario.roles || [];
-
       redirecionarPorRole(roles);
     } catch (e) {
       // se der erro, segue no login
@@ -164,7 +161,7 @@
   const btnEntrar    = document.getElementById('btnEntrar');
   const feedback     = document.getElementById('feedbackLogin');
 
-  // Mock simples de usuários
+  // Mock de usuários – ajuste aqui para os usuários reais do seu MVP
   const mockUsuarios = [
     {
       username: 'operador1',
@@ -199,10 +196,13 @@
   function redirecionarPorRole(roles) {
     roles = roles || [];
     if (roles.includes('GESTOR') || roles.includes('ADMIN')) {
+      // Gestor / Admin → painel do gestor
       window.location.href = 'gestor.html';
     } else if (roles.includes('OPERADOR')) {
+      // Operador → painel do operador
       window.location.href = 'operador.html';
     } else {
+      // Fallback: operador
       window.location.href = 'operador.html';
     }
   }
