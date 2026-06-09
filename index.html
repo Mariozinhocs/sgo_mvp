@@ -64,7 +64,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;    
+      gap:10px;
     }
 
     .header-left {
@@ -216,29 +216,26 @@
 </head>
 <body>
   <header>
-  <div class="header-left">
-    <div class="logo-box">
-      <!-- Se tiver SVG -->
-      <img src="icons/logo-sgo.svg" alt="Logo SGO" class="logo-img">
-      <!-- Ou, se for PNG/JPG, troque para: -->
-      <!-- <img src="icons/logo-sgo.png" alt="Logo SGO" class="logo-img"> -->
-
-      <div class="logo-text">
-        <span class="logo-title">SGO</span>
-        <span class="logo-subtitle">Sistema de Gestão de Operações</span>
+    <div class="header-left">
+      <div class="logo-box">
+        <!-- Usa o mesmo arquivo icon-512.png como logo -->
+        <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-title">SGO</span>
+          <span class="logo-subtitle">Sistema de Gestão de Operações</span>
+        </div>
+      </div>
+      <div class="subtitle-header">
+        Acesso ao sistema (MVP)
       </div>
     </div>
-    <div class="subtitle-header">
-      Acesso ao sistema (MVP)
+    <div class="header-right">
+      <button id="btnTheme" class="theme-toggle" type="button">
+        <span class="icon" id="themeIcon">☀️</span>
+        <span id="themeLabel">Light</span>
+      </button>
     </div>
-  </div>
-  <div class="header-right">
-    <button id="btnTheme" class="theme-toggle" type="button">
-      <span class="icon" id="themeIcon">☀️</span>
-      <span id="themeLabel">Light</span>
-    </button>
-  </div>
-</header>
+  </header>
 
   <section class="card">
     <h1>Login</h1>
