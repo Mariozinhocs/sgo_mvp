@@ -113,11 +113,11 @@
   <section class="card">
     <h1>SGO – Acesso</h1>
     <p class="small">
-      Informe usuário e senha para acessar o painel de Operador ou Gestor, conforme seu perfil.
+      Informe usuário e senha para acessar o painel (MVP com usuários de teste).
     </p>
 
     <div class="label">Usuário</div>
-    <input id="inputUsuario" type="text" placeholder="ex: operador1 ou gestor1" autocomplete="username" />
+    <input id="inputUsuario" type="text" placeholder="ex: user.user, gestor.gestor, admin.admin" autocomplete="username" />
 
     <div class="label">Senha</div>
     <input id="inputSenha" type="password" placeholder="Senha" autocomplete="current-password" />
@@ -127,30 +127,24 @@
     </button>
 
     <p class="muted">
-      MVP com autenticação mock: alguns usuários de exemplo já vêm com roles pré-definidos (OPERADOR, GESTOR, ADMIN).
-    </p>
-
-    <p class="muted">
-      Exemplos:
-      <br>operador1 / 123 (OPERADOR)
-      <br>gestor1 / 123 (GESTOR)
-      <br>admin / 123 (ADMIN)
+      Usuários de teste:
+      <br>user.user / 123 (OPERADOR)
+      <br>gestor.gestor / 123 (GESTOR)
+      <br>admin.admin / 123 (ADMIN + GESTOR)
     </p>
 
     <p id="feedbackLogin" class="feedback"></p>
   </section>
 
 <script>
-  // Se já estiver logado, redireciona imediatamente conforme role
+  // Se já estiver logado, manda direto para operador.html (MVP)
   (function redirectIfLogged() {
     try {
       const token = localStorage.getItem('sgo_auth_token');
       const usuarioRaw = localStorage.getItem('sgo_usuario');
       if (!token || !usuarioRaw) return;
-
-      const usuario = JSON.parse(usuarioRaw);
-      const roles = usuario.roles || [];
-      redirecionarPorRole(roles);
+      // MVP: sempre operador
+      window.location.href = 'operador.html';
     } catch (e) {
       // se der erro, segue no login
     }
@@ -161,18 +155,18 @@
   const btnEntrar    = document.getElementById('btnEntrar');
   const feedback     = document.getElementById('feedbackLogin');
 
-  // Mock de usuários – ajuste aqui para os usuários reais do seu MVP
+  // Mock de usuários conforme pedido: user, gestor, admin
   const mockUsuarios = [
     {
-      username: 'operador1',
+      username: 'user.user',
       senha: '123',
-      nome: 'Operador Demo',
+      nome: 'Operador User',
       matricula: '00001',
       roles: ['OPERADOR'],
       postoPrincipal: 'Centro de Cooperação da Cidade'
     },
     {
-      username: 'gestor1',
+      username: 'gestor.gestor',
       senha: '123',
       nome: 'Gestor Demo',
       matricula: '90001',
@@ -180,7 +174,7 @@
       postoPrincipal: 'Centro de Cooperação da Cidade'
     },
     {
-      username: 'admin',
+      username: 'admin.admin',
       senha: '123',
       nome: 'Admin Demo',
       matricula: '99999',
@@ -191,20 +185,6 @@
 
   function autenticarMock(user, senha) {
     return mockUsuarios.find(u => u.username === user && u.senha === senha) || null;
-  }
-
-  function redirecionarPorRole(roles) {
-    roles = roles || [];
-    if (roles.includes('GESTOR') || roles.includes('ADMIN')) {
-      // Gestor / Admin → painel do gestor
-      window.location.href = 'gestor.html';
-    } else if (roles.includes('OPERADOR')) {
-      // Operador → painel do operador
-      window.location.href = 'operador.html';
-    } else {
-      // Fallback: operador
-      window.location.href = 'operador.html';
-    }
   }
 
   btnEntrar.addEventListener('click', () => {
@@ -239,8 +219,6 @@
       // se falhar, ainda assim tentamos seguir
     }
 
-    const roles = encontrado.roles || [];
-
     // Captura geolocalização logo após login e antes do redirect
     if (navigator.geolocation) {
       feedback.textContent = 'Capturando localização...';
@@ -257,19 +235,20 @@
             // se não conseguir salvar, segue mesmo assim
           }
           feedback.textContent = '';
-          redirecionarPorRole(roles);
+          // MVP: sempre painel de operador
+          window.location.href = 'operador.html';
         },
         (err) => {
           console.warn('Erro geolocalização após login:', err);
           // Mesmo que o usuário negue a permissão ou dê erro, segue
           feedback.textContent = '';
-          redirecionarPorRole(roles);
+          window.location.href = 'operador.html';
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     } else {
       // Se geolocalização não for suportada
-      redirecionarPorRole(roles);
+      window.location.href = 'operador.html';
     }
   });
 
