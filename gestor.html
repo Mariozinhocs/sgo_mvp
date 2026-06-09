@@ -16,49 +16,114 @@
       --text-main: #e5e7eb;
       --text-secondary: #9ca3af;
       --primary: #22c55e;
-      --primary-soft: rgba(34,197,94,0.12);
-      --danger: #ef4444;
-      --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
+    }
+
+    body.theme-light {
+      background: #f3f4f6;
+      color: #020617;
+    }
+
+    body.theme-light .card {
+      background:#ffffff;
+      border-color:#d1d5db;
+      box-shadow:0 10px 25px rgba(15,23,42,0.12);
+    }
+
+    body.theme-light .logo-img {
+      background:#f9fafb;
+      border-color:#d1d5db;
     }
 
     * { box-sizing: border-box; }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
+      margin:0;
       background: radial-gradient(circle at top, #1d283a, #020617 58%);
-      color: var(--text-main);
-      min-height: 100vh;
+      color:var(--text-main);
+      min-height:100vh;
     }
 
     header {
-      padding: 14px 14px 6px;
+      padding:14px 14px 6px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    header .subtitle {
-      font-size: 11px;
-      color: var(--text-secondary);
+      max-width:960px;
+      margin:0 auto;
     }
 
     .header-left {
       display:flex;
       flex-direction:column;
+      gap:4px;
+    }
+
+    .logo-box {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo-img {
+      width:54px;
+      height:54px;
+      border-radius:12px;
+      object-fit:contain;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.5);
+      padding:6px;
+    }
+
+    .logo-text {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .logo-title {
+      font-size:16px;
+      font-weight:600;
+    }
+
+    .logo-subtitle {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .subtitle-header {
+      font-size:11px;
+      color:var(--text-secondary);
     }
 
     .header-right {
       display:flex;
       align-items:center;
       gap:8px;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
+    body.theme-light .theme-toggle {
+      background:#e5e7eb;
+      color:#020617;
+      border-color:#9ca3af;
     }
 
     .btn-exit {
@@ -79,27 +144,10 @@
       font-size:15px;
     }
 
-    .theme-toggle {
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    .theme-toggle span.icon {
-      font-size:15px;
-    }
-
     main {
       padding: 8px 14px 24px;
-      max-width: 820px;
-      margin: 0 auto;
+      max-width:960px;
+      margin:0 auto;
     }
 
     .card {
@@ -120,275 +168,46 @@
       font-size: 12px;
       color: var(--text-secondary);
     }
-
-    .row {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    button {
-      font: inherit;
-      border-radius: 999px;
-      border: none;
-      padding: 8px 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    button.primary {
-      background: var(--primary);
-      color: #022c22;
-      font-weight: 600;
-    }
-
-    button.secondary {
-      background: rgba(148,163,184,0.12);
-      color: var(--text-main);
-      border: 1px solid rgba(148,163,184,0.4);
-    }
-
-    button:disabled {
-      opacity:0.6;
-      cursor:not-allowed;
-    }
-
-    .tabs-header {
-      display:flex;
-      gap:6px;
-      margin: 4px 14px 0;
-      max-width:820px;
-      margin-left:auto;
-      margin-right:auto;
-    }
-
-    .tab-button {
-      flex:1;
-      text-align:center;
-      padding:8px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.4);
-      background:rgba(15,23,42,0.85);
-      color:var(--text-secondary);
-      font-size:12px;
-      cursor:pointer;
-    }
-
-    .tab-button.active {
-      background:var(--primary);
-      border-color:var(--primary);
-      color:#022c22;
-      font-weight:600;
-    }
-
-    .tab-panel {
-      display:none;
-    }
-
-    .tab-panel.active {
-      display:block;
-    }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-      margin-top:6px;
-    }
-
-    th, td {
-      padding:6px 4px;
-      border-bottom:1px solid rgba(31,41,55,0.9);
-      text-align:left;
-      vertical-align:middle;
-    }
-
-    th {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    .check-cell {
-      text-align:center;
-    }
-
-    .check-cell input[type="checkbox"] {
-      width:14px;
-      height:14px;
-      accent-color: #22c55e;
-      cursor:pointer;
-    }
-
-    .badge-status {
-      display:inline-flex;
-      align-items:center;
-      padding:2px 6px;
-      border-radius:999px;
-      font-size:11px;
-      border:1px solid rgba(148,163,184,0.5);
-      color:var(--text-secondary);
-    }
-
-    .badge-status.ativo {
-      border-color:rgba(34,197,94,0.8);
-      color:#bbf7d0;
-    }
-
-    .badge-status.afastado {
-      border-color:rgba(248,113,113,0.8);
-      color:#fecaca;
-    }
-
-    .file-label {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .file-input {
-      font-size:11px;
-      padding:5px 0;
-      border:none;
-      background:transparent;
-      color:var(--text-main);
-    }
-
-    textarea {
-      width:100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:#020617;
-      color:var(--text-main);
-      font-size:13px;
-      resize:vertical;
-    }
-
-    .modal-inline {
-      margin-top:10px;
-    }
   </style>
 </head>
 <body>
 <header>
   <div class="header-left">
-    <h1>SGO – Gestor</h1>
-    <div class="subtitle" id="subtitleGestor">Painel de gestão de equipes</div>
+    <div class="logo-box">
+      <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
+      <div class="logo-text">
+        <span class="logo-title">SGO</span>
+        <span class="logo-subtitle">Painel do Gestor</span>
+      </div>
+    </div>
+    <div class="subtitle-header" id="subtitleGestor">
+      Gestor logado
+    </div>
   </div>
   <div class="header-right">
     <button id="btnTheme" class="theme-toggle" type="button">
       <span class="icon" id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
-    <button class="btn-exit" type="button" id="btnSair">
-      <span>⏏</span>
-      Sair
+    <button class="btn-exit" type="button" id="btnVoltarOperador">
+      <span>←</span>
+      Voltar ao operador
     </button>
   </div>
 </header>
 
-<div class="tabs-header">
-  <button class="tab-button active" data-tab="tab-dashboard">Dashboard</button>
-  <button class="tab-button" data-tab="tab-equipe">Equipe</button>
-  <button class="tab-button" data-tab="tab-msg">Mensagens</button>
-</div>
-
 <main>
-  <!-- DASHBOARD -->
-  <section id="tab-dashboard" class="tab-panel active">
-    <section class="card">
-      <h2>Visão geral</h2>
-      <p class="small">
-        Resumo da equipe, registros de ponto e mensagens recentes (MVP ilustrativo).
-      </p>
-      <p class="small">
-        No futuro, esta área pode mostrar gráficos, indicadores e alertas principais.
-      </p>
-    </section>
-  </section>
-
-  <!-- EQUIPE -->
-  <section id="tab-equipe" class="tab-panel">
-    <section class="card">
-      <h2>Equipe</h2>
-      <p class="small">
-        Veja os operadores vinculados e envie mensagens individuais ou em grupo.
-      </p>
-
-      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div class="small">
-          Selecione operadores para enviar mensagens em lote.
-        </div>
-        <button id="btnMsgGrupo" class="secondary" type="button" disabled>
-          Mensagem em grupo
-        </button>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="width:26px;" class="check-cell">
-              <input id="chkEquipeSelectAll" type="checkbox" />
-            </th>
-            <th>Operador</th>
-            <th>Posto</th>
-            <th>Situação</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaEquipe"></tbody>
-      </table>
-    </section>
-
-    <!-- Form "modal" inline -->
-    <section id="modalMsg" class="card modal-inline" style="display:none;">
-      <h2 id="modalMsgTitulo">Nova mensagem</h2>
-      <p class="small" id="modalMsgDescricao">
-        Mensagem interna para operador(es) selecionado(s).
-      </p>
-
-      <div class="label">Destinatários</div>
-      <p class="small" id="modalMsgDestinatarios">—</p>
-
-      <div class="label" style="margin-top:6px;">Mensagem</div>
-      <textarea id="modalMsgTexto" rows="3"
-        placeholder="Escreva a mensagem que será enviada para o(s) operador(es)..."></textarea>
-
-      <div style="margin-top:6px;">
-        <div class="file-label">Anexos (opcional)</div>
-        <input id="modalMsgArquivo" class="file-input" type="file"
-               multiple
-               accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
-      </div>
-
-      <div class="row" style="margin-top:8px;justify-content:flex-end;">
-        <button id="btnModalCancelar" class="secondary" type="button">Cancelar</button>
-        <button id="btnModalEnviar" class="primary" type="button">Enviar</button>
-      </div>
-    </section>
-  </section>
-
-  <!-- MENSAGENS GESTOR -->
-  <section id="tab-msg" class="tab-panel">
-    <section class="card">
-      <h2>Comunicação Interna (Gestor)</h2>
-      <p class="small">
-        Histórico das mensagens internas enviadas pela gestão (mock local).
-      </p>
-      <div id="listaMsgGestor" class="small">
-        Nenhuma mensagem enviada ainda.
-      </div>
-    </section>
+  <section class="card">
+    <h2>Painel do Gestor</h2>
+    <p class="small">
+      Aqui o gestor irá configurar escalas, visualizar indicadores e acompanhar o time (MVP em construção).
+    </p>
   </section>
 </main>
 
 <script>
-  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
+
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel= document.getElementById('themeLabel');
@@ -397,71 +216,42 @@
     let saved = null;
     try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
 
-    if (saved === 'dark') {
-      document.body.classList.add('theme-dark');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    } else if (saved === 'light') {
-      document.body.classList.remove('theme-dark');
+    if (saved === 'light') {
+      document.body.classList.add('theme-light');
       themeIcon.textContent = '🌙';
       themeLabel.textContent = 'Dark';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
     } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        document.body.classList.add('theme-dark');
-        themeIcon.textContent = '☀️';
-        themeLabel.textContent = 'Light';
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-      } else {
-        document.body.classList.remove('theme-dark');
-        themeIcon.textContent = '🌙';
-        themeLabel.textContent = 'Dark';
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-      }
+      document.body.classList.remove('theme-light');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
     }
   }
 
   aplicarTemaInicial();
 
   btnTheme.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('theme-dark');
-    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
-    if (isDark) {
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    } else {
+    const isLight = document.body.classList.toggle('theme-light');
+    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
+    if (isLight) {
       themeIcon.textContent = '🌙';
       themeLabel.textContent = 'Dark';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
     }
   });
 
-  // ---------- Abas principais ----------
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabPanels  = document.querySelectorAll('.tab-panel');
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
-  // ---------- Sessão / roles ----------
+  // proteção de acesso: só gestor/admin
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch (e) {
-      return null;
-    }
+    } catch(e) { return null; }
   }
 
   const usuario = carregarUsuario();
@@ -472,237 +262,18 @@
     const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
 
     if (!temGestor) {
+      // não é gestor/admin: volta para painel principal de operador
       window.location.href = 'operador.html';
+    } else {
+      const nome = usuario.nome || usuario.username || 'Gestor';
+      document.getElementById('subtitleGestor').textContent =
+        `Gestor logado – ${nome}`;
     }
-
-    const nome = usuario.nome || 'Gestor';
-    document.getElementById('subtitleGestor').textContent =
-      `Gestor logado – ${nome}`;
   }
 
-  // ---------- Sair ----------
-  document.getElementById('btnSair').addEventListener('click', () => {
-    if (confirm('Deseja realmente sair?')) {
-      localStorage.removeItem('sgo_auth_token');
-      localStorage.removeItem('sgo_usuario');
-      window.location.href = 'index.html';
-    }
+  document.getElementById('btnVoltarOperador').addEventListener('click', () => {
+    window.location.href = 'operador.html';
   });
-
-  // ---------- Equipe (mock) ----------
-  const equipe = [
-    {
-      id: 1,
-      nome: 'João Silva',
-      matricula: '00123',
-      posto: 'Centro de Cooperação da Cidade',
-      situacao: 'Ativo'
-    },
-    {
-      id: 2,
-      nome: 'Maria Souza',
-      matricula: '00456',
-      posto: 'UBS Centro',
-      situacao: 'Ativo'
-    },
-    {
-      id: 3,
-      nome: 'Carlos Lima',
-      matricula: '00789',
-      posto: 'Escola Zona Leste',
-      situacao: 'Afastado'
-    }
-  ];
-
-  const tabelaEquipeBody = document.getElementById('tabelaEquipe');
-  const chkSelectAll      = document.getElementById('chkEquipeSelectAll');
-  const btnMsgGrupo       = document.getElementById('btnMsgGrupo');
-
-  let equipeSelecionadaIds = new Set();
-
-  function renderEquipe() {
-    tabelaEquipeBody.innerHTML = '';
-
-    equipe.forEach(op => {
-      const tr = document.createElement('tr');
-      tr.dataset.id = op.id;
-
-      // checkbox
-      const tdSel = document.createElement('td');
-      tdSel.className = 'check-cell';
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.className = 'chk-equipe-op';
-      chk.addEventListener('change', () => {
-        if (chk.checked) {
-          equipeSelecionadaIds.add(op.id);
-        } else {
-          equipeSelecionadaIds.delete(op.id);
-        }
-        atualizarBtnMsgGrupo();
-        atualizarSelectAllCheck();
-      });
-      tdSel.appendChild(chk);
-
-      // operador
-      const tdOp = document.createElement('td');
-      tdOp.innerHTML = `<strong>${op.nome}</strong><br><span class="small">Matrícula ${op.matricula}</span>`;
-
-      // posto
-      const tdPosto = document.createElement('td');
-      tdPosto.textContent = op.posto;
-
-      // situação
-      const tdSit = document.createElement('td');
-      const badge = document.createElement('span');
-      badge.className = 'badge-status ' + (op.situacao === 'Ativo' ? 'ativo' : 'afastado');
-      badge.textContent = op.situacao;
-      tdSit.appendChild(badge);
-
-      // ações
-      const tdAcoes = document.createElement('td');
-      const btnMsg = document.createElement('button');
-      btnMsg.type = 'button';
-      btnMsg.className = 'secondary';
-      btnMsg.textContent = 'Mensagem';
-      btnMsg.addEventListener('click', () => {
-        abrirModalMensagem([op.id]);
-      });
-      tdAcoes.appendChild(btnMsg);
-
-      tr.appendChild(tdSel);
-      tr.appendChild(tdOp);
-      tr.appendChild(tdPosto);
-      tr.appendChild(tdSit);
-      tr.appendChild(tdAcoes);
-
-      tabelaEquipeBody.appendChild(tr);
-    });
-  }
-
-  function atualizarBtnMsgGrupo() {
-    btnMsgGrupo.disabled = equipeSelecionadaIds.size === 0;
-  }
-
-  function atualizarSelectAllCheck() {
-    const total = equipe.length;
-    const marcados = equipeSelecionadaIds.size;
-    chkSelectAll.checked = marcados > 0 && marcados === total;
-    chkSelectAll.indeterminate = marcados > 0 && marcados < total;
-  }
-
-  chkSelectAll.addEventListener('change', () => {
-    const marcar = chkSelectAll.checked;
-    equipeSelecionadaIds = new Set();
-    const chks = document.querySelectorAll('.chk-equipe-op');
-    chks.forEach((chk, idx) => {
-      chk.checked = marcar;
-      if (marcar) {
-        equipeSelecionadaIds.add(equipe[idx].id);
-      }
-    });
-    atualizarBtnMsgGrupo();
-  });
-
-  btnMsgGrupo.addEventListener('click', () => {
-    if (!equipeSelecionadaIds.size) return;
-    abrirModalMensagem(Array.from(equipeSelecionadaIds));
-  });
-
-  // ---------- Modal / envio de mensagens ----------
-  const modalMsg            = document.getElementById('modalMsg');
-  const modalMsgTitulo      = document.getElementById('modalMsgTitulo');
-  const modalMsgDescricao   = document.getElementById('modalMsgDescricao');
-  const modalMsgDestinat    = document.getElementById('modalMsgDestinatarios');
-  const modalMsgTexto       = document.getElementById('modalMsgTexto');
-  const modalMsgArquivo     = document.getElementById('modalMsgArquivo');
-  const btnModalCancelar    = document.getElementById('btnModalCancelar');
-  const btnModalEnviar      = document.getElementById('btnModalEnviar');
-
-  let mensagensGestorEnviadas = [];
-
-  function abrirModalMensagem(listaIds) {
-    const destinatarios = equipe.filter(op => listaIds.includes(op.id));
-    const nomes = destinatarios.map(d => d.nome).join(', ');
-
-    modalMsgTitulo.textContent =
-      listaIds.length === 1 ? 'Nova mensagem para operador' : 'Nova mensagem em grupo';
-    modalMsgDescricao.textContent =
-      listaIds.length === 1
-        ? 'Mensagem interna direcionada a um único operador.'
-        : 'Mensagem interna direcionada aos operadores selecionados.';
-    modalMsgDestinat.textContent = nomes || '—';
-
-    modalMsgTexto.value = '';
-    modalMsgArquivo.value = '';
-    modalMsg.style.display = 'block';
-
-    btnModalEnviar.dataset.ids = JSON.stringify(listaIds);
-  }
-
-  btnModalCancelar.addEventListener('click', () => {
-    modalMsg.style.display = 'none';
-    btnModalEnviar.dataset.ids = '[]';
-  });
-
-  btnModalEnviar.addEventListener('click', () => {
-    const texto = modalMsgTexto.value.trim();
-    if (!texto) {
-      alert('Digite uma mensagem para enviar.');
-      return;
-    }
-    const anexosCount = modalMsgArquivo.files ? modalMsgArquivo.files.length : 0;
-    const ids = JSON.parse(btnModalEnviar.dataset.ids || '[]');
-
-    if (!ids.length) {
-      alert('Nenhum destinatário selecionado.');
-      return;
-    }
-
-    const agora = new Date().toLocaleString('pt-BR');
-
-    mensagensGestorEnviadas.push({
-      id: Date.now(),
-      texto,
-      anexos: anexosCount,
-      destinatarios: ids,
-      data: agora
-    });
-
-    atualizarHistoricoGestor();
-
-    alert('Mensagem registrada localmente para ' + ids.length + ' operador(es) (mock).');
-
-    modalMsg.style.display = 'none';
-    btnModalEnviar.dataset.ids = '[]';
-  });
-
-  function atualizarHistoricoGestor() {
-    const container = document.getElementById('listaMsgGestor');
-    if (!mensagensGestorEnviadas.length) {
-      container.textContent = 'Nenhuma mensagem enviada ainda.';
-      return;
-    }
-    container.innerHTML = '';
-    mensagensGestorEnviadas
-      .slice()
-      .reverse()
-      .forEach(m => {
-        const dests = equipe
-          .filter(op => m.destinatarios.includes(op.id))
-          .map(op => op.nome)
-          .join(', ');
-        const div = document.createElement('div');
-        div.style.marginBottom = '6px';
-        div.innerHTML =
-          `<strong>${m.data}</strong> – para: ${dests}<br><span class="small">${m.texto}</span>`;
-        container.appendChild(div);
-      });
-  }
-
-  // Inicializa
-  renderEquipe();
-  atualizarHistoricoGestor();
 </script>
 </body>
 </html>
