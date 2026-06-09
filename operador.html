@@ -476,7 +476,6 @@
       <span class="icon" id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
-    <!-- botão para acessar painel do gestor, só aparece para roles GESTOR/ADMIN -->
     <button id="btnPainelGestor" class="secondary" type="button" style="display:none;">
       Painel do gestor
     </button>
@@ -487,43 +486,458 @@
   </div>
 </header>
 
-<!-- resto igual ao operador.html que te passei na mensagem anterior,
-     incluindo abas Perfil, Ponto, Escala, Mensagens e todos os scripts,
-     apenas acrescentando a lógica abaixo para o btnPainelGestor -->
+<main>
+  <div class="tabs-header">
+    <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
+    <button class="tab-button" data-tab="tab-ponto">Ponto</button>
+    <button class="tab-button" data-tab="tab-escala">Escala</button>
+    <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
+  </div>
+
+  <section id="tab-perfil" class="tab-panel active">
+    <section class="card">
+      <h2>Perfil</h2>
+      <p class="small">Dados pessoais básicos, foto e alteração de senha (MVP local).</p>
+
+      <div class="perfil-grid">
+        <div class="perfil-foto" id="fotoContainer">
+          <span id="fotoIniciais">OP</span>
+        </div>
+        <div class="perfil-dados">
+          <div class="perfil-campo">
+            <span class="label">Nome</span>
+            <span class="valor" id="perfilNome">—</span>
+          </div>
+          <div class="perfil-campo">
+            <span class="label">Matrícula</span>
+            <span class="valor" id="perfilMatricula">—</span>
+          </div>
+          <div class="perfil-campo">
+            <span class="label">Usuário</span>
+            <span class="valor" id="perfilUsuario">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="label-inline">Foto de perfil</div>
+      <input id="inputFoto" class="perfil-input" type="file" accept="image/*" />
+
+      <div class="label-inline">Alterar senha</div>
+      <input id="inputSenhaAtual" class="senha-input" type="password" placeholder="Senha atual" />
+      <input id="inputSenhaNova" class="senha-input" type="password" placeholder="Nova senha" style="margin-top:4px;" />
+      <input id="inputSenhaNova2" class="senha-input" type="password" placeholder="Confirmar nova senha" style="margin-top:4px;" />
+
+      <div class="row" style="margin-top:8px;">
+        <button id="btnSalvarSenha" class="primary" type="button">Salvar nova senha</button>
+      </div>
+
+      <p id="feedbackPerfil" class="small" style="margin-top:6px;"></p>
+    </section>
+  </section>
+
+  <section id="tab-ponto" class="tab-panel">
+    <section class="card">
+      <h2>Ponto</h2>
+      <p class="small">Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).</p>
+
+      <div class="info-box">
+        <div class="info-label">Operador</div>
+        <div class="info-value" id="infoOperador">—</div>
+
+        <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
+        <div class="info-value" id="infoLocal">Localização não disponível.</div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="btnCheckin" class="primary" type="button">Check-in</button>
+        <button id="btnIntervalo" class="secondary" type="button" disabled>Intervalo</button>
+        <button id="btnCheckout" class="secondary" type="button" disabled>Checkout</button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <span class="status-badge off" id="statusPonto">Status: Fora do expediente</span>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-escala" class="tab-panel">
+    <section class="card">
+      <h2>Escala de turnos</h2>
+      <p class="small">A escala mensal é definida pelos supervisores. Visualize seus dias e horários e marque os dias já trabalhados.</p>
+
+      <div class="escala-header">
+        <div class="escala-selects">
+          <select id="escalaMes"></select>
+          <select id="escalaAno"></select>
+        </div>
+        <div class="small">
+          Cada linha representa o dia da escala e o horário a ser cumprido.
+        </div>
+      </div>
+
+      <div class="escala-box" id="escalaBox"></div>
+
+      <div class="link-escala-anterior" id="linkEscalasAnteriores">
+        Ver escalas anteriores já cumpridas
+      </div>
+      <ul class="lista-escalas-anteriores" id="listaEscalasAnteriores" style="display:none;"></ul>
+    </section>
+  </section>
+
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card">
+      <h2>Mensagens</h2>
+      <p class="small">Aqui você pode visualizar mensagens internas (MVP ilustrativo).</p>
+      <div class="info-box">
+        <div class="info-label">Mensagens recentes</div>
+        <div class="info-value">Nenhuma mensagem recebida ainda.</div>
+      </div>
+    </section>
+  </section>
+</main>
 
 <script>
-  // ... (todo o script já enviado antes permanece igual) ...
+  const THEME_KEY = 'sgo_theme_login';
 
-  // após carregar o usuário no operador:
+  const btnTheme  = document.getElementById('btnTheme');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel= document.getElementById('themeLabel');
+
+  function aplicarTemaInicial() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+
+    if (saved === 'light') {
+      document.body.classList.add('theme-light');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      document.body.classList.remove('theme-light');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  }
+
+  aplicarTemaInicial();
+
+  btnTheme.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('theme-light');
+    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
+    if (isLight) {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  });
+
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanels  = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch(e) { return null; }
+    } catch(e) {
+      return null;
+    }
   }
 
   const usuario = carregarUsuario();
   if (!usuario) {
     window.location.href = 'index.html';
   } else {
+    const nome = usuario.nome || usuario.username || 'Operador';
+    const matricula = usuario.matricula || '—';
+    const username  = usuario.username || '';
+
+    document.getElementById('subtitleOperador').textContent = `Operador logado – ${nome}`;
+    document.getElementById('perfilNome').textContent = nome;
+    document.getElementById('perfilMatricula').textContent = matricula;
+    document.getElementById('perfilUsuario').textContent = username;
+
+    const iniciais = nome.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('fotoIniciais').textContent = iniciais;
+    document.getElementById('infoOperador').textContent = `${nome} · Matrícula ${matricula}`;
+
     const roles = usuario.roles || [];
     const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
-
     const btnPainelGestor = document.getElementById('btnPainelGestor');
-    if (btnPainelGestor) {
-      if (temGestor) {
-        btnPainelGestor.style.display = 'inline-flex';
-        btnPainelGestor.addEventListener('click', () => {
-          window.location.href = 'gestor.html';
-        });
-      } else {
-        btnPainelGestor.style.display = 'none';
+    if (btnPainelGestor && temGestor) {
+      btnPainelGestor.style.display = 'inline-flex';
+      btnPainelGestor.addEventListener('click', () => {
+        window.location.href = 'gestor.html';
+      });
+    }
+  }
+
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      window.location.href = 'index.html';
+    }
+  });
+
+  (function carregarGeoPosLogin() {
+    const infoLocal = document.getElementById('infoLocal');
+    try {
+      const raw = localStorage.getItem('sgo_geo_pos');
+      if (!raw) {
+        infoLocal.textContent = 'Localização não disponível.';
+        return;
       }
+      const data = JSON.parse(raw);
+      if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') {
+        infoLocal.textContent = 'Localização não disponível.';
+        return;
+      }
+
+      const lat = data.lat.toFixed(6);
+      const lng = data.lng.toFixed(6);
+
+      const ts = data.ts ? new Date(data.ts) : null;
+      const tsStr = ts
+        ? ts.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+        : 'horário desconhecido';
+
+      infoLocal.textContent = `Lat ${lat} · Lng ${lng} (capturado em ${tsStr})`;
+    } catch (e) {
+      infoLocal.textContent = 'Localização não disponível.';
+    }
+  })();
+
+  const btnCheckin   = document.getElementById('btnCheckin');
+  const btnIntervalo = document.getElementById('btnIntervalo');
+  const btnCheckout  = document.getElementById('btnCheckout');
+  const statusPonto  = document.getElementById('statusPonto');
+
+  let emExpediente = false;
+  let emIntervalo  = false;
+
+  btnCheckin.addEventListener('click', () => {
+    emExpediente = true;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = true;
+    btnIntervalo.disabled = false;
+    btnCheckout.disabled  = false;
+
+    statusPonto.classList.remove('off');
+    statusPonto.classList.add('ativo');
+    statusPonto.textContent = 'Status: Em expediente';
+  });
+
+  btnIntervalo.addEventListener('click', () => {
+    if (!emExpediente) return;
+
+    emIntervalo = !emIntervalo;
+
+    if (emIntervalo) {
+      statusPonto.textContent = 'Status: Em intervalo';
+      btnIntervalo.textContent = 'Retomar';
+    } else {
+      statusPonto.textContent = 'Status: Em expediente';
+      btnIntervalo.textContent = 'Intervalo';
+    }
+  });
+
+  btnCheckout.addEventListener('click', () => {
+    emExpediente = false;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = false;
+    btnIntervalo.disabled = true;
+    btnCheckout.disabled  = true;
+
+    statusPonto.classList.remove('ativo');
+    statusPonto.classList.add('off');
+    statusPonto.textContent = 'Status: Fora do expediente';
+  });
+
+  const btnSalvarSenha = document.getElementById('btnSalvarSenha');
+  const feedbackPerfil = document.getElementById('feedbackPerfil');
+
+  btnSalvarSenha.addEventListener('click', () => {
+    const atual = document.getElementById('inputSenhaAtual').value.trim();
+    const nova  = document.getElementById('inputSenhaNova').value.trim();
+    const nova2 = document.getElementById('inputSenhaNova2').value.trim();
+
+    if (!atual || !nova || !nova2) {
+      feedbackPerfil.textContent = 'Preencha todos os campos de senha.';
+      return;
+    }
+    if (nova !== nova2) {
+      feedbackPerfil.textContent = 'Nova senha e confirmação não conferem.';
+      return;
     }
 
-    // (resto do preenchimento de nome, matrícula, etc. permanece)
+    try {
+      localStorage.setItem('sgo_senha_alterada', '1');
+    } catch(e) {}
+
+    feedbackPerfil.textContent = 'Senha alterada (mock local, sem backend).';
+    document.getElementById('inputSenhaAtual').value = '';
+    document.getElementById('inputSenhaNova').value  = '';
+    document.getElementById('inputSenhaNova2').value = '';
+  });
+
+  const escalaMes = document.getElementById('escalaMes');
+  const escalaAno = document.getElementById('escalaAno');
+  const escalaBox = document.getElementById('escalaBox');
+  const listaEscalasAnteriores = document.getElementById('listaEscalasAnteriores');
+  const linkEscalasAnteriores  = document.getElementById('linkEscalasAnteriores');
+
+  (function initMesAno() {
+    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = hoje.getMonth();
+
+    meses.forEach((m, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = m;
+      if (idx === mesAtual) opt.selected = true;
+      escalaMes.appendChild(opt);
+    });
+
+    for (let a = anoAtual - 1; a <= anoAtual + 1; a++) {
+      const opt = document.createElement('option');
+      opt.value = a;
+      opt.textContent = a;
+      if (a === anoAtual) opt.selected = true;
+      escalaAno.appendChild(opt);
+    }
+  })();
+
+  function chaveEscala(mes, ano) {
+    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
   }
+
+  function obterEscalaDoGestorMock() {
+    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
+    const dias = [];
+    for (let d = 1; d <= 7; d++) {
+      dias.push({
+        dia: d,
+        horario: turnos[d % turnos.length]
+      });
+    }
+    return dias;
+  }
+
+  function gerarEscalaMes(mes, ano) {
+    const dias = obterEscalaDoGestorMock(mes, ano);
+
+    let marcados = {};
+    try {
+      const raw = localStorage.getItem(chaveEscala(mes, ano));
+      if (raw) marcados = JSON.parse(raw) || {};
+    } catch(e) {}
+
+    const table = document.createElement('table');
+    table.className = 'escala';
+
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+      <tr>
+        <th>Dia</th>
+        <th>Horário</th>
+        <th>Trabalhado</th>
+      </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    dias.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${String(item.dia).padStart(2,'0')}</td>
+        <td>${item.horario}</td>
+        <td><input type="checkbox" data-dia="${item.dia}"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    escalaBox.innerHTML = '';
+    escalaBox.appendChild(table);
+
+    const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(chk => {
+      const dia = chk.dataset.dia;
+      if (marcados[dia]) chk.checked = true;
+
+      chk.addEventListener('change', () => {
+        if (chk.checked) {
+          marcados[dia] = true;
+        } else {
+          delete marcados[dia];
+        }
+        try {
+          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcados));
+        } catch(e) {}
+      });
+    });
+  }
+
+  function atualizarEscalaAtual() {
+    const mes = parseInt(escalaMes.value, 10);
+    const ano = parseInt(escalaAno.value, 10);
+    gerarEscalaMes(mes, ano);
+  }
+
+  escalaMes.addEventListener('change', atualizarEscalaAtual);
+  escalaAno.addEventListener('change', atualizarEscalaAtual);
+  atualizarEscalaAtual();
+
+  linkEscalasAnteriores.addEventListener('click', () => {
+    if (listaEscalasAnteriores.style.display === 'none') {
+      listaEscalasAnteriores.style.display = 'block';
+      listaEscalasAnteriores.innerHTML = '';
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('sgo_escala_')) {
+          const val = localStorage.getItem(k);
+          try {
+            const parsed = JSON.parse(val);
+            if (parsed && Object.keys(parsed).length > 0) {
+              const li = document.createElement('li');
+              li.textContent = k.replace('sgo_escala_', '');
+              listaEscalasAnteriores.appendChild(li);
+            }
+          } catch(e) {}
+        }
+      }
+
+      if (!listaEscalasAnteriores.children.length) {
+        const li = document.createElement('li');
+        li.textContent = 'Nenhuma escala anterior registrada.';
+        listaEscalasAnteriores.appendChild(li);
+      }
+    } else {
+      listaEscalasAnteriores.style.display = 'none';
+    }
+  });
 </script>
 </body>
 </html>
