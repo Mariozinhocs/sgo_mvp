@@ -19,7 +19,6 @@
       --border-subtle: #1f2937;
     }
 
-    /* Tema claro */
     body.theme-light {
       background: #f3f4f6;
       color: #020617;
@@ -79,7 +78,6 @@
       gap:10px;
     }
 
-    /* AUMENTO DE 70% NO LOGO (32px -> 54px aprox.) */
     .logo-img {
       width:54px;
       height:54px;
@@ -219,7 +217,6 @@
   <header>
     <div class="header-left">
       <div class="logo-box">
-        <!-- Usa o mesmo arquivo icon-512.png como logo -->
         <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
         <div class="logo-text">
           <span class="logo-title">SGO</span>
@@ -281,7 +278,6 @@
       themeLabel.textContent = 'Dark';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
     } else {
-      // padrão: dark
       document.body.classList.remove('theme-light');
       themeIcon.textContent = '☀️';
       themeLabel.textContent = 'Light';
@@ -305,16 +301,14 @@
     }
   });
 
-  // Se já estiver logado, manda direto para operador.html (MVP)
+  // auto-login: sempre para operador.html
   (function redirectIfLogged() {
     try {
       const token = localStorage.getItem('sgo_auth_token');
       const usuarioRaw = localStorage.getItem('sgo_usuario');
       if (!token || !usuarioRaw) return;
       window.location.href = 'operador.html';
-    } catch (e) {
-      // se der erro, segue no login
-    }
+    } catch (e) {}
   })();
 
   const inputUsuario = document.getElementById('inputUsuario');
@@ -323,30 +317,9 @@
   const feedback     = document.getElementById('feedbackLogin');
 
   const mockUsuarios = [
-    {
-      username: 'user.user',
-      senha: '123',
-      nome: 'User User',
-      matricula: '00001',
-      roles: ['OPERADOR'],
-      postoPrincipal: 'Centro de Cooperação da Cidade'
-    },
-    {
-      username: 'gestor.gestor',
-      senha: '123',
-      nome: 'Gestor Gestor',
-      matricula: '90001',
-      roles: ['GESTOR'],
-      postoPrincipal: 'Centro de Cooperação da Cidade'
-    },
-    {
-      username: 'admin.admin',
-      senha: '123',
-      nome: 'Admin Admin',
-      matricula: '99999',
-      roles: ['ADMIN', 'GESTOR'],
-      postoPrincipal: 'Centro de Cooperação da Cidade'
-    }
+    { username: 'user.user',   senha: '123', nome: 'User User',   matricula: '00001', roles: ['OPERADOR'],        postoPrincipal: 'Centro de Cooperação da Cidade' },
+    { username: 'gestor.gestor', senha: '123', nome: 'Gestor Gestor', matricula: '90001', roles: ['GESTOR'],      postoPrincipal: 'Centro de Cooperação da Cidade' },
+    { username: 'admin.admin', senha: '123', nome: 'Admin Admin', matricula: '99999', roles: ['ADMIN','GESTOR'], postoPrincipal: 'Centro de Cooperação da Cidade' }
   ];
 
   function autenticarMock(user, senha) {
@@ -397,8 +370,7 @@
           feedback.textContent = '';
           window.location.href = 'operador.html';
         },
-        (err) => {
-          console.warn('Erro geolocalização após login:', err);
+        () => {
           feedback.textContent = '';
           window.location.href = 'operador.html';
         },
@@ -409,7 +381,6 @@
     }
   });
 
-  // Enter para submeter
   inputSenha.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
       btnEntrar.click();
