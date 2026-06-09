@@ -155,12 +155,12 @@
   const btnEntrar    = document.getElementById('btnEntrar');
   const feedback     = document.getElementById('feedbackLogin');
 
-  // Mock de usuários conforme pedido: user, gestor, admin
+  // Mock de usuários com padrão nome.sobrenome
   const mockUsuarios = [
     {
       username: 'user.user',
       senha: '123',
-      nome: 'Operador User',
+      nome: 'User User',
       matricula: '00001',
       roles: ['OPERADOR'],
       postoPrincipal: 'Centro de Cooperação da Cidade'
@@ -168,7 +168,7 @@
     {
       username: 'gestor.gestor',
       senha: '123',
-      nome: 'Gestor Demo',
+      nome: 'Gestor Gestor',
       matricula: '90001',
       roles: ['GESTOR'],
       postoPrincipal: 'Centro de Cooperação da Cidade'
@@ -176,7 +176,7 @@
     {
       username: 'admin.admin',
       senha: '123',
-      nome: 'Admin Demo',
+      nome: 'Admin Admin',
       matricula: '99999',
       roles: ['ADMIN', 'GESTOR'],
       postoPrincipal: 'Centro de Cooperação da Cidade'
