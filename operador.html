@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="pt-BR">
-head>
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
   <title>SGO – Operador</title>
 
+  <!-- Favicons na pasta "icons" -->
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
@@ -20,41 +21,6 @@ head>
       --danger: #ef4444;
       --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
-      --input-light: #e5e7eb;
-      --input-light-border: #d1d5db;
-      --button-inactive-light: #e5e7eb;
-      --button-inactive-dark: #111827;
-    }
-
-    /* Tema claro */
-    body.theme-light {
-      background: #f3f4f6;
-      color: #020617;
-    }
-
-    body.theme-light .card {
-      background: #ffffff;
-      border-color: #d1d5db;
-      box-shadow: 0 10px 25px rgba(15,23,42,0.12);
-    }
-
-    body.theme-light .logo-img {
-      background:#f9fafb;
-      border-color:#d1d5db;
-    }
-
-    body.theme-light .info-box,
-    body.theme-light .escala-box {
-      background:#f9fafb;
-      border-color:#d1d5db;
-    }
-
-    /* inputs mais claros no tema claro */
-    body.theme-light input,
-    body.theme-light select {
-      background: var(--input-light);
-      color: #020617;
-      border-color: var(--input-light-border);
     }
 
     * { box-sizing: border-box; }
@@ -73,80 +39,27 @@ head>
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      max-width:820px;
-      margin:0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header .subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
     }
 
     .header-left {
       display:flex;
       flex-direction:column;
-      gap:4px;
-    }
-
-    .logo-box {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    /* mesmo tamanho do logo do login (54px) */
-    .logo-img {
-      width:54px;
-      height:54px;
-      border-radius:12px;
-      object-fit:contain;
-      background:#020617;
-      border:1px solid rgba(148,163,184,0.5);
-      padding:6px;
-    }
-
-    .logo-text {
-      display:flex;
-      flex-direction:column;
-    }
-
-    .logo-title {
-      font-size:16px;
-      font-weight:600;
-    }
-
-    .logo-subtitle {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .subtitle-header {
-      font-size:11px;
-      color:var(--text-secondary);
     }
 
     .header-right {
       display:flex;
       align-items:center;
       gap:8px;
-    }
-
-    .theme-toggle {
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    .theme-toggle span.icon {
-      font-size:15px;
-    }
-
-    body.theme-light .theme-toggle {
-      background:#e5e7eb;
-      color:#020617;
-      border-color:#9ca3af;
     }
 
     .btn-exit {
@@ -167,17 +80,200 @@ head>
       font-size:15px;
     }
 
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
     main {
       padding: 8px 14px 24px;
-      max-width: 820px;
+      max-width: 520px;
       margin: 0 auto;
     }
 
+    .card {
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 14px 14px 16px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    button {
+      font: inherit;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: rgba(148,163,184,0.12);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    button:disabled {
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+
+    .status-pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .status-ok {
+      background: var(--primary-soft);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.5);
+    }
+
+    .status-warn {
+      background: var(--danger-soft);
+      color: #fecaca;
+      border: 1px solid rgba(248,113,113,0.55);
+    }
+
+    .badge-posto {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(148,163,184,0.14);
+      border: 1px solid rgba(148,163,184,0.45);
+    }
+
+    .map-placeholder {
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.4);
+      padding: 10px 10px;
+      margin-top:8px;
+      font-size:11px;
+      color: var(--text-secondary);
+    }
+
+    ul {
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+
+    li.history-item {
+      font-size:12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(31,41,55,0.8);
+    }
+
+    li.history-item:last-child {
+      border-bottom:none;
+    }
+
+    .dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#34d399;
+      display:inline-block;
+    }
+
+    .dot-red {
+      background:#f97373;
+    }
+
+    .chip {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.18);
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      margin-bottom:2px;
+    }
+
+    select, input, textarea {
+      width:100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#020617;
+      color:var(--text-main);
+      font-size:13px;
+      resize:vertical;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color:var(--text-secondary);
+    }
+
+    .time-big {
+      font-size: 32px;
+      font-weight: 600;
+    }
+
+    /* Abas principais */
     .tabs-header {
       display:flex;
       gap:6px;
-      margin: 4px 0 10px;
-      flex-wrap:wrap;
+      margin: 4px 14px 0;
+      max-width:520px;
+      margin-left:auto;
+      margin-right:auto;
     }
 
     .tab-button {
@@ -207,132 +303,73 @@ head>
       display:block;
     }
 
-    .card {
-      background: linear-gradient(145deg, #020617, #020617);
-      border-radius: 18px;
-      padding: 14px 14px 16px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
-      margin-bottom: 14px;
-    }
-
-    h2 {
-      margin: 0 0 6px;
-      font-size: 17px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .info-box {
-      margin-top:8px;
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid var(--border-subtle);
-      background:rgba(15,23,42,0.8);
+    /* Escala */
+    table {
+      width:100%;
+      border-collapse:collapse;
       font-size:12px;
+      margin-top:6px;
     }
 
-    .info-label {
-      text-transform:uppercase;
+    th, td {
+      padding:6px 4px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+      vertical-align:middle;
+    }
+
+    th {
       font-size:11px;
+      text-transform:uppercase;
       letter-spacing:0.06em;
       color:var(--text-secondary);
     }
 
-    .info-value {
-      margin-top:2px;
-      font-size:13px;
+    .check-cell {
+      text-align:center;
     }
 
-    .row {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    .check-cell input[type="checkbox"] {
+      width:14px;
+      height:14px;
+      accent-color: #22c55e;
+      cursor:pointer;
     }
 
-    button {
-      font: inherit;
-      border-radius: 999px;
-      border: none;
-      padding: 8px 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .escala-dia {
+      font-weight:500;
     }
 
-    button.primary {
-      background: var(--primary);
-      color: #022c22;
-      font-weight: 600;
-    }
-
-    /* botões secundários (inativos) com cinza melhor definido */
-    button.secondary {
-      background: var(--button-inactive-dark);
-      color: var(--text-main);
-      border: 1px solid rgba(148,163,184,0.4);
-    }
-
-    body.theme-light button.secondary {
-      background: var(--button-inactive-light);
-      color: #111827;
-      border-color: #cbd5f5;
-    }
-
-    button:disabled {
-      opacity:0.7;
-      cursor:not-allowed;
-    }
-
-    .status-badge {
-      display:inline-flex;
-      align-items:center;
-      padding:2px 8px;
-      border-radius:999px;
+    .escala-hora {
       font-size:11px;
-      border:1px solid rgba(148,163,184,0.5);
       color:var(--text-secondary);
-      gap:4px;
     }
 
-    .status-badge.ativo {
-      border-color:rgba(34,197,94,0.8);
-      color:#bbf7d0;
-      background:var(--primary-soft);
-    }
-
-    .status-badge.off {
-      border-color:rgba(248,113,113,0.8);
-      color:#fecaca;
-      background:var(--danger-soft);
+    .escala-post {
+      font-size:11px;
+      color:var(--text-secondary);
     }
 
     /* Perfil */
-    .perfil-grid {
+    .perfil-header {
       display:flex;
+      align-items:center;
       gap:14px;
-      flex-wrap:wrap;
-      align-items:flex-start;
+      margin-bottom:10px;
     }
 
     .perfil-foto {
-      width:90px;
-      height:90px;
-      border-radius:999px;
-      border:2px solid rgba(148,163,184,0.6);
+      width:70px;
+      height:70px;
+      border-radius:50%;
       background:#020617;
+      border:2px solid rgba(148,163,184,0.7);
+      overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:32px;
-      font-weight:600;
-      color:var(--text-secondary);
-      overflow:hidden;
+      font-size:26px;
+      color:#9ca3af;
     }
 
     .perfil-foto img {
@@ -341,145 +378,145 @@ head>
       object-fit:cover;
     }
 
-    .perfil-dados {
-      flex:1;
-      min-width:200px;
+    .perfil-nome {
+      font-size:18px;
+      font-weight:600;
     }
 
-    .perfil-campo {
-      margin-top:4px;
-      font-size:13px;
+    .perfil-matricula {
+      font-size:12px;
+      color:var(--text-secondary);
     }
 
-    .perfil-campo span.label {
+    .perfil-info-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .perfil-info-item {
+      font-size:12px;
+    }
+
+    .perfil-info-item strong {
+      display:block;
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:0.06em;
       color:var(--text-secondary);
+    }
+
+    /* Mensagens / Comunicação Interna */
+    .msg-tabs-header {
+      display:flex;
+      gap:6px;
+      margin-top:6px;
+    }
+
+    .msg-tab-button {
+      flex:1;
+      text-align:center;
+      padding:6px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:11px;
+      cursor:pointer;
+    }
+
+    .msg-tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .msg-tab-panel {
+      display:none;
+      margin-top:6px;
+    }
+
+    .msg-tab-panel.active {
       display:block;
     }
 
-    .perfil-campo span.valor {
-      font-size:13px;
+    .msg-list {
+      max-height:220px;
+      overflow-y:auto;
+      margin-top:4px;
     }
 
-    .label-inline {
+    .msg-item {
+      font-size:12px;
+      padding:6px 8px;
+      border-radius:10px;
+      margin-bottom:6px;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.4);
+    }
+
+    .msg-item.recebida {
+      border-color:rgba(59,130,246,0.6);
+    }
+
+    .msg-item.enviada {
+      border-color:rgba(34,197,94,0.6);
+    }
+
+    .msg-meta {
       font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
       color:var(--text-secondary);
-      margin-top:8px;
       margin-bottom:2px;
     }
 
-    input.perfil-input, input.senha-input {
-      width:100%;
-      padding:7px 9px;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:#020617;
-      color:var(--text-main);
-      font-size:13px;
-    }
-
-    /* Escala */
-    .escala-header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      margin-top:6px;
-      flex-wrap:wrap;
-    }
-
-    .escala-selects {
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-    }
-
-    .escala-selects select {
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:#020617;
-      color:var(--text-main);
+    .msg-text {
       font-size:12px;
     }
 
-    .escala-box {
-      margin-top:8px;
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid var(--border-subtle);
-      background:rgba(15,23,42,0.8);
-      font-size:12px;
-      overflow-x:auto;
+    .msg-form {
+      margin-top:4px;
     }
 
-    table.escala {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-    }
-
-    table.escala th,
-    table.escala td {
-      padding:4px 3px;
-      border-bottom:1px solid rgba(31,41,55,0.9);
-      text-align:center;
-      white-space:nowrap;
-    }
-
-    table.escala th {
+    .file-label {
       font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
       color:var(--text-secondary);
     }
 
-    table.escala td.turno-label {
-      text-align:left;
+    .file-input {
+      font-size:11px;
+      padding:5px 0;
+      border:none;
+      background:transparent;
+      color:var(--text-main);
     }
 
-    table.escala input[type="checkbox"] {
-      width:14px;
-      height:14px;
-      accent-color:#22c55e;
-      cursor:pointer;
+    .divider {
+      height:1px;
+      background:rgba(31,41,55,0.9);
+      margin:8px 0 10px;
     }
 
-    .link-escala-anterior {
-      margin-top:8px;
-      font-size:12px;
-      color:#a5b4fc;
-      cursor:pointer;
-      text-decoration:underline;
+    .feedback {
+      font-size:11px;
+      margin-top:4px;
     }
 
-    .lista-escalas-anteriores {
-      margin-top:6px;
-      font-size:12px;
+    .feedback.ok {
+      color:#bbf7d0;
     }
 
-    .lista-escalas-anteriores li {
-      margin-bottom:2px;
+    .feedback.err {
+      color:#fecaca;
     }
   </style>
 </head>
 <body>
 <header>
   <div class="header-left">
-    <div class="logo-box">
-      <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
-      <div class="logo-text">
-        <span class="logo-title">SGO</span>
-        <span class="logo-subtitle">Sistema de Gestão de Operações</span>
-      </div>
-    </div>
-    <div class="subtitle-header" id="subtitleOperador">
-      Operador logado
-    </div>
+    <h1>SGO – Operador</h1>
+    <div class="subtitle" id="subtitleOperador">Perfil, ponto, escala e comunicação</div>
   </div>
   <div class="header-right">
     <button id="btnTheme" class="theme-toggle" type="button">
@@ -493,146 +530,302 @@ head>
   </div>
 </header>
 
-<main>
-  <!-- Abas -->
-  <div class="tabs-header">
-    <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
-    <button class="tab-button" data-tab="tab-ponto">Ponto</button>
-    <button class="tab-button" data-tab="tab-escala">Escala</button>
-    <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
-  </div>
+<div class="tabs-header">
+  <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
+  <button class="tab-button" data-tab="tab-ponto">Ponto</button>
+  <button class="tab-button" data-tab="tab-escala">Escala</button>
+  <button class="tab-button" data-tab="tab-msg">Mensagens</button>
+</div>
 
-  <!-- ABA PERFIL -->
+<main>
+  <!-- PERFIL -->
   <section id="tab-perfil" class="tab-panel active">
     <section class="card">
-      <h2>Perfil</h2>
-      <p class="small">
-        Dados pessoais básicos, foto e alteração de senha (MVP local).
-      </p>
+      <h2>Perfil do operador</h2>
+      <p class="small">Confira seus dados cadastrais, foto e altere sua senha de acesso.</p>
 
-      <div class="perfil-grid">
-        <div class="perfil-foto" id="fotoContainer">
-          <span id="fotoIniciais">OP</span>
+      <div class="perfil-header">
+        <div class="perfil-foto" id="perfilFotoPreview">
+          <span>👤</span>
         </div>
-        <div class="perfil-dados">
-          <div class="perfil-campo">
-            <span class="label">Nome</span>
-            <span class="valor" id="perfilNome">—</span>
+        <div>
+          <div class="perfil-nome" id="perfilNome">Nome do Operador</div>
+          <div class="perfil-matricula" id="perfilMatricula">Matrícula 00000</div>
+          <div class="chip" id="perfilSituacaoChip">
+            <span class="dot"></span>
+            Ativo
           </div>
-          <div class="perfil-campo">
-            <span class="label">Matrícula</span>
-            <span class="valor" id="perfilMatricula">—</span>
-          </div>
-          <div class="perfil-campo">
-            <span class="label">Usuário</span>
-            <span class="valor" id="perfilUsuario">—</span>
+          <div class="chip" id="perfilMockChip" style="display:none;">
+            Usuário de teste
           </div>
         </div>
       </div>
 
-      <div class="label-inline">Foto de perfil</div>
-      <input id="inputFoto" class="perfil-input" type="file" accept="image/*" />
-
-      <div class="label-inline">Alterar senha</div>
-      <input id="inputSenhaAtual" class="senha-input" type="password" placeholder="Senha atual" />
-      <input id="inputSenhaNova" class="senha-input" type="password" placeholder="Nova senha" style="margin-top:4px;" />
-      <input id="inputSenhaNova2" class="senha-input" type="password" placeholder="Confirmar nova senha" style="margin-top:4px;" />
-
-      <div class="row" style="margin-top:8px;">
-        <button id="btnSalvarSenha" class="primary" type="button">
-          Salvar nova senha
-        </button>
+      <div class="perfil-info-grid">
+        <div class="perfil-info-item">
+          <strong>Matrícula</strong>
+          <span id="perfilMatriculaNum">00000</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Usuário</strong>
+          <span id="perfilUsername">nome.sobrenome</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Documento</strong>
+          <span id="perfilDocumento">000.000.000-00</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Telefone</strong>
+          <span id="perfilTelefone">(00) 00000-0000</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>E-mail</strong>
+          <span id="perfilEmail">operador@empresa.com</span>
+        </div>
+        <div class="perfil-info-item">
+          <strong>Posto principal</strong>
+          <span id="perfilPostoPrincipal">Centro de Cooperação da Cidade</span>
+        </div>
       </div>
 
-      <p id="feedbackPerfil" class="small" style="margin-top:6px;"></p>
+      <div style="margin-top:10px">
+        <div class="label">Foto oficial</div>
+        <p class="small">
+          Esta é a foto utilizada para identificação interna. Caso esteja desatualizada, procure seu gestor para solicitar atualização.
+        </p>
+        <input id="perfilFotoInput" class="file-input" type="file" accept="image/*" />
+        <p class="small">
+          *No MVP, a foto é trocada apenas localmente neste dispositivo. Na integração futura, o envio será feito ao servidor.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <h2 style="font-size:15px;margin-bottom:4px;">Alterar senha</h2>
+        <p class="small">
+          Por segurança, altere sua senha periodicamente. A senha inicial é fornecida pelo gestor.
+        </p>
+
+        <div style="margin-top:6px;">
+          <div class="label">Senha atual</div>
+          <input id="senhaAtual" type="password" placeholder="Digite sua senha atual" autocomplete="current-password" />
+        </div>
+
+        <div style="margin-top:6px;">
+          <div class="label">Nova senha</div>
+          <input id="senhaNova" type="password" placeholder="Nova senha" autocomplete="new-password" />
+          <p class="small">
+            Mínimo de 8 caracteres, com letras e números. A política exata será validada pelo servidor.
+          </p>
+        </div>
+
+        <div style="margin-top:6px;">
+          <div class="label">Confirmar nova senha</div>
+          <input id="senhaNovaConfirma" type="password" placeholder="Repita a nova senha" autocomplete="new-password" />
+        </div>
+
+        <div class="row" style="margin-top:8px;justify-content:flex-end">
+          <button id="btnAlterarSenha" class="primary" type="button">
+            Alterar senha
+          </button>
+        </div>
+
+        <p id="feedbackSenha" class="feedback"></p>
+      </div>
     </section>
   </section>
 
-  <!-- ABA PONTO -->
+  <!-- PONTO -->
   <section id="tab-ponto" class="tab-panel">
     <section class="card">
-      <h2>Ponto</h2>
-      <p class="small">
-        Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="label">Situação atual</div>
+          <div id="statusTexto" class="time-big">Aguardando</div>
+          <div id="statusPill" class="status-pill status-warn">
+            <span class="dot dot-red"></span>
+            Fora da área de posto
+          </div>
+          <div class="chip">
+            <span>Último registro:</span>
+            <span id="chipUltimoRegistro">Nenhum</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="label">Hora</div>
+          <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
+          <div class="small" id="dataAtual">--/--/----</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Posto e localização</h2>
+      <div class="label">Posto designado</div>
+      <div id="postoAtual" class="badge-posto">
+        <span>Não definido (MVP)</span>
+      </div>
+
+      <div class="map-placeholder" id="infoLocal">
+        Sem localização. Toque em “Capturar localização” para iniciar.
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="btnGeo" class="secondary" type="button" disabled>Capturar localização</button>
+        <button id="btnCheckin" class="primary" type="button" disabled>Check-in</button>
+        <button id="btnCheckout" class="secondary" type="button" disabled>Check-out</button>
+      </div>
+
+      <p class="small" style="margin-top:8px">
+        *Sempre que registrar o ponto, o sistema grava a distância até o posto designado. Se estiver fora do raio, o gestor verá essa observação no painel.
       </p>
+    </section>
 
-      <div class="info-box">
-        <div class="info-label">Operador</div>
-        <div class="info-value" id="infoOperador">—</div>
+    <section class="card">
+      <h2>Postos disponíveis (MVP)</h2>
+      <p class="small">
+        Nesta versão, os postos estão simulados localmente. Na integração real, a lista virá do painel do gestor (designações).
+      </p>
+      <div class="label" style="margin-top:4px">Selecione o posto</div>
+      <select id="selectPosto">
+        <option value="">Selecione um posto</option>
+        <option value="UBS Centro|-3.132000|-60.021000|100">UBS Centro (100 m)</option>
+        <option value="Escola Zona Leste|-3.100500|-60.005800|150">Escola Zona Leste (150 m)</option>
+        <option value="Base Operacional Norte|-3.050000|-60.010000|200">Base Operacional Norte (200 m)</option>
+        <option value="Centro de Cooperação da Cidade|-3.089968|-60.009204|120">
+          Centro de Cooperação da Cidade (120 m)
+        </option>
+      </select>
+    </section>
 
-        <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
-        <div class="info-value" id="infoLocal">Localização não disponível.</div>
-      </div>
-
-      <div class="row" style="margin-top:10px;">
-        <button id="btnCheckin" class="primary" type="button">
-          Check-in
-        </button>
-        <button id="btnIntervalo" class="secondary" type="button" disabled>
-          Intervalo
-        </button>
-        <button id="btnCheckout" class="secondary" type="button" disabled>
-          Checkout
-        </button>
-      </div>
-
-      <div style="margin-top:10px;">
-        <span class="status-badge off" id="statusPonto">
-          Status: Fora do expediente
-        </span>
-      </div>
+    <section class="card">
+      <h2>Histórico local</h2>
+      <p class="small">Registros armazenados apenas neste dispositivo (MVP). Depois conectaremos isso à API.</p>
+      <ul id="histLista"></ul>
     </section>
   </section>
 
-  <!-- ABA ESCALA -->
+  <!-- ESCALA -->
   <section id="tab-escala" class="tab-panel">
     <section class="card">
-      <h2>Escala de turnos</h2>
+      <h2>Escala do mês</h2>
       <p class="small">
-        A escala mensal é definida pelos supervisores. Visualize seus dias e horários e marque os dias já trabalhados.
+        Escala mensal fornecida pelo gestor. As jornadas não são editáveis aqui; os checks são marcados automaticamente ou por você, para controle visual.
       </p>
 
-      <div class="escala-header">
-        <div class="escala-selects">
-          <select id="escalaMes"></select>
-          <select id="escalaAno"></select>
-        </div>
-        <div class="small">
-          Cada linha representa o dia da escala e o horário a ser cumprido.
-        </div>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Dia</th>
+            <th>Horário</th>
+            <th>Posto</th>
+            <th class="check-cell">Cumprido</th>
+          </tr>
+        </thead>
+        <tbody id="escalaTabela">
+          <tr data-id="1">
+            <td class="escala-dia">01</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Centro de Cooperação da Cidade</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="1">
+            </td>
+          </tr>
+          <tr data-id="2">
+            <td class="escala-dia">02</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Centro de Cooperação da Cidade</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="2">
+            </td>
+          </tr>
+          <tr data-id="3">
+            <td class="escala-dia">03</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Escola Zona Leste</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="3">
+            </td>
+          </tr>
+          <tr data-id="4">
+            <td class="escala-dia">04</td>
+            <td class="escala-hora">08:00–17:00</td>
+            <td class="escala-post">Base Operacional Norte</td>
+            <td class="check-cell">
+              <input type="checkbox" class="esc-check" data-id="4">
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div class="escala-box" id="escalaBox">
-        <!-- tabela da escala será desenhada aqui -->
-      </div>
-
-      <div class="link-escala-anterior" id="linkEscalasAnteriores">
-        Ver escalas anteriores já cumpridas
-      </div>
-      <ul class="lista-escalas-anteriores" id="listaEscalasAnteriores" style="display:none;"></ul>
+      <p class="small" style="margin-top:8px">
+        *Na integração real, o sistema poderá marcar automaticamente os dias cumpridos conforme os registros de ponto forem batidos dentro do horário previsto.
+      </p>
     </section>
   </section>
 
-  <!-- ABA MENSAGENS -->
-  <section id="tab-mensagens" class="tab-panel">
+  <!-- MENSAGENS / COMUNICAÇÃO INTERNA -->
+  <section id="tab-msg" class="tab-panel">
     <section class="card">
-      <h2>Mensagens</h2>
+      <h2>Comunicação Interna</h2>
       <p class="small">
-        Aqui você pode visualizar mensagens internas (MVP ilustrativo).
+        Envie e receba mensagens internas com sua equipe de gestão. Funciona como um e-mail simples:
+        você escreve uma nova mensagem, consulta a caixa de entrada e acompanha o histórico de enviados.
       </p>
-      <div class="info-box">
-        <div class="info-label">Mensagens recentes</div>
-        <div class="info-value">
-          Nenhuma mensagem recebida ainda.
+
+      <!-- Abas internas: Nova, Recebidas, Enviadas -->
+      <div class="msg-tabs-header">
+        <button class="msg-tab-button active" data-msg-tab="msg-nova">Nova mensagem</button>
+        <button class="msg-tab-button" data-msg-tab="msg-recebidas">Recebidas</button>
+        <button class="msg-tab-button" data-msg-tab="msg-enviadas">Enviadas</button>
+      </div>
+
+      <!-- Nova mensagem -->
+      <div id="msg-nova" class="msg-tab-panel active">
+        <div class="msg-form">
+          <div class="label">Mensagem para o gestor/supervisor</div>
+          <textarea id="msgTexto" rows="3" placeholder="Descreva sua mensagem para o gestor..."></textarea>
+
+          <div style="margin-top:6px">
+            <div class="file-label">Anexos para enviar (opcional)</div>
+            <input id="msgArquivo" class="file-input" type="file"
+                   multiple
+                   accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
+          </div>
+
+          <div class="row" style="margin-top:8px;justify-content:flex-end">
+            <button id="btnEnviarMsg" class="primary" type="button">Enviar</button>
+          </div>
+
+          <p class="small" style="margin-top:6px">
+            *No MVP, as mensagens e anexos ficam registrados apenas neste dispositivo. Na Fase 2, serão integrados ao painel do gestor/supervisor.
+          </p>
         </div>
+      </div>
+
+      <!-- Caixa de entrada -->
+      <div id="msg-recebidas" class="msg-tab-panel">
+        <p class="small">
+          Mensagens e documentos enviados pela gestão para você (simulados neste dispositivo).
+        </p>
+        <div class="msg-list" id="msgListaRecebidas"></div>
+      </div>
+
+      <!-- Caixa de saída -->
+      <div id="msg-enviadas" class="msg-tab-panel">
+        <p class="small">
+          Histórico das mensagens que você enviou.
+        </p>
+        <div class="msg-list" id="msgListaEnviadas"></div>
       </div>
     </section>
   </section>
 </main>
 
 <script>
+  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
-
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel= document.getElementById('themeLabel');
@@ -641,36 +834,49 @@ head>
     let saved = null;
     try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
 
-    if (saved === 'light') {
-      document.body.classList.add('theme-light');
+    if (saved === 'dark') {
+      document.body.classList.add('theme-dark');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else if (saved === 'light') {
+      document.body.classList.remove('theme-dark');
       themeIcon.textContent = '🌙';
       themeLabel.textContent = 'Dark';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
     } else {
-      document.body.classList.remove('theme-light');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.body.classList.add('theme-dark');
+        themeIcon.textContent = '☀️';
+        themeLabel.textContent = 'Light';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+      } else {
+        document.body.classList.remove('theme-dark');
+        themeIcon.textContent = '🌙';
+        themeLabel.textContent = 'Dark';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+      }
     }
   }
 
   aplicarTemaInicial();
 
   btnTheme.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('theme-light');
-    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
-    if (isLight) {
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-    } else {
+    const isDark = document.body.classList.toggle('theme-dark');
+    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
+    if (isDark) {
       themeIcon.textContent = '☀️';
       themeLabel.textContent = 'Light';
       document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
     }
   });
 
-  // Tabs
+  // ---------- Abas principais ----------
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -684,13 +890,13 @@ head>
     });
   });
 
-  // Carrega usuário
+  // ---------- Sessão / roles ----------
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }
@@ -699,25 +905,50 @@ head>
   if (!usuario) {
     window.location.href = 'index.html';
   } else {
-    const nome = usuario.nome || usuario.username || 'Operador';
-    const matricula = usuario.matricula || '—';
-    const username  = usuario.username || '';
+    const roles = usuario.roles || [];
+    const temOperador = roles.includes('OPERADOR');
 
+    if (!temOperador) {
+      window.location.href = 'gestor.html';
+    }
+
+    const nome = usuario.nome || 'Operador';
+    const matricula = usuario.matricula || '00000';
+    const username = usuario.username || '';
+    const documento = usuario.documento || '000.000.000-00';
+    const telefone = usuario.telefone || '(00) 00000-0000';
+    const email = usuario.email || 'operador@empresa.com';
+    const postoPrincipal = usuario.postoPrincipal || 'Centro de Cooperação da Cidade';
+
+    document.getElementById('perfilNome').textContent = nome;
+    document.getElementById('perfilMatricula').textContent = `Matrícula ${matricula}`;
+    document.getElementById('perfilMatriculaNum').textContent = matricula;
+    document.getElementById('perfilUsername').textContent = username || '—';
+    document.getElementById('perfilDocumento').textContent = documento;
+    document.getElementById('perfilTelefone').textContent = telefone;
+    document.getElementById('perfilEmail').textContent = email;
+    document.getElementById('perfilPostoPrincipal').textContent = postoPrincipal;
     document.getElementById('subtitleOperador').textContent =
       `Operador logado – ${nome}`;
 
-    document.getElementById('perfilNome').textContent = nome;
-    document.getElementById('perfilMatricula').textContent = matricula;
-    document.getElementById('perfilUsuario').textContent = username;
+    if (username === 'admin.admin' || username === 'gestor.gestor' || username === 'user.user') {
+      document.getElementById('perfilMockChip').style.display = 'inline-flex';
+    }
 
-    const iniciais = nome.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0,2).toUpperCase();
-    document.getElementById('fotoIniciais').textContent = iniciais;
-
-    document.getElementById('infoOperador').textContent =
-      `${nome} · Matrícula ${matricula}`;
+    const selectPosto = document.getElementById('selectPosto');
+    if (selectPosto && postoPrincipal) {
+      for (const opt of selectPosto.options) {
+        if (opt.value.startsWith(postoPrincipal + '|')) {
+          opt.selected = true;
+          document.getElementById('postoAtual').innerHTML =
+            `<span>${postoPrincipal}</span>`;
+          break;
+        }
+      }
+    }
   }
 
-  // Sair
+  // ---------- Sair ----------
   document.getElementById('btnSair').addEventListener('click', () => {
     if (confirm('Deseja realmente sair?')) {
       localStorage.removeItem('sgo_auth_token');
@@ -726,262 +957,267 @@ head>
     }
   });
 
-  // Localização (Ponto)
-  (function carregarGeoPosLogin() {
-    const infoLocal = document.getElementById('infoLocal');
-    try {
-      const raw = localStorage.getItem('sgo_geo_pos');
-      if (!raw) {
-        infoLocal.textContent = 'Localização não disponível.';
-        return;
-      }
-      const data = JSON.parse(raw);
-      if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') {
-        infoLocal.textContent = 'Localização não disponível.';
-        return;
-      }
+  // ---------- Relógio ----------
+  function atualizarRelogio() {
+    const agora = new Date();
+    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const data = agora.toLocaleDateString('pt-BR');
+    document.getElementById('horaAtual').textContent = hora;
+    document.getElementById('dataAtual').textContent = data;
+  }
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
 
-      const lat = data.lat.toFixed(6);
-      const lng = data.lng.toFixed(6);
+  // ---------- Ponto / Localização ----------
+  let currentPos = null;
+  const histLista = document.getElementById('histLista');
 
-      const ts = data.ts ? new Date(data.ts) : null;
-      const tsStr = ts
-        ? ts.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
-        : 'horário desconhecido';
+  function addHist(text) {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+    li.textContent = new Date().toLocaleTimeString('pt-BR') + ' – ' + text;
+    histLista.prepend(li);
+  }
 
-      infoLocal.textContent =
-        `Lat ${lat} · Lng ${lng} (capturado em ${tsStr})`;
-    } catch (e) {
-      console.warn('Erro ao ler sgo_geo_pos', e);
-      infoLocal.textContent = 'Localização não disponível.';
-    }
-  })();
+  document.getElementById('btnGeo').disabled = false;
+  document.getElementById('btnCheckin').disabled = false;
+  document.getElementById('btnCheckout').disabled = false;
 
-  // Ponto
-  const btnCheckin   = document.getElementById('btnCheckin');
-  const btnIntervalo = document.getElementById('btnIntervalo');
-  const btnCheckout  = document.getElementById('btnCheckout');
-  const statusPonto  = document.getElementById('statusPonto');
-
-  let emExpediente = false;
-  let emIntervalo  = false;
-
-  btnCheckin.addEventListener('click', () => {
-    emExpediente = true;
-    emIntervalo  = false;
-
-    btnCheckin.disabled   = true;
-    btnIntervalo.disabled = false;
-    btnCheckout.disabled  = false;
-
-    statusPonto.classList.remove('off');
-    statusPonto.classList.add('ativo');
-    statusPonto.textContent = 'Status: Em expediente';
-  });
-
-  btnIntervalo.addEventListener('click', () => {
-    if (!emExpediente) return;
-
-    emIntervalo = !emIntervalo;
-
-    if (emIntervalo) {
-      statusPonto.textContent = 'Status: Em intervalo';
-      btnIntervalo.textContent = 'Retomar';
-    } else {
-      statusPonto.textContent = 'Status: Em expediente';
-      btnIntervalo.textContent = 'Intervalo';
-    }
-  });
-
-  btnCheckout.addEventListener('click', () => {
-    emExpediente = false;
-    emIntervalo  = false;
-
-    btnCheckin.disabled   = false;
-    btnIntervalo.disabled = true;
-    btnCheckout.disabled  = true;
-
-    statusPonto.classList.remove('ativo');
-    statusPonto.classList.add('off');
-    statusPonto.textContent = 'Status: Fora do expediente';
-  });
-
-  // Perfil: alterar senha (mock)
-  const btnSalvarSenha = document.getElementById('btnSalvarSenha');
-  const feedbackPerfil = document.getElementById('feedbackPerfil');
-
-  btnSalvarSenha.addEventListener('click', () => {
-    const atual = document.getElementById('inputSenhaAtual').value.trim();
-    const nova  = document.getElementById('inputSenhaNova').value.trim();
-    const nova2 = document.getElementById('inputSenhaNova2').value.trim();
-
-    if (!atual || !nova || !nova2) {
-      feedbackPerfil.textContent = 'Preencha todos os campos de senha.';
+  document.getElementById('btnGeo').onclick = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalização indisponível');
       return;
     }
-    if (nova !== nova2) {
-      feedbackPerfil.textContent = 'Nova senha e confirmação não conferem.';
+    navigator.geolocation.getCurrentPosition(pos => {
+      currentPos = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+      document.getElementById('infoLocal').textContent =
+        `Local atual: Lat ${currentPos.lat.toFixed(6)} · Lng ${currentPos.lng.toFixed(6)} (mock, sem cálculo de distância)`;
+      addHist('Geolocalização capturada');
+    }, () => {
+      alert('Não foi possível obter a localização');
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  };
+
+  document.getElementById('btnCheckin').onclick = () => {
+    if (!currentPos) {
+      alert('Capture a geolocalização primeiro');
+      return;
+    }
+    document.getElementById('statusTexto').textContent = 'Em posto';
+    document.getElementById('statusPill').classList.remove('status-warn');
+    document.getElementById('statusPill').classList.add('status-ok');
+    document.getElementById('statusPill').innerHTML =
+      '<span class="dot"></span>Dentro do posto (mock)';
+    document.getElementById('chipUltimoRegistro').textContent = 'Check-in';
+    addHist('Check-in registrado');
+  };
+
+  document.getElementById('btnCheckout').onclick = () => {
+    document.getElementById('statusTexto').textContent = 'Fora de posto';
+    document.getElementById('statusPill').classList.remove('status-ok');
+    document.getElementById('statusPill').classList.add('status-warn');
+    document.getElementById('statusPill').innerHTML =
+      '<span class="dot dot-red"></span>Fora da área de posto';
+    document.getElementById('chipUltimoRegistro').textContent = 'Check-out';
+    addHist('Check-out registrado');
+  };
+
+  // ---------- Escala ----------
+  const escChecks = document.querySelectorAll('.esc-check');
+  escChecks.forEach(chk => {
+    chk.addEventListener('change', () => {
+      // poderíamos salvar em localStorage se quiser
+    });
+  });
+
+  // ---------- Abas internas de mensagens ----------
+  const msgTabButtons = document.querySelectorAll('.msg-tab-button');
+  const msgTabPanels  = document.querySelectorAll('.msg-tab-panel');
+
+  msgTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.msgTab;
+      msgTabButtons.forEach(b => b.classList.remove('active'));
+      msgTabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // ---------- Mensagens (entrada e saída) ----------
+  const msgListaRecebidas = document.getElementById('msgListaRecebidas');
+  const msgListaEnviadas  = document.getElementById('msgListaEnviadas');
+  const msgTexto   = document.getElementById('msgTexto');
+  const msgArquivo = document.getElementById('msgArquivo');
+  const btnEnviarMsg = document.getElementById('btnEnviarMsg');
+
+  let mensagensRecebidas = [
+    {
+      id: 1,
+      origem: 'Supervisor Demo',
+      cargoOrigem: 'Supervisor',
+      data: 'Hoje 08:15',
+      texto: 'Favor registrar justificativa de atraso no início do plantão.',
+      anexos: 0
+    },
+    {
+      id: 2,
+      origem: 'Gerente de Operação',
+      cargoOrigem: 'Gerente',
+      data: 'Ontem 17:40',
+      texto: 'Escala do próximo mês será publicada até sexta-feira.',
+      anexos: 1,
+      nomeAnexo: 'Comunicado_Escala.pdf'
+    }
+  ];
+
+  let mensagensEnviadas = [];
+
+  function renderMensagensRecebidas() {
+    msgListaRecebidas.innerHTML = '';
+    if (!mensagensRecebidas.length) {
+      const p = document.createElement('p');
+      p.className = 'small';
+      p.textContent = 'Nenhuma mensagem recebida ainda neste dispositivo.';
+      msgListaRecebidas.appendChild(p);
       return;
     }
 
-    try {
-      localStorage.setItem('sgo_senha_alterada', '1');
-    } catch(e) {}
+    mensagensRecebidas.forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'msg-item recebida';
 
-    feedbackPerfil.textContent = 'Senha alterada (mock local, sem backend).';
-    document.getElementById('inputSenhaAtual').value = '';
-    document.getElementById('inputSenhaNova').value  = '';
-    document.getElementById('inputSenhaNova2').value = '';
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      const origem = m.cargoOrigem ? `${m.origem} (${m.cargoOrigem})` : m.origem;
+      meta.textContent = `${origem} · ${m.data}` +
+        (m.anexos ? ` · ${m.anexos} anexo(s)` : '');
+
+      const body = document.createElement('div');
+      body.className = 'msg-text';
+      body.textContent = m.texto;
+
+      if (m.nomeAnexo) {
+        const anexEl = document.createElement('div');
+        anexEl.className = 'small';
+        anexEl.textContent = `Anexo: ${m.nomeAnexo} (simulado)`;
+        body.appendChild(document.createElement('br'));
+        body.appendChild(anexEl);
+      }
+
+      item.appendChild(meta);
+      item.appendChild(body);
+      msgListaRecebidas.prepend(item);
+    });
+  }
+
+  function renderMensagensEnviadas() {
+    msgListaEnviadas.innerHTML = '';
+    if (!mensagensEnviadas.length) {
+      const p = document.createElement('p');
+      p.className = 'small';
+      p.textContent = 'Nenhuma mensagem enviada neste dispositivo ainda.';
+      msgListaEnviadas.appendChild(p);
+      return;
+    }
+
+    mensagensEnviadas.forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'msg-item enviada';
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = `${m.data} · para gestor` +
+        (m.anexos ? ` · ${m.anexos} anexo(s)` : '');
+
+      const body = document.createElement('div');
+      body.className = 'msg-text';
+      body.textContent = m.texto;
+
+      item.appendChild(meta);
+      item.appendChild(body);
+      msgListaEnviadas.prepend(item);
+    });
+  }
+
+  btnEnviarMsg.addEventListener('click', () => {
+    const texto = msgTexto.value.trim();
+    if (!texto) {
+      alert('Digite uma mensagem para enviar.');
+      return;
+    }
+    const anexosCount = msgArquivo.files ? msgArquivo.files.length : 0;
+
+    mensagensEnviadas.push({
+      id: Date.now(),
+      texto,
+      anexos: anexosCount,
+      data: new Date().toLocaleString('pt-BR')
+    });
+
+    renderMensagensEnviadas();
+
+    msgTexto.value = '';
+    msgArquivo.value = '';
   });
 
-  // Escala: dias + horários com check por dia
-  const escalaMes = document.getElementById('escalaMes');
-  const escalaAno = document.getElementById('escalaAno');
-  const escalaBox = document.getElementById('escalaBox');
-  const listaEscalasAnteriores = document.getElementById('listaEscalasAnteriores');
-  const linkEscalasAnteriores  = document.getElementById('linkEscalasAnteriores');
+  renderMensagensRecebidas();
+  renderMensagensEnviadas();
 
-  (function initMesAno() {
-    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    const hoje = new Date();
-    const anoAtual = hoje.getFullYear();
-    const mesAtual = hoje.getMonth();
+  // ---------- Foto de perfil local ----------
+  const perfilFotoInput = document.getElementById('perfilFotoInput');
+  const perfilFotoPreview = document.getElementById('perfilFotoPreview');
 
-    meses.forEach((m, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.textContent = m;
-      if (idx === mesAtual) opt.selected = true;
-      escalaMes.appendChild(opt);
-    });
-
-    for (let a = anoAtual - 1; a <= anoAtual + 1; a++) {
-      const opt = document.createElement('option');
-      opt.value = a;
-      opt.textContent = a;
-      if (a === anoAtual) opt.selected = true;
-      escalaAno.appendChild(opt);
-    }
-  })();
-
-  function chaveEscala(mes, ano) {
-    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
-  }
-
-  function obterEscalaDoGestorMock(mes, ano) {
-    // MOCK: exemplo de escala que será trazida do painel do gestor
-    // Em produção, essa estrutura virá do backend/painel do gestor
-    const diasNoMes = 7; // para MVP, só 7 dias de exemplo
-    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
-
-    const dias = [];
-    for (let d = 1; d <= diasNoMes; d++) {
-      dias.push({
-        dia: d,
-        horario: turnos[d % turnos.length] // só para variar
-      });
-    }
-    return dias;
-  }
-
-  function gerarEscalaMes(mes, ano) {
-    const dias = obterEscalaDoGestorMock(mes, ano);
-
-    let marcados = {};
-    try {
-      const raw = localStorage.getItem(chaveEscala(mes, ano));
-      if (raw) marcados = JSON.parse(raw) || {};
-    } catch(e) {}
-
-    const table = document.createElement('table');
-    table.className = 'escala';
-
-    const thead = document.createElement('thead');
-    thead.innerHTML = `
-      <tr>
-        <th>Dia</th>
-        <th>Horário</th>
-        <th>Trabalhado</th>
-      </tr>
-    `;
-    table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-
-    dias.forEach(item => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${String(item.dia).padStart(2,'0')}</td>
-        <td>${item.horario}</td>
-        <td>
-          <input type="checkbox" data-dia="${item.dia}">
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    table.appendChild(tbody);
-    escalaBox.innerHTML = '';
-    escalaBox.appendChild(table);
-
-    const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(chk => {
-      const dia = chk.dataset.dia;
-      if (marcados[dia]) {
-        chk.checked = true;
-      }
-      chk.addEventListener('change', () => {
-        if (chk.checked) {
-          marcados[dia] = true;
-        } else {
-          delete marcados[dia];
-        }
-        try {
-          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcados));
-        } catch(e) {}
-      });
-    });
-  }
-
-  function atualizarEscalaAtual() {
-    const mes = parseInt(escalaMes.value, 10);
-    const ano = parseInt(escalaAno.value, 10);
-    gerarEscalaMes(mes, ano);
-  }
-
-  escalaMes.addEventListener('change', atualizarEscalaAtual);
-  escalaAno.addEventListener('change', atualizarEscalaAtual);
-  atualizarEscalaAtual();
-
-  linkEscalasAnteriores.addEventListener('click', () => {
-    if (listaEscalasAnteriores.style.display === 'none') {
-      listaEscalasAnteriores.style.display = 'block';
-      listaEscalasAnteriores.innerHTML = '';
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('sgo_escala_')) {
-          const val = localStorage.getItem(k);
-          try {
-            const parsed = JSON.parse(val);
-            if (parsed && Object.keys(parsed).length > 0) {
-              const li = document.createElement('li');
-              li.textContent = k.replace('sgo_escala_', '');
-              listaEscalasAnteriores.appendChild(li);
-            }
-          } catch(e) {}
-        }
-      }
-
-      if (!listaEscalasAnteriores.children.length) {
-        const li = document.createElement('li');
-        li.textContent = 'Nenhuma escala anterior registrada.';
-        listaEscalasAnteriores.appendChild(li);
-      }
-    } else {
-      listaEscalasAnteriores.style.display = 'none';
-    }
+  perfilFotoInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      perfilFotoPreview.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = reader.result;
+      perfilFotoPreview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
   });
+
+  // ---------- Alterar senha (mock) ----------
+  const btnAlterarSenha = document.getElementById('btnAlterarSenha');
+  const feedbackSenha   = document.getElementById('feedbackSenha');
+
+  btnAlterarSenha.addEventListener('click', () => {
+    const atual   = document.getElementById('senhaAtual').value;
+    const nova    = document.getElementById('senhaNova').value;
+    const confirma= document.getElementById('senhaNovaConfirma').value;
+
+    feedbackSenha.textContent = '';
+    feedbackSenha.className = 'feedback';
+
+    if (!atual || !nova || !confirma) {
+      feedbackSenha.textContent = 'Preencha todos os campos de senha.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+    if (nova !== confirma) {
+      feedbackSenha.textContent = 'A confirmação da nova senha não confere.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+    if (nova.length < 8) {
+      feedbackSenha.textContent = 'A nova senha deve ter pelo menos 8 caracteres.';
+      feedbackSenha.classList.add('err');
+      return;
+    }
+
+    feedbackSenha.textContent = 'Senha alterada localmente (mock). Na versão completa, será enviada ao servidor.';
+    feedbackSenha.classList.add('ok');
+  });
+
+  // Histórico inicial
+  addHist('Painel do operador iniciado');
 </script>
 </body>
 </html>
