@@ -6,21 +6,8 @@
   <meta name="theme-color" content="#020826" />
   <title>SGO – Gestor</title>
 
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="icon" type="image/png" href="icon-512.png" />
-
-  <!-- Leaflet (mapa) -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script> <!-- [web:340][web:343] -->
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+  <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
   <style>
     :root {
@@ -33,7 +20,6 @@
       --danger: #ef4444;
       --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
-      --info-soft: rgba(59,130,246,0.14);
     }
 
     * { box-sizing: border-box; }
@@ -41,9 +27,9 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      min-height: 100vh;
       background: radial-gradient(circle at top, #1d283a, #020617 58%);
       color: var(--text-main);
+      min-height: 100vh;
     }
 
     header {
@@ -52,11 +38,6 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-    }
-
-    .header-left {
-      display:flex;
-      flex-direction:column;
     }
 
     header h1 {
@@ -69,27 +50,15 @@
       color: var(--text-secondary);
     }
 
+    .header-left {
+      display:flex;
+      flex-direction:column;
+    }
+
     .header-right {
       display:flex;
       align-items:center;
       gap:8px;
-    }
-
-    .theme-toggle {
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    .theme-toggle span.icon {
-      font-size:15px;
     }
 
     .btn-exit {
@@ -110,21 +79,33 @@
       font-size:15px;
     }
 
-    main {
-      padding: 8px 14px 24px;
-      max-width: 960px;
-      margin: 0 auto 32px;
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
     }
 
-    .small {
-      font-size: 12px;
-      color: var(--text-secondary);
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
+    main {
+      padding: 8px 14px 24px;
+      max-width: 820px;
+      margin: 0 auto;
     }
 
     .card {
       background: linear-gradient(145deg, #020617, #020617);
       border-radius: 18px;
-      padding: 12px 14px 14px;
+      padding: 14px 14px 16px;
       border: 1px solid var(--border-subtle);
       box-shadow: 0 18px 40px rgba(15,23,42,0.85);
       margin-bottom: 14px;
@@ -132,19 +113,25 @@
 
     h2 {
       margin: 0 0 6px;
-      font-size: 16px;
+      font-size: 17px;
     }
 
-    h3 {
-      margin: 0 0 4px;
-      font-size: 14px;
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
     }
 
     button {
       font: inherit;
       border-radius: 999px;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -164,239 +151,16 @@
       border: 1px solid rgba(148,163,184,0.4);
     }
 
-    button.ghost {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px dashed rgba(148,163,184,0.5);
-    }
-
     button:disabled {
       opacity:0.6;
       cursor:not-allowed;
     }
 
-    .grid-3 {
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap:8px;
-    }
-
-    @media (max-width: 768px) {
-      .grid-3 {
-        grid-template-columns: repeat(2, minmax(0,1fr));
-      }
-    }
-
-    @media (max-width: 520px) {
-      .grid-3 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .summary-card {
-      border-radius: 14px;
-      padding: 10px 10px;
-      background: rgba(15,23,42,0.9);
-      border:1px solid rgba(148,163,184,0.4);
-    }
-
-    .summary-label {
-      font-size:11px;
-      color:var(--text-secondary);
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-    }
-
-    .summary-value {
-      margin-top:2px;
-      font-size:20px;
-      font-weight:600;
-    }
-
-    .summary-sub {
-      font-size:11px;
-      color:var(--text-secondary);
-      margin-top:2px;
-    }
-
-    .pill {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:3px 8px;
-      border-radius:999px;
-      font-size:11px;
-    }
-
-    .pill-ok {
-      background:var(--primary-soft);
-      color:#bbf7d0;
-      border:1px solid rgba(34,197,94,0.5);
-    }
-
-    .pill-warn {
-      background:var(--danger-soft);
-      color:#fecaca;
-      border:1px solid rgba(248,113,113,0.5);
-    }
-
-    .pill-info {
-      background:var(--info-soft);
-      color:#bfdbfe;
-      border:1px solid rgba(59,130,246,0.4);
-    }
-
-    .dot {
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:#22c55e;
-      display:inline-block;
-    }
-
-    .dot-red {
-      background:#f97373;
-    }
-
-    .dot-blue {
-      background:#3b82f6;
-    }
-
-    .row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .row-between {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:8px;
-    }
-
-    .divider {
-      height:1px;
-      background:rgba(31,41,55,0.9);
-      margin:8px 0;
-    }
-
-    /* Tabelas */
-    table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-      margin-top:6px;
-    }
-
-    th, td {
-      padding:6px 4px;
-      border-bottom:1px solid rgba(31,41,55,0.9);
-      text-align:left;
-    }
-
-    th {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    .tag {
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      padding:2px 7px;
-      border-radius:999px;
-      font-size:11px;
-      background:rgba(148,163,184,0.16);
-      border:1px solid rgba(148,163,184,0.45);
-    }
-
-    .tag-small {
-      font-size:10px;
-      padding:1px 6px;
-    }
-
-    .tag-green {
-      background:var(--primary-soft);
-      border-color:rgba(34,197,94,0.5);
-      color:#bbf7d0;
-    }
-
-    .tag-red {
-      background:var(--danger-soft);
-      border-color:rgba(248,113,113,0.5);
-      color:#fecaca;
-    }
-
-    .tag-blue {
-      background:var(--info-soft);
-      border-color:rgba(59,130,246,0.4);
-      color:#bfdbfe;
-    }
-
-    /* Listas scrolláveis */
-    .scroll-list {
-      max-height:240px;
-      overflow-y:auto;
-      margin-top:4px;
-    }
-
-    .occ-item {
-      padding:6px 8px;
-      border-radius:10px;
-      background:rgba(15,23,42,0.9);
-      border:1px solid rgba(148,163,184,0.4);
-      font-size:12px;
-      margin-bottom:6px;
-    }
-
-    .occ-meta {
-      font-size:11px;
-      color:var(--text-secondary);
-      margin-bottom:2px;
-    }
-
-    .badge-role {
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      padding:3px 8px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.18);
-      font-size:11px;
-      margin-right:4px;
-    }
-
-    .label {
-      font-size:11px;
-      color:var(--text-secondary);
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      margin-bottom:2px;
-    }
-
-    input, select {
-      width:100%;
-      padding: 7px 9px;
-      border-radius: 10px;
-      border:1px solid rgba(148,163,184,0.45);
-      background:#020617;
-      color:var(--text-main);
-      font-size:12px;
-    }
-
-    input::placeholder {
-      color:var(--text-secondary);
-    }
-
-    /* Abas */
     .tabs-header {
       display:flex;
       gap:6px;
       margin: 4px 14px 0;
-      max-width:960px;
+      max-width:820px;
       margin-left:auto;
       margin-right:auto;
     }
@@ -428,10 +192,84 @@
       display:block;
     }
 
-    @media (max-width: 600px) {
-      .row-between {
-        flex-direction:column;
-      }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      margin-top:6px;
+    }
+
+    th, td {
+      padding:6px 4px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+      vertical-align:middle;
+    }
+
+    th {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .check-cell {
+      text-align:center;
+    }
+
+    .check-cell input[type="checkbox"] {
+      width:14px;
+      height:14px;
+      accent-color: #22c55e;
+      cursor:pointer;
+    }
+
+    .badge-status {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,0.5);
+      color:var(--text-secondary);
+    }
+
+    .badge-status.ativo {
+      border-color:rgba(34,197,94,0.8);
+      color:#bbf7d0;
+    }
+
+    .badge-status.afastado {
+      border-color:rgba(248,113,113,0.8);
+      color:#fecaca;
+    }
+
+    .file-label {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .file-input {
+      font-size:11px;
+      padding:5px 0;
+      border:none;
+      background:transparent;
+      color:var(--text-main);
+    }
+
+    textarea {
+      width:100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#020617;
+      color:var(--text-main);
+      font-size:13px;
+      resize:vertical;
+    }
+
+    .modal-inline {
+      margin-top:10px;
     }
   </style>
 </head>
@@ -439,7 +277,7 @@
 <header>
   <div class="header-left">
     <h1>SGO – Gestor</h1>
-    <div class="subtitle" id="subtitleGestor">Painel de supervisão</div>
+    <div class="subtitle" id="subtitleGestor">Painel de gestão de equipes</div>
   </div>
   <div class="header-right">
     <button id="btnTheme" class="theme-toggle" type="button">
@@ -454,190 +292,96 @@
 </header>
 
 <div class="tabs-header">
-  <button class="tab-button active" data-tab="tab-visao">Visão geral</button>
-  <button class="tab-button" data-tab="tab-postos">Postos</button>
+  <button class="tab-button active" data-tab="tab-dashboard">Dashboard</button>
   <button class="tab-button" data-tab="tab-equipe">Equipe</button>
-  <button class="tab-button" data-tab="tab-ocorr">Ocorrências</button>
+  <button class="tab-button" data-tab="tab-msg">Mensagens</button>
 </div>
 
 <main>
-  <!-- VISÃO GERAL -->
-  <section id="tab-visao" class="tab-panel active">
+  <!-- DASHBOARD simples -->
+  <section id="tab-dashboard" class="tab-panel active">
     <section class="card">
-      <div class="row-between">
-        <div>
-          <h2>Resumo da operação</h2>
-          <p class="small">
-            Visão em tempo quase real dos postos, operadores e registros de ponto (dados simulados neste MVP).
-          </p>
-          <div id="infoUsuarioGestor" class="small"></div>
-        </div>
-        <div style="text-align:right">
-          <div class="label">Data / hora</div>
-          <div id="horaAtual" style="font-size:18px;font-weight:500">--:--</div>
-          <div id="dataAtual" class="small">--/--/----</div>
-        </div>
-      </div>
-
-      <div class="grid-3" style="margin-top:10px">
-        <div class="summary-card">
-          <div class="summary-label">Postos</div>
-          <div class="summary-value" id="cardPostosTotal">4</div>
-          <div class="summary-sub" id="cardPostosDetalhe">0 ativos · 0 com alerta</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Operadores</div>
-          <div class="summary-value" id="cardOpsTotal">0</div>
-          <div class="summary-sub" id="cardOpsDetalhe">0 em posto · 0 ausentes</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Registros hoje</div>
-          <div class="summary-value" id="cardRegistrosHoje">0</div>
-          <div class="summary-sub" id="cardRegistrosDetalhe">check-in / check-out (mock)</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div class="row" style="flex-wrap:wrap">
-          <span class="pill pill-ok">
-            <span class="dot"></span>
-            Dentro de posto
-          </span>
-          <span class="pill pill-warn">
-            <span class="dot dot-red"></span>
-            Fora do posto / sem registro
-          </span>
-          <span class="pill pill-info">
-            <span class="dot dot-blue"></span>
-            Ocorrências pendentes
-          </span>
-        </div>
-        <button class="ghost" type="button" id="btnRecarregarMock">
-          Recarregar dados simulados
-        </button>
-      </div>
-    </section>
-
-    <!-- Mapa dos postos -->
-    <section class="card">
-      <h2>Mapa dos postos (MVP)</h2>
+      <h2>Visão geral</h2>
       <p class="small">
-        Visualização geográfica dos postos com indicação de status operacional (dados simulados).
+        Resumo da equipe, registros de ponto e mensagens recentes (MVP ilustrativo).
       </p>
-      <div id="mapGestor" style="width:100%;height:280px;border-radius:14px;overflow:hidden;margin-top:6px;"></div>
-    </section>
-
-    <section class="card">
-      <h2>Últimos registros de ponto (mock)</h2>
       <p class="small">
-        Lista de registros recentes de operadores. No MVP, os dados são gerados localmente apenas para demonstração.
-      </p>
-
-      <div class="scroll-list" id="listaRegistros"></div>
-    </section>
-  </section>
-
-  <!-- POSTOS -->
-  <section id="tab-postos" class="tab-panel">
-    <section class="card">
-      <div class="row-between">
-        <div>
-          <h2>Postos de serviço</h2>
-          <p class="small">
-            Acompanhe status dos postos, operadores previstos e se há registros recentes.
-          </p>
-        </div>
-        <button class="secondary" type="button" id="btnNovoPosto" disabled>
-          + Novo posto (futuro)
-        </button>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Posto</th>
-            <th>Operadores</th>
-            <th>Situação</th>
-            <th>Último registro</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaPostos"></tbody>
-      </table>
-      <p class="small" style="margin-top:6px">
-        *Na integração real, estes dados virão da base com geolocalização e escala associada a cada posto.
+        No futuro, esta área pode mostrar gráficos, indicadores e alertas principais.
       </p>
     </section>
   </section>
 
-  <!-- EQUIPE -->
+  <!-- EQUIPE: seleção + mensagem individual ou em grupo -->
   <section id="tab-equipe" class="tab-panel">
     <section class="card">
-      <div class="row-between">
-        <div>
-          <h2>Equipe sob supervisão</h2>
-          <p class="small">
-            Lista de operadores, posto principal, situação e último movimento. Neste MVP os dados são simulados.
-          </p>
-        </div>
-        <button class="secondary" type="button" disabled>
-          Importar da base (futuro)
-        </button>
-      </div>
+      <h2>Equipe</h2>
+      <p class="small">
+        Veja os operadores vinculados e envie mensagens individuais ou em grupo.
+      </p>
 
-      <div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap">
-        <div style="flex:1;min-width:160px">
-          <div class="label">Filtrar por posto</div>
-          <select id="filtroPostoEquipe">
-            <option value="">Todos os postos</option>
-          </select>
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="small">
+          Selecione operadores para enviar mensagens em lote.
         </div>
-        <div style="flex:1;min-width:140px">
-          <div class="label">Filtrar por situação</div>
-          <select id="filtroSituacaoEquipe">
-            <option value="">Todas</option>
-            <option value="em_posto">Em posto</option>
-            <option value="ausente">Sem registro</option>
-            <option value="ocorrencia">Com ocorrência</option>
-          </select>
-        </div>
+        <button id="btnMsgGrupo" class="secondary" type="button" disabled>
+          Mensagem em grupo
+        </button>
       </div>
 
       <table>
         <thead>
           <tr>
+            <th style="width:26px;" class="check-cell">
+              <input id="chkEquipeSelectAll" type="checkbox" />
+            </th>
             <th>Operador</th>
-            <th>Posto principal</th>
+            <th>Posto</th>
             <th>Situação</th>
-            <th>Último mov.</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="tabelaEquipe"></tbody>
       </table>
     </section>
-  </section>
 
-  <!-- OCORRÊNCIAS -->
-  <section id="tab-ocorr" class="tab-panel">
-    <section class="card">
-      <div class="row-between">
-        <div>
-          <h2>Ocorrências e mensagens</h2>
-          <p class="small">
-            Central simples para acompanhar mensagens enviadas pelos operadores (simuladas a partir de dados locais).
-          </p>
-        </div>
-        <button class="ghost" type="button" id="btnLimparOcorrencias">
-          Limpar lista local
-        </button>
+    <!-- "Modal" inline para nova mensagem -->
+    <section id="modalMsg" class="card modal-inline" style="display:none;">
+      <h2 id="modalMsgTitulo">Nova mensagem</h2>
+      <p class="small" id="modalMsgDescricao">
+        Mensagem interna para operador(es) selecionado(s).
+      </p>
+
+      <div class="label">Destinatários</div>
+      <p class="small" id="modalMsgDestinatarios">—</p>
+
+      <div class="label" style="margin-top:6px;">Mensagem</div>
+      <textarea id="modalMsgTexto" rows="3"
+        placeholder="Escreva a mensagem que será enviada para o(s) operador(es)..."></textarea>
+
+      <div style="margin-top:6px;">
+        <div class="file-label">Anexos (opcional)</div>
+        <input id="modalMsgArquivo" class="file-input" type="file"
+               multiple
+               accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
       </div>
 
-      <div class="scroll-list" id="listaOcorrencias"></div>
+      <div class="row" style="margin-top:8px;justify-content:flex-end;">
+        <button id="btnModalCancelar" class="secondary" type="button">Cancelar</button>
+        <button id="btnModalEnviar" class="primary" type="button">Enviar</button>
+      </div>
+    </section>
+  </section>
 
-      <p class="small" style="margin-top:6px">
-        *Na Fase 2, estas ocorrências virão diretamente dos envios da tela de operador, com anexos e status de tratativa.
+  <!-- MENSAGENS (histórico do gestor, opcional) -->
+  <section id="tab-msg" class="tab-panel">
+    <section class="card">
+      <h2>Comunicação Interna (Gestor)</h2>
+      <p class="small">
+        Histórico das mensagens internas enviadas pela gestão (mock local).
       </p>
+      <div id="listaMsgGestor" class="small">
+        Nenhuma mensagem enviada ainda.
+      </div>
     </section>
   </section>
 </main>
@@ -695,7 +439,7 @@
     }
   });
 
-  // ---------- Abas ----------
+  // ---------- Abas principais ----------
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabPanels  = document.querySelectorAll('.tab-panel');
 
@@ -709,7 +453,7 @@
     });
   });
 
-  // ---------- Usuário / sessão ----------
+  // ---------- Sessão / roles ----------
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -724,15 +468,19 @@
   if (!usuario) {
     window.location.href = 'index.html';
   } else {
-    const nome = usuario.nome || 'Gestor';
-    const username = usuario.username || '';
     const roles = usuario.roles || [];
+    const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
+
+    if (!temGestor) {
+      window.location.href = 'operador.html';
+    }
+
+    const nome = usuario.nome || 'Gestor';
     document.getElementById('subtitleGestor').textContent =
       `Gestor logado – ${nome}`;
-    document.getElementById('infoUsuarioGestor').textContent =
-      `Usuário: ${username || '—'} · Perfis: ${(roles || []).join(', ') || '—'}`;
   }
 
+  // ---------- Sair ----------
   document.getElementById('btnSair').addEventListener('click', () => {
     if (confirm('Deseja realmente sair?')) {
       localStorage.removeItem('sgo_auth_token');
@@ -741,411 +489,220 @@
     }
   });
 
-  // ---------- Relógio ----------
-  function atualizarRelogio() {
-    const agora = new Date();
-    const hora = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const data = agora.toLocaleDateString('pt-BR');
-    document.getElementById('horaAtual').textContent = hora;
-    document.getElementById('dataAtual').textContent = data;
-  }
-  atualizarRelogio();
-  setInterval(atualizarRelogio, 1000);
-
-  // ---------- Dados simulados ----------
-  const postosMock = [
+  // ---------- Equipe (mock) ----------
+  const equipe = [
     {
       id: 1,
-      nome: 'Centro de Cooperação da Cidade',
-      operadoresPrevistos: 3,
-      operadoresEmPosto: 2,
-      alerta: false,
-      ultimoRegistro: 'Hoje 07:58',
-      lat: -3.089968,
-      lng: -60.009204,
-    },
-    {
-      id: 2,
-      nome: 'UBS Centro',
-      operadoresPrevistos: 2,
-      operadoresEmPosto: 1,
-      alerta: true,
-      ultimoRegistro: 'Hoje 08:10',
-      lat: -3.132000,
-      lng: -60.021000,
-    },
-    {
-      id: 3,
-      nome: 'Escola Zona Leste',
-      operadoresPrevistos: 1,
-      operadoresEmPosto: 0,
-      alerta: true,
-      ultimoRegistro: 'Ontem 17:05',
-      lat: -3.100500,
-      lng: -60.005800,
-    },
-    {
-      id: 4,
-      nome: 'Base Operacional Norte',
-      operadoresPrevistos: 2,
-      operadoresEmPosto: 2,
-      alerta: false,
-      ultimoRegistro: 'Hoje 07:50',
-      lat: -3.050000,
-      lng: -60.010000,
-    },
-  ];
-
-  const equipeMock = [
-    {
-      id: 1,
-      nome: 'Admin Demo',
-      username: 'admin.admin',
-      postoPrincipal: 'Centro de Cooperação da Cidade',
-      situacao: 'em_posto',
-      ultimoMov: 'Check-in 07:58',
-    },
-    {
-      id: 2,
       nome: 'João Silva',
-      username: 'joao.silva',
-      postoPrincipal: 'UBS Centro',
-      situacao: 'em_posto',
-      ultimoMov: 'Check-in 08:10',
-    },
-    {
-      id: 3,
-      nome: 'Maria Souza',
-      username: 'maria.souza',
-      postoPrincipal: 'UBS Centro',
-      situacao: 'ausente',
-      ultimoMov: 'Sem registro hoje',
-    },
-    {
-      id: 4,
-      nome: 'Carlos Lima',
-      username: 'carlos.lima',
-      postoPrincipal: 'Escola Zona Leste',
-      situacao: 'ocorrencia',
-      ultimoMov: 'Mensagem às 07:30',
-    },
-    {
-      id: 5,
-      nome: 'Ana Pereira',
-      username: 'ana.pereira',
-      postoPrincipal: 'Base Operacional Norte',
-      situacao: 'em_posto',
-      ultimoMov: 'Check-in 07:50',
-    },
-    {
-      id: 6,
-      nome: 'Rafael Costa',
-      username: 'rafael.costa',
-      postoPrincipal: 'Base Operacional Norte',
-      situacao: 'em_posto',
-      ultimoMov: 'Check-in 07:51',
-    },
-  ];
-
-  let registrosMock = [
-    { operador: 'Admin Demo', posto: 'Centro de Cooperação da Cidade', tipo: 'Check-in', hora: '07:58', dentroPosto: true },
-    { operador: 'João Silva', posto: 'UBS Centro', tipo: 'Check-in', hora: '08:10', dentroPosto: true },
-    { operador: 'Ana Pereira', posto: 'Base Operacional Norte', tipo: 'Check-in', hora: '07:50', dentroPosto: true },
-    { operador: 'Rafael Costa', posto: 'Base Operacional Norte', tipo: 'Check-in', hora: '07:51', dentroPosto: true },
-    { operador: 'Carlos Lima', posto: 'Escola Zona Leste', tipo: 'Ausência', hora: '—', dentroPosto: false },
-  ];
-
-  let ocorrenciasMock = [
-    {
-      id: 1,
-      operador: 'Carlos Lima',
-      posto: 'Escola Zona Leste',
-      tipo: 'Justificativa',
-      texto: 'Atraso por problema de transporte. Solicito avaliação.',
-      data: 'Hoje 07:30',
-      status: 'Pendente',
+      matricula: '00123',
+      posto: 'Centro de Cooperação da Cidade',
+      situacao: 'Ativo'
     },
     {
       id: 2,
-      operador: 'Maria Souza',
+      nome: 'Maria Souza',
+      matricula: '00456',
       posto: 'UBS Centro',
-      tipo: 'Ausência',
-      texto: 'Sem registro de entrada até 08:30.',
-      data: 'Hoje 08:30',
-      status: 'Em análise',
+      situacao: 'Ativo'
     },
+    {
+      id: 3,
+      nome: 'Carlos Lima',
+      matricula: '00789',
+      posto: 'Escola Zona Leste',
+      situacao: 'Afastado'
+    }
   ];
 
-  // ---------- Resumo ----------
-  function atualizarResumo() {
-    const totalPostos = postosMock.length;
-    const postosComAlerta = postosMock.filter(p => p.alerta).length;
+  const tabelaEquipeBody = document.getElementById('tabelaEquipe');
+  const chkSelectAll      = document.getElementById('chkEquipeSelectAll');
+  const btnMsgGrupo       = document.getElementById('btnMsgGrupo');
 
-    const totalOps = equipeMock.length;
-    const emPosto  = equipeMock.filter(o => o.situacao === 'em_posto').length;
-    const ausentes = equipeMock.filter(o => o.situacao === 'ausente').length;
-
-    const registrosHoje = registrosMock.length;
-
-    document.getElementById('cardPostosTotal').textContent = totalPostos;
-    document.getElementById('cardPostosDetalhe').textContent =
-      `${totalPostos - postosComAlerta} ok · ${postosComAlerta} com alerta`;
-
-    document.getElementById('cardOpsTotal').textContent = totalOps;
-    document.getElementById('cardOpsDetalhe').textContent =
-      `${emPosto} em posto · ${ausentes} ausentes`;
-
-    document.getElementById('cardRegistrosHoje').textContent = registrosHoje;
-    document.getElementById('cardRegistrosDetalhe').textContent =
-      `${registrosHoje} registro(s) simulado(s) hoje`;
-  }
-
-  atualizarResumo();
-
-  // ---------- Tabela de postos ----------
-  const tbodyPostos = document.getElementById('tabelaPostos');
-
-  function renderPostos() {
-    tbodyPostos.innerHTML = '';
-    postosMock.forEach(p => {
-      const tr = document.createElement('tr');
-
-      const tdNome = document.createElement('td');
-      tdNome.textContent = p.nome;
-
-      const tdOps = document.createElement('td');
-      tdOps.textContent = `${p.operadoresEmPosto}/${p.operadoresPrevistos}`;
-
-      const tdSit = document.createElement('td');
-      const span = document.createElement('span');
-      span.className = 'tag tag-small ' + (p.alerta ? 'tag-red' : 'tag-green');
-      span.innerHTML = `<span class="dot ${p.alerta ? 'dot-red' : ''}"></span>${p.alerta ? 'Alerta' : 'Ok'}`;
-      tdSit.appendChild(span);
-
-      const tdUlt = document.createElement('td');
-      tdUlt.textContent = p.ultimoRegistro;
-
-      tr.appendChild(tdNome);
-      tr.appendChild(tdOps);
-      tr.appendChild(tdSit);
-      tr.appendChild(tdUlt);
-
-      tbodyPostos.appendChild(tr);
-    });
-  }
-
-  renderPostos();
-
-  // ---------- Registros ----------
-  const listaRegistros = document.getElementById('listaRegistros');
-
-  function renderRegistros() {
-    listaRegistros.innerHTML = '';
-    registrosMock.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'occ-item';
-
-      const meta = document.createElement('div');
-      meta.className = 'occ-meta';
-      meta.innerHTML =
-        `<span class="tag tag-small ${r.dentroPosto ? 'tag-green' : 'tag-red'}">
-          <span class="dot ${r.dentroPosto ? '' : 'dot-red'}"></span>
-          ${r.dentroPosto ? 'Dentro do posto' : 'Fora do posto'}
-        </span> · ${r.hora} · ${r.posto}`;
-
-      const text = document.createElement('div');
-      text.textContent = `${r.operador} – ${r.tipo}`;
-
-      div.appendChild(meta);
-      div.appendChild(text);
-      listaRegistros.appendChild(div);
-    });
-  }
-
-  renderRegistros();
-
-  // ---------- Equipe ----------
-  const tabelaEquipe = document.getElementById('tabelaEquipe');
-  const filtroPostoEquipe = document.getElementById('filtroPostoEquipe');
-  const filtroSituacaoEquipe = document.getElementById('filtroSituacaoEquipe');
-
-  const postosEquipeUnicos = [...new Set(equipeMock.map(o => o.postoPrincipal))];
-  postosEquipeUnicos.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p;
-    opt.textContent = p;
-    filtroPostoEquipe.appendChild(opt);
-  });
+  let equipeSelecionadaIds = new Set();
 
   function renderEquipe() {
-    const posto = filtroPostoEquipe.value;
-    const situ = filtroSituacaoEquipe.value;
+    tabelaEquipeBody.innerHTML = '';
 
-    tabelaEquipe.innerHTML = '';
+    equipe.forEach(op => {
+      const tr = document.createElement('tr');
+      tr.dataset.id = op.id;
 
-    equipeMock
-      .filter(o => !posto || o.postoPrincipal === posto)
-      .filter(o => !situ || o.situacao === situ)
-      .forEach(o => {
-        const tr = document.createElement('tr');
-
-        const tdOp = document.createElement('td');
-        tdOp.innerHTML = `<strong>${o.nome}</strong><br><span class="small">@${o.username}</span>`;
-
-        const tdPosto = document.createElement('td');
-        tdPosto.textContent = o.postoPrincipal;
-
-        const tdSit = document.createElement('td');
-        const span = document.createElement('span');
-        span.className = 'tag tag-small ' + (
-          o.situacao === 'em_posto' ? 'tag-green' :
-          o.situacao === 'ocorrencia' ? 'tag-blue' : 'tag-red'
-        );
-        let label = '—';
-        if (o.situacao === 'em_posto') label = 'Em posto';
-        else if (o.situacao === 'ausente') label = 'Sem registro';
-        else if (o.situacao === 'ocorrencia') label = 'Com ocorrência';
-        span.textContent = label;
-        tdSit.appendChild(span);
-
-        const tdUlt = document.createElement('td');
-        tdUlt.textContent = o.ultimoMov;
-
-        tr.appendChild(tdOp);
-        tr.appendChild(tdPosto);
-        tr.appendChild(tdSit);
-        tr.appendChild(tdUlt);
-
-        tabelaEquipe.appendChild(tr);
+      // checkbox
+      const tdSel = document.createElement('td');
+      tdSel.className = 'check-cell';
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'chk-equipe-op';
+      chk.addEventListener('change', () => {
+        if (chk.checked) {
+          equipeSelecionadaIds.add(op.id);
+        } else {
+          equipeSelecionadaIds.delete(op.id);
+        }
+        atualizarBtnMsgGrupo();
+        atualizarSelectAllCheck();
       });
+      tdSel.appendChild(chk);
+
+      // operador
+      const tdOp = document.createElement('td');
+      tdOp.innerHTML = `<strong>${op.nome}</strong><br><span class="small">Matrícula ${op.matricula}</span>`;
+
+      // posto
+      const tdPosto = document.createElement('td');
+      tdPosto.textContent = op.posto;
+
+      // situação
+      const tdSit = document.createElement('td');
+      const badge = document.createElement('span');
+      badge.className = 'badge-status ' + (op.situacao === 'Ativo' ? 'ativo' : 'afastado');
+      badge.textContent = op.situacao;
+      tdSit.appendChild(badge);
+
+      // ações
+      const tdAcoes = document.createElement('td');
+      const btnMsg = document.createElement('button');
+      btnMsg.type = 'button';
+      btnMsg.className = 'secondary';
+      btnMsg.textContent = 'Mensagem';
+      btnMsg.addEventListener('click', () => {
+        abrirModalMensagem([op.id]);
+      });
+      tdAcoes.appendChild(btnMsg);
+
+      tr.appendChild(tdSel);
+      tr.appendChild(tdOp);
+      tr.appendChild(tdPosto);
+      tr.appendChild(tdSit);
+      tr.appendChild(tdAcoes);
+
+      tabelaEquipeBody.appendChild(tr);
+    });
   }
 
-  filtroPostoEquipe.addEventListener('change', renderEquipe);
-  filtroSituacaoEquipe.addEventListener('change', renderEquipe);
+  function atualizarBtnMsgGrupo() {
+    btnMsgGrupo.disabled = equipeSelecionadaIds.size === 0;
+  }
 
-  renderEquipe();
+  function atualizarSelectAllCheck() {
+    const total = equipe.length;
+    const marcados = equipeSelecionadaIds.size;
+    chkSelectAll.checked = marcados > 0 && marcados === total;
+    chkSelectAll.indeterminate = marcados > 0 && marcados < total;
+  }
 
-  // ---------- Ocorrências ----------
-  const listaOcorrencias = document.getElementById('listaOcorrencias');
+  chkSelectAll.addEventListener('change', () => {
+    const marcar = chkSelectAll.checked;
+    equipeSelecionadaIds = new Set();
+    const chks = document.querySelectorAll('.chk-equipe-op');
+    chks.forEach((chk, idx) => {
+      chk.checked = marcar;
+      if (marcar) {
+        equipeSelecionadaIds.add(equipe[idx].id);
+      }
+    });
+    atualizarBtnMsgGrupo();
+  });
 
-  function renderOcorrencias() {
-    listaOcorrencias.innerHTML = '';
-    if (!ocorrenciasMock.length) {
-      const p = document.createElement('p');
-      p.className = 'small';
-      p.textContent = 'Nenhuma ocorrência simulada no momento.';
-      listaOcorrencias.appendChild(p);
+  btnMsgGrupo.addEventListener('click', () => {
+    if (!equipeSelecionadaIds.size) return;
+    abrirModalMensagem(Array.from(equipeSelecionadaIds));
+  });
+
+  // ---------- Modal / envio de mensagens ----------
+  const modalMsg            = document.getElementById('modalMsg');
+  const modalMsgTitulo      = document.getElementById('modalMsgTitulo');
+  const modalMsgDescricao   = document.getElementById('modalMsgDescricao');
+  const modalMsgDestinat    = document.getElementById('modalMsgDestinatarios');
+  const modalMsgTexto       = document.getElementById('modalMsgTexto');
+  const modalMsgArquivo     = document.getElementById('modalMsgArquivo');
+  const btnModalCancelar    = document.getElementById('btnModalCancelar');
+  const btnModalEnviar      = document.getElementById('btnModalEnviar');
+
+  let mensagensGestorEnviadas = [];
+
+  function abrirModalMensagem(listaIds) {
+    const destinatarios = equipe.filter(op => listaIds.includes(op.id));
+    const nomes = destinatarios.map(d => d.nome).join(', ');
+
+    modalMsgTitulo.textContent =
+      listaIds.length === 1 ? 'Nova mensagem para operador' : 'Nova mensagem em grupo';
+    modalMsgDescricao.textContent =
+      listaIds.length === 1
+        ? 'Mensagem interna direcionada a um único operador.'
+        : 'Mensagem interna direcionada aos operadores selecionados.';
+    modalMsgDestinat.textContent = nomes || '—';
+
+    modalMsgTexto.value = '';
+    modalMsgArquivo.value = '';
+    modalMsg.style.display = 'block';
+
+    btnModalEnviar.dataset.ids = JSON.stringify(listaIds);
+  }
+
+  btnModalCancelar.addEventListener('click', () => {
+    modalMsg.style.display = 'none';
+    btnModalEnviar.dataset.ids = '[]';
+  });
+
+  btnModalEnviar.addEventListener('click', () => {
+    const texto = modalMsgTexto.value.trim();
+    if (!texto) {
+      alert('Digite uma mensagem para enviar.');
+      return;
+    }
+    const anexosCount = modalMsgArquivo.files ? modalMsgArquivo.files.length : 0;
+    const ids = JSON.parse(btnModalEnviar.dataset.ids || '[]');
+
+    if (!ids.length) {
+      alert('Nenhum destinatário selecionado.');
       return;
     }
 
-    ocorrenciasMock.forEach(o => {
-      const div = document.createElement('div');
-      div.className = 'occ-item';
+    const agora = new Date().toLocaleString('pt-BR');
 
-      const meta = document.createElement('div');
-      meta.className = 'occ-meta';
-      const badge = document.createElement('span');
-      badge.className = 'tag tag-small ' +
-        (o.status === 'Pendente' ? 'tag-blue' : 'tag-green');
-      badge.textContent = o.status;
-
-      meta.appendChild(badge);
-      meta.insertAdjacentText('beforeend', ` · ${o.data} · ${o.posto} · ${o.operador}`);
-
-      const text = document.createElement('div');
-      text.textContent = `${o.tipo}: ${o.texto}`;
-
-      div.appendChild(meta);
-      div.appendChild(text);
-      listaOcorrencias.appendChild(div);
+    mensagensGestorEnviadas.push({
+      id: Date.now(),
+      texto,
+      anexos: anexosCount,
+      destinatarios: ids,
+      data: agora
     });
-  }
 
-  renderOcorrencias();
+    atualizarHistoricoGestor();
 
-  document.getElementById('btnLimparOcorrencias').addEventListener('click', () => {
-    if (!ocorrenciasMock.length) return;
-    if (confirm('Limpar ocorrências simuladas desta visualização?')) {
-      ocorrenciasMock = [];
-      renderOcorrencias();
+    alert('Mensagem registrada localmente para ' + ids.length + ' operador(es) (mock).');
+
+    modalMsg.style.display = 'none';
+    btnModalEnviar.dataset.ids = '[]';
+  });
+
+  function atualizarHistoricoGestor() {
+    const container = document.getElementById('listaMsgGestor');
+    if (!mensagensGestorEnviadas.length) {
+      container.textContent = 'Nenhuma mensagem enviada ainda.';
+      return;
     }
-  });
-
-  // ---------- Mapa dos postos (Leaflet) ----------
-  let mapGestor;
-
-  function inicializarMapa() {
-    const mapDiv = document.getElementById('mapGestor');
-    if (!mapDiv) return;
-
-    mapGestor = L.map('mapGestor').setView([-3.09, -60.01], 12);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(mapGestor); // [web:340][web:343]
-
-    const iconOk = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      shadowSize: [41, 41]
-    }); // [web:340][web:342]
-
-    const iconAlert = L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      shadowSize: [41, 41]
-    }); // [web:342][web:345]
-
-    postosMock.forEach(p => {
-      if (typeof p.lat !== 'number' || typeof p.lng !== 'number') return;
-
-      const icon = p.alerta ? iconAlert : iconOk;
-      const marker = L.marker([p.lat, p.lng], { icon }).addTo(mapGestor);
-
-      const statusLabel = p.alerta ? 'Posto com alerta' : 'Posto ok';
-      const statusColor = p.alerta ? '#fecaca' : '#bbf7d0';
-
-      marker.bindPopup(`
-        <div style="font-size:12px;">
-          <strong>${p.nome}</strong><br/>
-          <span style="font-size:11px;color:#9ca3af;">
-            ${p.operadoresEmPosto}/${p.operadoresPrevistos} operadores em posto
-          </span><br/>
-          <span style="font-size:11px;color:#9ca3af;">
-            Último registro: ${p.ultimoRegistro}
-          </span><br/>
-          <span style="font-size:11px;color:${statusColor};">
-            ${statusLabel}
-          </span>
-        </div>
-      `);
-    });
+    container.innerHTML = '';
+    mensagensGestorEnviadas
+      .slice()
+      .reverse()
+      .forEach(m => {
+        const dests = equipe
+          .filter(op => m.destinatarios.includes(op.id))
+          .map(op => op.nome)
+          .join(', ');
+        const div = document.createElement('div');
+        div.style.marginBottom = '6px';
+        div.innerHTML =
+          `<strong>${m.data}</strong> – para: ${dests}<br><span class="small">${m.texto}</span>`;
+        container.appendChild(div);
+      });
   }
 
-  // Inicializa o mapa quando o DOM estiver pronto
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(inicializarMapa, 200);
-  });
-
-  // ---------- Botão de recarregar mocks ----------
-  document.getElementById('btnRecarregarMock').addEventListener('click', () => {
-    registrosMock.push({
-      operador: 'Admin Demo',
-      posto: 'Centro de Cooperação da Cidade',
-      tipo: 'Check-out',
-      hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-      dentroPosto: true,
-    });
-    atualizarResumo();
-    renderRegistros();
-  });
+  // Inicializa
+  renderEquipe();
+  atualizarHistoricoGestor();
 </script>
 </body>
 </html>
