@@ -384,7 +384,7 @@
     if (confirm('Deseja realmente sair?')) {
       localStorage.removeItem('sgo_auth_token');
       localStorage.removeItem('sgo_usuario');
-      // Mantém sgo_theme_login e sgo_geo_pos se quiser
+      // Mantém sgo_theme_login e sgo_geo_pos para reaproveitar se quiser
       window.location.href = 'index.html';
     }
   });
