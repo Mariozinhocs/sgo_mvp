@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
+head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
@@ -20,6 +20,10 @@
       --danger: #ef4444;
       --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
+      --input-light: #e5e7eb;
+      --input-light-border: #d1d5db;
+      --button-inactive-light: #e5e7eb;
+      --button-inactive-dark: #111827;
     }
 
     /* Tema claro */
@@ -43,6 +47,14 @@
     body.theme-light .escala-box {
       background:#f9fafb;
       border-color:#d1d5db;
+    }
+
+    /* inputs mais claros no tema claro */
+    body.theme-light input,
+    body.theme-light select {
+      background: var(--input-light);
+      color: #020617;
+      border-color: var(--input-light-border);
     }
 
     * { box-sizing: border-box; }
@@ -77,14 +89,15 @@
       gap:10px;
     }
 
+    /* mesmo tamanho do logo do login (54px) */
     .logo-img {
-      width:32px;
-      height:32px;
-      border-radius:10px;
+      width:54px;
+      height:54px;
+      border-radius:12px;
       object-fit:contain;
       background:#020617;
       border:1px solid rgba(148,163,184,0.5);
-      padding:4px;
+      padding:6px;
     }
 
     .logo-text {
@@ -258,14 +271,21 @@
       font-weight: 600;
     }
 
+    /* botões secundários (inativos) com cinza melhor definido */
     button.secondary {
-      background: rgba(148,163,184,0.12);
+      background: var(--button-inactive-dark);
       color: var(--text-main);
       border: 1px solid rgba(148,163,184,0.4);
     }
 
+    body.theme-light button.secondary {
+      background: var(--button-inactive-light);
+      color: #111827;
+      border-color: #cbd5f5;
+    }
+
     button:disabled {
-      opacity:0.6;
+      opacity:0.7;
       cursor:not-allowed;
     }
 
@@ -369,6 +389,7 @@
       justify-content:space-between;
       gap:8px;
       margin-top:6px;
+      flex-wrap:wrap;
     }
 
     .escala-selects {
@@ -491,7 +512,6 @@
 
       <div class="perfil-grid">
         <div class="perfil-foto" id="fotoContainer">
-          <!-- Inicial com iniciais do nome -->
           <span id="fotoIniciais">OP</span>
         </div>
         <div class="perfil-dados">
@@ -544,7 +564,7 @@
         <div class="info-value" id="infoLocal">Localização não disponível.</div>
       </div>
 
-      <div class="row" style="margin-top:10px%;">
+      <div class="row" style="margin-top:10px;">
         <button id="btnCheckin" class="primary" type="button">
           Check-in
         </button>
@@ -569,20 +589,16 @@
     <section class="card">
       <h2>Escala de turnos</h2>
       <p class="small">
-        A escala mensal é definida pelos supervisores. Marque os turnos já trabalhados; abaixo você pode acessar escalas anteriores.
+        A escala mensal é definida pelos supervisores. Visualize seus dias e horários e marque os dias já trabalhados.
       </p>
 
       <div class="escala-header">
         <div class="escala-selects">
-          <select id="escalaMes">
-            <!-- preenchido via JS -->
-          </select>
-          <select id="escalaAno">
-            <!-- preenchido via JS -->
-          </select>
+          <select id="escalaMes"></select>
+          <select id="escalaAno"></select>
         </div>
         <div class="small">
-          Turnos: Manhã (M), Tarde (T), Noite (N).
+          Cada linha representa o dia da escala e o horário a ser cumprido.
         </div>
       </div>
 
@@ -668,7 +684,7 @@
     });
   });
 
-  // Carrega usuário do localStorage
+  // Carrega usuário
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -687,25 +703,21 @@
     const matricula = usuario.matricula || '—';
     const username  = usuario.username || '';
 
-    // Header
     document.getElementById('subtitleOperador').textContent =
       `Operador logado – ${nome}`;
 
-    // Perfil
     document.getElementById('perfilNome').textContent = nome;
     document.getElementById('perfilMatricula').textContent = matricula;
     document.getElementById('perfilUsuario').textContent = username;
 
-    // Iniciais na foto
     const iniciais = nome.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('fotoIniciais').textContent = iniciais;
 
-    // Ponto – info operador
     document.getElementById('infoOperador').textContent =
       `${nome} · Matrícula ${matricula}`;
   }
 
-  // Botão sair
+  // Sair
   document.getElementById('btnSair').addEventListener('click', () => {
     if (confirm('Deseja realmente sair?')) {
       localStorage.removeItem('sgo_auth_token');
@@ -714,7 +726,7 @@
     }
   });
 
-  // Localização salva no login (Ponto)
+  // Localização (Ponto)
   (function carregarGeoPosLogin() {
     const infoLocal = document.getElementById('infoLocal');
     try {
@@ -745,7 +757,7 @@
     }
   })();
 
-  // Ponto: check-in, intervalo, checkout
+  // Ponto
   const btnCheckin   = document.getElementById('btnCheckin');
   const btnIntervalo = document.getElementById('btnIntervalo');
   const btnCheckout  = document.getElementById('btnCheckout');
@@ -794,7 +806,7 @@
     statusPonto.textContent = 'Status: Fora do expediente';
   });
 
-  // Perfil: alterar senha (mock local)
+  // Perfil: alterar senha (mock)
   const btnSalvarSenha = document.getElementById('btnSalvarSenha');
   const feedbackPerfil = document.getElementById('feedbackPerfil');
 
@@ -812,7 +824,6 @@
       return;
     }
 
-    // MVP: só grava em localStorage um flag de que a senha foi trocada
     try {
       localStorage.setItem('sgo_senha_alterada', '1');
     } catch(e) {}
@@ -823,19 +834,18 @@
     document.getElementById('inputSenhaNova2').value = '';
   });
 
-  // Escala: mock mensal com checkboxes salvos em localStorage
+  // Escala: dias + horários com check por dia
   const escalaMes = document.getElementById('escalaMes');
   const escalaAno = document.getElementById('escalaAno');
   const escalaBox = document.getElementById('escalaBox');
   const listaEscalasAnteriores = document.getElementById('listaEscalasAnteriores');
   const linkEscalasAnteriores  = document.getElementById('linkEscalasAnteriores');
 
-  // Popular meses/anos
   (function initMesAno() {
     const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     const hoje = new Date();
     const anoAtual = hoje.getFullYear();
-    const mesAtual = hoje.getMonth(); // 0-11
+    const mesAtual = hoje.getMonth();
 
     meses.forEach((m, idx) => {
       const opt = document.createElement('option');
@@ -858,16 +868,29 @@
     return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
   }
 
-  function gerarEscalaMes(mes, ano) {
-    // Mock simples: 3 turnos por dia (M/T/N) marcados pelo supervisor
-    // Aqui só criamos uma tabela com 7 dias de exemplo para não ficar imenso
-    const dias = Array.from({length: 7}, (_,i) => i+1);
+  function obterEscalaDoGestorMock(mes, ano) {
+    // MOCK: exemplo de escala que será trazida do painel do gestor
+    // Em produção, essa estrutura virá do backend/painel do gestor
+    const diasNoMes = 7; // para MVP, só 7 dias de exemplo
+    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
 
-    // Ler marcações já feitas pelo operador no localStorage
-    let marcacoes = {};
+    const dias = [];
+    for (let d = 1; d <= diasNoMes; d++) {
+      dias.push({
+        dia: d,
+        horario: turnos[d % turnos.length] // só para variar
+      });
+    }
+    return dias;
+  }
+
+  function gerarEscalaMes(mes, ano) {
+    const dias = obterEscalaDoGestorMock(mes, ano);
+
+    let marcados = {};
     try {
       const raw = localStorage.getItem(chaveEscala(mes, ano));
-      if (raw) marcacoes = JSON.parse(raw) || {};
+      if (raw) marcados = JSON.parse(raw) || {};
     } catch(e) {}
 
     const table = document.createElement('table');
@@ -877,22 +900,22 @@
     thead.innerHTML = `
       <tr>
         <th>Dia</th>
-        <th>M</th>
-        <th>T</th>
-        <th>N</th>
+        <th>Horário</th>
+        <th>Trabalhado</th>
       </tr>
     `;
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
 
-    dias.forEach(dia => {
+    dias.forEach(item => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${String(dia).padStart(2,'0')}</td>
-        <td><input type="checkbox" data-dia="${dia}" data-turno="M"></td>
-        <td><input type="checkbox" data-dia="${dia}" data-turno="T"></td>
-        <td><input type="checkbox" data-dia="${dia}" data-turno="N"></td>
+        <td>${String(item.dia).padStart(2,'0')}</td>
+        <td>${item.horario}</td>
+        <td>
+          <input type="checkbox" data-dia="${item.dia}">
+        </td>
       `;
       tbody.appendChild(tr);
     });
@@ -901,27 +924,20 @@
     escalaBox.innerHTML = '';
     escalaBox.appendChild(table);
 
-    // Aplicar marcações salvas
     const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(chk => {
       const dia = chk.dataset.dia;
-      const turno = chk.dataset.turno;
-      if (marcacoes[dia] && marcacoes[dia].includes(turno)) {
+      if (marcados[dia]) {
         chk.checked = true;
       }
-
       chk.addEventListener('change', () => {
-        const d = chk.dataset.dia;
-        const t = chk.dataset.turno;
-        marcacoes[d] = marcacoes[d] || [];
         if (chk.checked) {
-          if (!marcacoes[d].includes(t)) marcacoes[d].push(t);
+          marcados[dia] = true;
         } else {
-          marcacoes[d] = marcacoes[d].filter(x => x !== t);
-          if (marcacoes[d].length === 0) delete marcacoes[d];
+          delete marcados[dia];
         }
         try {
-          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcacoes));
+          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcados));
         } catch(e) {}
       });
     });
@@ -935,10 +951,8 @@
 
   escalaMes.addEventListener('change', atualizarEscalaAtual);
   escalaAno.addEventListener('change', atualizarEscalaAtual);
-
   atualizarEscalaAtual();
 
-  // Escalas anteriores: lista meses/anos que já têm registros
   linkEscalasAnteriores.addEventListener('click', () => {
     if (listaEscalasAnteriores.style.display === 'none') {
       listaEscalasAnteriores.style.display = 'block';
