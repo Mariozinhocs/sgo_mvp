@@ -4,156 +4,72 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
-  <title>SGO – Acesso</title>
+  <title>SGO – Login</title>
 
-  <!-- Ícones na pasta "icons" -->
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-512.png" />
 
   <style>
     :root {
-      --bg-body: #f3f4f6;
-      --bg-card: #ffffff;
-      --text-main: #111827;
-      --text-secondary: #6b7280;
-      --primary: #22c55e;
-      --primary-soft: rgba(34,197,94,0.12);
-      --border-subtle: #e5e7eb;
-      --danger: #ef4444;
-    }
-
-    body.theme-dark {
-      --bg-body: #020826;
-      --bg-card: #050b35;
-      --text-main: #f9fafb;
+      --bg-body: #0f172a;
+      --bg-card: #020617;
+      --text-main: #e5e7eb;
       --text-secondary: #9ca3af;
       --primary: #22c55e;
-      --primary-soft: rgba(34,197,94,0.16);
       --border-subtle: #1f2937;
-      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #cbd5f5, #020617 58%);
+      margin: 0;
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
       color: var(--text-main);
+      min-height: 100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:16px;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    body.theme-dark {
-      background: radial-gradient(circle at top, #1d283a, #020617 58%);
     }
 
     .card {
-      position: relative;
-      background: var(--bg-card);
-      max-width: 460px;
-      width:100%;
+      background: linear-gradient(145deg, #020617, #020617);
       border-radius: 18px;
-      padding: 20px 18px 20px;
+      padding: 18px 18px 20px;
       border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.25);
-      text-align:center;
-    }
-
-    .theme-toggle {
-      position:absolute;
-      top:10px;
-      right:10px;
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.04);
-      color:var(--text-secondary);
-      display:flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    body.theme-dark .theme-toggle {
-      background: rgba(15,23,42,0.9);
-      color:#e5e7eb;
-    }
-
-    .theme-toggle span.icon {
-      font-size:15px;
-    }
-
-    .logo-wrapper {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      margin-bottom:12px;
-      margin-top:12px;
-    }
-
-    .logo-img {
-      width:72px;
-      height:72px;
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid rgba(148,163,184,0.6);
-      background:#020617;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .logo-img img {
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      max-width: 400px;
       width:100%;
-      height:100%;
-      object-fit:cover;
     }
 
     h1 {
-      margin:8px 0 0;
-      font-size:22px;
+      margin: 0 0 6px;
+      font-size: 20px;
     }
 
-    .subtitle {
-      font-size:13px;
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
       color:var(--text-secondary);
-      margin-top:2px;
-    }
-
-    form {
-      margin-top:14px;
-      text-align:left;
-    }
-
-    label {
-      display:block;
-      font-size:12px;
-      margin-top:10px;
-      margin-bottom:4px;
-      color:var(--text-secondary);
+      margin-bottom:2px;
+      margin-top:8px;
     }
 
     input {
       width:100%;
-      padding: 9px 11px;
+      padding:8px 10px;
       border-radius:10px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:#f9fafb;
-      color:var(--text-main);
-      font-size:14px;
-    }
-
-    body.theme-dark input {
+      border:1px solid rgba(148,163,184,0.45);
       background:#020617;
       color:var(--text-main);
-      border-color: rgba(148,163,184,0.6);
+      font-size:13px;
     }
 
     input::placeholder {
@@ -162,461 +78,207 @@
 
     button {
       font: inherit;
-      border-radius: 999px;
-      border: none;
-      padding: 10px 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      border-radius:999px;
+      border:none;
+      padding:9px 14px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
     }
 
     button.primary {
-      background: var(--primary);
-      color: #022c22;
-      font-weight: 600;
+      background:var(--primary);
+      color:#022c22;
+      font-weight:600;
       width:100%;
-      margin-top:14px;
+      margin-top:12px;
     }
 
-    button.secondary {
-      background: rgba(148,163,184,0.12);
-      color: var(--text-main);
-      border: 1px solid rgba(148,163,184,0.4);
-      width:100%;
-      margin-top:6px;
-    }
-
-    button:disabled {
-      opacity:0.6;
-      cursor:not-allowed;
-    }
-
-    .small {
-      font-size:12px;
-      color:var(--text-secondary);
-    }
-
-    .error {
-      font-size:12px;
+    .feedback {
+      font-size:11px;
+      margin-top:8px;
       color:#fecaca;
-      margin-top:6px;
-      background:rgba(248,113,113,0.18);
-      border-radius:10px;
-      padding:6px 8px;
-      border:1px solid rgba(248,113,113,0.5);
-      text-align:left;
     }
 
-    .success {
-      font-size:12px;
-      color:#bbf7d0;
-      margin-top:6px;
-      text-align:left;
-    }
-
-    .divider {
-      height:1px;
-      background:rgba(31,41,55,0.15);
-      margin:12px 0;
-    }
-
-    body.theme-dark .divider {
-      background:rgba(31,41,55,0.9);
-    }
-
-    .role-actions {
-      margin-top:4px;
-      text-align:left;
-    }
-
-    .role-actions h2 {
-      font-size:14px;
-      margin:0 0 6px;
-    }
-
-    .badge-role {
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      padding:3px 8px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.16);
-      font-size:11px;
-      margin:2px 4px 2px 0;
-    }
-
-    .badge-role span.kind {
-      font-size:11px;
-      color:#9ca3af;
-    }
-
-    .hint-users {
-      margin-top:6px;
+    .muted {
       font-size:11px;
       color:var(--text-secondary);
-    }
-
-    .hint-users code {
-      background:rgba(148,163,184,0.12);
-      padding:2px 4px;
-      border-radius:4px;
-      font-size:11px;
+      margin-top:6px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <button id="btnTheme" class="theme-toggle" type="button">
-      <span class="icon" id="themeIcon">🌙</span>
-      <span id="themeLabel">Dark</span>
+  <section class="card">
+    <h1>SGO – Acesso</h1>
+    <p class="small">
+      Informe usuário e senha para acessar o painel de Operador ou Gestor, conforme seu perfil.
+    </p>
+
+    <div class="label">Usuário</div>
+    <input id="inputUsuario" type="text" placeholder="ex: operador1 ou gestor1" autocomplete="username" />
+
+    <div class="label">Senha</div>
+    <input id="inputSenha" type="password" placeholder="Senha" autocomplete="current-password" />
+
+    <button id="btnEntrar" class="primary" type="button">
+      Entrar
     </button>
 
-    <div class="logo-wrapper">
-      <div class="logo-img">
-        <!-- Logo vindo da pasta "icons" -->
-        <img src="icons/icon-512.png" alt="SGO" />
-      </div>
-      <h1>SGO</h1>
-      <div class="subtitle">Acesso ao sistema de gestão de operações</div>
-    </div>
+    <p class="muted">
+      MVP com autenticação mock: alguns usuários de exemplo já vêm com roles pré-definidos (OPERADOR, GESTOR, ADMIN).
+    </p>
 
-    <form id="formLogin">
-      <label for="identificador">Matrícula, usuário ou e-mail</label>
-      <input
-        id="identificador"
-        type="text"
-        required
-        placeholder="Ex: user.user, gestor.gestor ou admin.admin"
-        autocomplete="username" />
+    <p class="muted">
+      Exemplos:
+      <br>operador1 / 123 (OPERADOR)
+      <br>gestor1 / 123 (GESTOR)
+      <br>admin / 123 (ADMIN)
+    </p>
 
-      <label for="senha">Senha</label>
-      <input
-        id="senha"
-        type="password"
-        required
-        placeholder="Senha de teste: 123456"
-        autocomplete="current-password" />
-
-      <button id="btnEntrar" class="primary" type="submit">
-        Entrar
-      </button>
-
-      <p class="small" style="margin-top:8px;">
-        • Login de demonstração com usuários de teste (dados locais, sem backend).<br>
-        • Operador: <strong>user.user</strong> / <strong>123456</strong> (apenas painel do Operador).<br>
-        • Supervisor: <strong>gestor.gestor</strong> / <strong>123456</strong> (Operador + Gestor com escopo limitado de postos; não cria usuários).<br>
-        • Gerente de Operação: <strong>admin.admin</strong> / <strong>123456</strong> (Operador + Gestor global; no futuro terá visão de delegação, não criação direta de usuários).
-      </p>
-    </form>
-
-    <div id="msgErro" class="error" style="display:none"></div>
-    <div id="msgOk" class="success" style="display:none"></div>
-
-    <div class="divider"></div>
-
-    <div id="areaPerfis" class="role-actions" style="display:none">
-      <h2>Acessar painéis</h2>
-      <p class="small" id="textoUsuario"></p>
-      <div id="rolesBadges" style="margin-bottom:6px;"></div>
-
-      <button id="btnIrOperador" class="secondary" type="button" style="display:none">
-        Painel do Operador
-      </button>
-      <button id="btnIrGestor" class="secondary" type="button" style="display:none">
-        Painel do Gestor
-      </button>
-
-      <div class="hint-users" id="hintGestor" style="display:none;">
-        • Perfis de gestão neste dispositivo:
-        <br>– <code>gestor.gestor</code>: SUPERVISOR (vê apenas postos e equipes atribuídos; sem criação de usuários).
-        <br>– <code>admin.admin</code>: GERENTE_OPERACAO (vê todos os postos/supervisores; criação/atribuição/exclusão de usuários ficará em módulo específico no futuro).
-      </div>
-    </div>
-  </div>
+    <p id="feedbackLogin" class="feedback"></p>
+  </section>
 
 <script>
-  // ---------- Tema ----------
   const THEME_KEY = 'sgo_theme_login';
-  const btnTheme  = document.getElementById('btnTheme');
-  const themeIcon = document.getElementById('themeIcon');
-  const themeLabel= document.getElementById('themeLabel');
 
-  function aplicarTemaInicial() {
-    let saved = null;
-    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
-
-    if (saved === 'dark') {
-      document.body.classList.add('theme-dark');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    } else if (saved === 'light') {
-      document.body.classList.remove('theme-dark');
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        document.body.classList.add('theme-dark');
-        themeIcon.textContent = '☀️';
-        themeLabel.textContent = 'Light';
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-      } else {
-        document.body.classList.remove('theme-dark');
-        themeIcon.textContent = '🌙';
-        themeLabel.textContent = 'Dark';
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-      }
-    }
-  }
-
-  aplicarTemaInicial();
-
-  btnTheme.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('theme-dark');
-    try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e) {}
-    if (isDark) {
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    } else {
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-    }
-  });
-
-  // ---------- Login ----------
-  const API_LOGIN_URL = '/api/auth/login'; // para futuro backend
-
-  const formLogin  = document.getElementById('formLogin');
-  const btnEntrar  = document.getElementById('btnEntrar');
-  const msgErro    = document.getElementById('msgErro');
-  const msgOk      = document.getElementById('msgOk');
-  const areaPerfis   = document.getElementById('areaPerfis');
-  const textoUsuario = document.getElementById('textoUsuario');
-  const rolesBadges  = document.getElementById('rolesBadges');
-  const btnIrOperador = document.getElementById('btnIrOperador');
-  const btnIrGestor   = document.getElementById('btnIrGestor');
-  const hintGestor    = document.getElementById('hintGestor');
-
-  function limparMensagens() {
-    msgErro.style.display = 'none';
-    msgOk.style.display = 'none';
-  }
-
-  function mostrarErro(texto) {
-    msgErro.textContent = texto;
-    msgErro.style.display = 'block';
-    msgOk.style.display = 'none';
-  }
-
-  function mostrarOk(texto) {
-    msgOk.textContent = texto;
-    msgOk.style.display = 'block';
-    msgErro.style.display = 'none';
-  }
-
-  function popularPerfis(usuario) {
-    areaPerfis.style.display = 'block';
-    const ident = usuario.identificadorExibicao || usuario.email || usuario.username || usuario.matricula || '';
-    textoUsuario.textContent = `Autenticado como ${usuario.nome}${ident ? ' (' + ident + ')' : ''}.`;
-
-    rolesBadges.innerHTML = '';
-    const roles = usuario.roles || [];
-
-    roles.forEach(r => {
-      const span = document.createElement('span');
-      span.className = 'badge-role';
-      let label = r;
-      let tipo = '';
-      if (r === 'OPERADOR')          { label = 'Operador'; tipo = 'Campo'; }
-      if (r === 'SUPERVISOR')       { label = 'Supervisor'; tipo = 'Gestão parcial'; }
-      if (r === 'GERENTE_OPERACAO') { label = 'Gerente de Operação'; tipo = 'Gestão global'; }
-      span.innerHTML = `<strong>${label}</strong>${tipo ? '<span class="kind"> · ' + tipo + '</span>' : ''}`;
-      rolesBadges.appendChild(span);
-    });
-
-    const temOperador = roles.includes('OPERADOR');
-    const temGestor   = roles.includes('SUPERVISOR') || roles.includes('GERENTE_OPERACAO');
-
-    btnIrOperador.style.display = temOperador ? 'inline-flex' : 'none';
-    btnIrGestor.style.display   = temGestor   ? 'inline-flex' : 'none';
-    hintGestor.style.display    = temGestor   ? 'block'      : 'none';
-  }
-
-  function criarUsuarioMock(identificador, senha) {
-    // Três usuários de teste locais:
-    // 1) user.user  -> apenas OPERADOR
-    // 2) gestor.gestor -> OPERADOR + SUPERVISOR (escopo limitado, sem criação de usuários)
-    // 3) admin.admin   -> OPERADOR + GERENTE_OPERACAO (escopo total, futura delegação)
-    if (senha !== '123456') return null;
-
-    if (identificador === 'user.user') {
-      return {
-        id: 2,
-        nome: 'Operador Demo',
-        email: 'user.user@empresa.com',
-        username: 'user.user',
-        matricula: '00002',
-        documento: '111.111.111-11',
-        telefone: '(00) 00000-0001',
-        postoPrincipal: 'UBS Centro',
-        postoPrincipalLat: -3.132000,
-        postoPrincipalLng: -60.021000,
-        situacao: 'Ativo',
-        deveTrocarSenha: false,
-        roles: ['OPERADOR'],
-        escopoPostos: [] // operador puro não tem escopo de gestão
-      };
-    }
-
-    if (identificador === 'gestor.gestor') {
-      return {
-        id: 3,
-        nome: 'Supervisor Demo',
-        email: 'gestor.gestor@empresa.com',
-        username: 'gestor.gestor',
-        matricula: '00003',
-        documento: '222.222.222-22',
-        telefone: '(00) 00000-0002',
-        postoPrincipal: 'UBS Centro',
-        postoPrincipalLat: -3.132000,
-        postoPrincipalLng: -60.021000,
-        situacao: 'Ativo',
-        deveTrocarSenha: false,
-        // Supervisor: vê apenas alguns postos e respectivas equipes; não cria usuários
-        roles: ['OPERADOR', 'SUPERVISOR'],
-        escopoPostos: [2, 3] // Exemplo: UBS Centro (2) e Escola Zona Leste (3)
-      };
-    }
-
-    if (identificador === 'admin.admin') {
-      return {
-        id: 1,
-        nome: 'Admin Demo',
-        email: 'admin.admin@empresa.com',
-        username: 'admin.admin',
-        matricula: '00001',
-        documento: '000.000.000-00',
-        telefone: '(00) 00000-0000',
-        postoPrincipal: 'Centro de Cooperação da Cidade',
-        postoPrincipalLat: -3.089968,
-        postoPrincipalLng: -60.009204,
-        situacao: 'Ativo',
-        deveTrocarSenha: true,
-        // Gerente de Operação: visão global de postos/supervisores/equipes.
-        // Criação/atribuição/exclusão de usuários será feita, no futuro,
-        // por um módulo específico (não pelo Supervisor).
-        roles: ['OPERADOR', 'GERENTE_OPERACAO'],
-        escopoPostos: 'TODOS'
-      };
-    }
-
-    return null;
-  }
-
-  formLogin.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    limparMensagens();
-
-    const identificador = document.getElementById('identificador').value.trim();
-    const senha         = document.getElementById('senha').value;
-
-    if (!identificador || !senha) {
-      mostrarErro('Informe o identificador (matrícula, usuário ou e-mail) e a senha.');
-      return;
-    }
-
-    btnEntrar.disabled = true;
-    btnEntrar.textContent = 'Validando...';
-
-    // ---- MOCK LOCAL: user.user, gestor.gestor, admin.admin ----
-    const usuarioMock = criarUsuarioMock(identificador, senha);
-    if (usuarioMock) {
-      localStorage.setItem('sgo_auth_token', 'token-mock-' + usuarioMock.username);
-      localStorage.setItem('sgo_usuario', JSON.stringify(usuarioMock));
-
-      if (usuarioMock.deveTrocarSenha) {
-        mostrarOk('Login de teste realizado. No primeiro acesso completo, será solicitada troca de senha.');
-      } else {
-        mostrarOk('Login de teste realizado.');
-      }
-
-      popularPerfis(usuarioMock);
-
-      btnEntrar.disabled = false;
-      btnEntrar.textContent = 'Entrar';
-      return;
-    }
-    // ---- FIM MOCK LOCAL ----
-
+  // Se já estiver logado, redireciona imediatamente
+  (function redirectIfLogged() {
     try {
-      const resp = await fetch(API_LOGIN_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identificador, senha })
-      });
+      const token = localStorage.getItem('sgo_auth_token');
+      const usuarioRaw = localStorage.getItem('sgo_usuario');
+      if (!token || !usuarioRaw) return;
 
-      if (!resp.ok) {
-        mostrarErro('Dados inválidos ou falha de comunicação. Confirme o identificador e a senha.');
-        btnEntrar.disabled = false;
-        btnEntrar.textContent = 'Entrar';
-        return;
-      }
+      const usuario = JSON.parse(usuarioRaw);
+      const roles = usuario.roles || [];
 
-      const data = await resp.json();
-
-      if (!data || !data.usuario || !data.usuario.roles) {
-        mostrarErro('Resposta inesperada do servidor. Fale com o suporte.');
-        btnEntrar.disabled = false;
-        btnEntrar.textContent = 'Entrar';
-        return;
-      }
-
-      localStorage.setItem('sgo_auth_token', data.token || '');
-      localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
-
-      if (data.usuario.deveTrocarSenha) {
-        mostrarOk('Login realizado. Altere sua senha no painel do operador no primeiro acesso.');
-      } else {
-        mostrarOk('Login realizado com sucesso.');
-      }
-
-      popularPerfis(data.usuario);
-
-      btnEntrar.disabled = false;
-      btnEntrar.textContent = 'Entrar';
-    } catch (err) {
-      console.error(err);
-      mostrarErro('Erro de rede ao tentar autenticar. Verifique sua conexão.');
-      btnEntrar.disabled = false;
-      btnEntrar.textContent = 'Entrar';
+      redirecionarPorRole(roles);
+    } catch (e) {
+      // se der erro, segue no login
     }
-  });
-
-  btnIrOperador.addEventListener('click', () => {
-    window.location.href = 'operador.html';
-  });
-
-  btnIrGestor.addEventListener('click', () => {
-    window.location.href = 'gestor.html';
-  });
-
-  // Se já existe usuário no localStorage, reaproveita
-  (function checkUsuarioLocal() {
-    try {
-      const raw = localStorage.getItem('sgo_usuario');
-      if (!raw) return;
-      const usuario = JSON.parse(raw);
-      if (usuario && (usuario.email || usuario.username || usuario.matricula)) {
-        popularPerfis(usuario);
-      }
-    } catch (e) {}
   })();
+
+  const inputUsuario = document.getElementById('inputUsuario');
+  const inputSenha   = document.getElementById('inputSenha');
+  const btnEntrar    = document.getElementById('btnEntrar');
+  const feedback     = document.getElementById('feedbackLogin');
+
+  // Mock simples de usuários
+  const mockUsuarios = [
+    {
+      username: 'operador1',
+      senha: '123',
+      nome: 'Operador Demo',
+      matricula: '00001',
+      roles: ['OPERADOR'],
+      postoPrincipal: 'Centro de Cooperação da Cidade'
+    },
+    {
+      username: 'gestor1',
+      senha: '123',
+      nome: 'Gestor Demo',
+      matricula: '90001',
+      roles: ['GESTOR'],
+      postoPrincipal: 'Centro de Cooperação da Cidade'
+    },
+    {
+      username: 'admin',
+      senha: '123',
+      nome: 'Admin Demo',
+      matricula: '99999',
+      roles: ['ADMIN', 'GESTOR'],
+      postoPrincipal: 'Centro de Cooperação da Cidade'
+    }
+  ];
+
+  function autenticarMock(user, senha) {
+    return mockUsuarios.find(u => u.username === user && u.senha === senha) || null;
+  }
+
+  function redirecionarPorRole(roles) {
+    roles = roles || [];
+    if (roles.includes('GESTOR') || roles.includes('ADMIN')) {
+      window.location.href = 'gestor.html';
+    } else if (roles.includes('OPERADOR')) {
+      window.location.href = 'operador.html';
+    } else {
+      window.location.href = 'operador.html';
+    }
+  }
+
+  btnEntrar.addEventListener('click', () => {
+    feedback.textContent = '';
+
+    const user = inputUsuario.value.trim();
+    const senha= inputSenha.value.trim();
+
+    if (!user || !senha) {
+      feedback.textContent = 'Informe usuário e senha.';
+      return;
+    }
+
+    const encontrado = autenticarMock(user, senha);
+
+    if (!encontrado) {
+      feedback.textContent = 'Usuário ou senha inválidos (mock).';
+      return;
+    }
+
+    // Salva token/usuário em localStorage
+    try {
+      localStorage.setItem('sgo_auth_token', 'mock-token-' + Date.now());
+      localStorage.setItem('sgo_usuario', JSON.stringify({
+        nome: encontrado.nome,
+        username: encontrado.username,
+        matricula: encontrado.matricula,
+        roles: encontrado.roles,
+        postoPrincipal: encontrado.postoPrincipal
+      }));
+    } catch (e) {
+      // se falhar, ainda assim tentamos seguir
+    }
+
+    const roles = encontrado.roles || [];
+
+    // Captura geolocalização logo após login e antes do redirect
+    if (navigator.geolocation) {
+      feedback.textContent = 'Capturando localização...';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          try {
+            localStorage.setItem('sgo_geo_pos', JSON.stringify({
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              ts: Date.now()
+            }));
+          } catch (e) {
+            // se não conseguir salvar, segue mesmo assim
+          }
+          feedback.textContent = '';
+          redirecionarPorRole(roles);
+        },
+        (err) => {
+          console.warn('Erro geolocalização após login:', err);
+          // Mesmo que o usuário negue a permissão ou dê erro, segue
+          feedback.textContent = '';
+          redirecionarPorRole(roles);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      // Se geolocalização não for suportada
+      redirecionarPorRole(roles);
+    }
+  });
+
+  // Enter para submeter
+  inputSenha.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      btnEntrar.click();
+    }
+  });
 </script>
 </body>
 </html>
