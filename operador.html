@@ -288,7 +288,7 @@
   <section class="card">
     <h2>Ponto do operador</h2>
     <p class="small">
-      Registre entrada, saída e pausas. A localização é capturada automaticamente no login (MVP).
+      Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
     </p>
 
     <div class="info-box">
@@ -300,11 +300,14 @@
     </div>
 
     <div class="row" style="margin-top:10px;">
-      <button id="btnEntrada" class="primary" type="button">
-        Registrar entrada
+      <button id="btnCheckin" class="primary" type="button">
+        Check-in
       </button>
-      <button id="btnSaida" class="secondary" type="button" disabled>
-        Registrar saída
+      <button id="btnIntervalo" class="secondary" type="button" disabled>
+        Intervalo
+      </button>
+      <button id="btnCheckout" class="secondary" type="button" disabled>
+        Checkout
       </button>
     </div>
 
@@ -384,7 +387,7 @@
     if (confirm('Deseja realmente sair?')) {
       localStorage.removeItem('sgo_auth_token');
       localStorage.removeItem('sgo_usuario');
-      // Mantém sgo_theme_login e sgo_geo_pos para reaproveitar se quiser
+      // Mantém sgo_theme_login e sgo_geo_pos
       window.location.href = 'index.html';
     }
   });
@@ -420,22 +423,50 @@
     }
   })();
 
-  // Lógica simples de ponto (MVP)
-  const btnEntrada = document.getElementById('btnEntrada');
-  const btnSaida   = document.getElementById('btnSaida');
-  const statusPonto= document.getElementById('statusPonto');
+  // Lógica de ponto: check-in, intervalo, checkout (sem botão de localização)
+  const btnCheckin   = document.getElementById('btnCheckin');
+  const btnIntervalo = document.getElementById('btnIntervalo');
+  const btnCheckout  = document.getElementById('btnCheckout');
+  const statusPonto  = document.getElementById('statusPonto');
 
-  btnEntrada.addEventListener('click', () => {
-    btnEntrada.disabled = true;
-    btnSaida.disabled   = false;
+  let emExpediente = false;
+  let emIntervalo  = false;
+
+  btnCheckin.addEventListener('click', () => {
+    emExpediente = true;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = true;
+    btnIntervalo.disabled = false;
+    btnCheckout.disabled  = false;
+
     statusPonto.classList.remove('off');
     statusPonto.classList.add('ativo');
     statusPonto.textContent = 'Status: Em expediente';
   });
 
-  btnSaida.addEventListener('click', () => {
-    btnEntrada.disabled = false;
-    btnSaida.disabled   = true;
+  btnIntervalo.addEventListener('click', () => {
+    if (!emExpediente) return;
+
+    emIntervalo = !emIntervalo;
+
+    if (emIntervalo) {
+      statusPonto.textContent = 'Status: Em intervalo';
+      btnIntervalo.textContent = 'Retomar';
+    } else {
+      statusPonto.textContent = 'Status: Em expediente';
+      btnIntervalo.textContent = 'Intervalo';
+    }
+  });
+
+  btnCheckout.addEventListener('click', () => {
+    emExpediente = false;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = false;
+    btnIntervalo.disabled = true;
+    btnCheckout.disabled  = true;
+
     statusPonto.classList.remove('ativo');
     statusPonto.classList.add('off');
     statusPonto.textContent = 'Status: Fora do expediente';
