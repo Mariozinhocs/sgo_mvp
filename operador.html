@@ -463,7 +463,6 @@
       margin-bottom:2px;
     }
 
-    /* Modal senha */
     .modal-backdrop {
       position:fixed;
       inset:0;
@@ -487,7 +486,6 @@
       background:#ffffff;
     }
 
-    /* abas internas de mensagens */
     .tab-button.inner {
       flex:initial;
       padding:6px 10px;
@@ -663,6 +661,20 @@
 
         <div class="label-inline">Mensagem</div>
         <textarea id="msgCorpo" class="perfil-input" rows="4" placeholder="Digite sua mensagem"></textarea>
+
+        <div class="label-inline">Anexar imagem (câmera)</div>
+        <input
+          id="msgAnexo"
+          type="file"
+          class="perfil-input"
+          accept="image/*"
+          capture="environment"
+        />
+
+        <p class="small">
+          Em dispositivos móveis, ao tocar neste campo a câmera traseira será aberta para tirar uma foto
+          (em alguns navegadores também é possível escolher da galeria).
+        </p>
 
         <div class="row" style="margin-top:8px;">
           <button id="btnEnviarMsg" class="primary" type="button" disabled>
@@ -1080,7 +1092,6 @@
   escalaAno.addEventListener('change', atualizarEscalaAtual);
   atualizarEscalaAtual();
 
-  // Dropdown de escalas anteriores (por enquanto apenas placeholder)
   selectEscalasAnteriores.addEventListener('change', () => {
     if (!selectEscalasAnteriores.value) return;
     alert('Consulta de PDF de escala anterior será implementada em próxima fase.');
