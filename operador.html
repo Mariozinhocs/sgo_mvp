@@ -281,7 +281,7 @@
       border-color: #cbd5f5;
     }
 
-    /* Botões desabilitados – cinza claro, bem visível */
+    /* Botões desabilitados – cinza em ambos temas, mais claros no light */
     button:disabled {
       cursor: not-allowed;
       background: #e5e7eb;
@@ -296,11 +296,12 @@
       border: 1px solid #d1d5db;
     }
 
+    body.theme-light button:disabled,
     body.theme-light button.primary:disabled,
     body.theme-light button.secondary:disabled {
-      background: #e5e7eb;
+      background: #f3f4f6;   /* ainda mais claro no tema light */
       color: #9ca3af;
-      border-color: #d1d5db;
+      border-color: #e5e7eb;
     }
 
     .status-badge {
