@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
-  <title>SGO – Gestor</title>
+  <title>SGO – Painel do Gestor</title>
 
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-512.png" />
@@ -17,19 +17,34 @@
       --text-secondary: #9ca3af;
       --primary: #22c55e;
       --primary-soft: rgba(34,197,94,0.12);
+      --danger: #ef4444;
+      --danger-soft: rgba(248,113,113,0.12);
       --border-subtle: #1f2937;
+      --input-light: #e5e7eb;
+      --input-light-border: #d1d5db;
+      --button-inactive-light: #e5f0ec;
+      --button-inactive-dark: #111827;
     }
 
-    /* Tema claro */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    * { box-sizing: border-box; }
+
     body.theme-light {
       background: #f3f4f6;
       color: #020617;
     }
 
     body.theme-light .card {
-      background:#ffffff;
-      border-color:#d1d5db;
-      box-shadow:0 10px 25px rgba(15,23,42,0.12);
+      background: #ffffff;
+      border-color: #d1d5db;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.12);
     }
 
     body.theme-light .logo-img {
@@ -37,28 +52,28 @@
       border-color:#d1d5db;
     }
 
-    body.theme-light .info-box {
+    body.theme-light .info-box,
+    body.theme-light .table-box,
+    body.theme-light .map-box {
       background:#f9fafb;
       border-color:#d1d5db;
     }
 
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin:0;
-      background: radial-gradient(circle at top, #1d283a, #020617 58%);
-      color:var(--text-main);
-      min-height:100vh;
+    body.theme-light input,
+    body.theme-light select,
+    body.theme-light textarea {
+      background: var(--input-light);
+      color: #020617;
+      border-color: var(--input-light-border);
     }
 
     header {
-      padding:14px 14px 6px;
+      padding: 14px 14px 6px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      max-width:960px;
+      max-width:1024px;
       margin:0 auto;
     }
 
@@ -74,7 +89,6 @@
       gap:10px;
     }
 
-    /* mesmo logo das outras telas */
     .logo-img {
       width:54px;
       height:54px;
@@ -137,10 +151,10 @@
     .btn-exit {
       font-size: 13px;
       border-radius: 999px;
-      border: 1px solid rgba(148,163,113,0.6);
+      border: 1px solid rgba(248,113,113,0.6);
       padding: 6px 10px;
-      background: rgba(31,41,55,0.9);
-      color: #e5e7eb;
+      background: rgba(127,29,29,0.9);
+      color: #fee2e2;
       display:inline-flex;
       align-items:center;
       gap:6px;
@@ -154,8 +168,42 @@
 
     main {
       padding: 8px 14px 24px;
-      max-width:960px;
-      margin:0 auto;
+      max-width: 1024px;
+      margin: 0 auto;
+    }
+
+    .tabs-header {
+      display:flex;
+      gap:6px;
+      margin: 4px 0 10px;
+      flex-wrap:wrap;
+    }
+
+    .tab-button {
+      flex:1;
+      text-align:center;
+      padding:8px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .tab-panel {
+      display:none;
+    }
+
+    .tab-panel.active {
+      display:block;
     }
 
     .card {
@@ -177,7 +225,9 @@
       color: var(--text-secondary);
     }
 
-    .info-box {
+    .info-box,
+    .table-box,
+    .map-box {
       margin-top:8px;
       padding:8px 10px;
       border-radius:10px;
@@ -186,23 +236,51 @@
       font-size:12px;
     }
 
-    .info-label {
-      text-transform:uppercase;
-      font-size:11px;
-      letter-spacing:0.06em;
-      color:var(--text-secondary);
-    }
-
-    .info-value {
-      margin-top:2px;
-      font-size:13px;
-    }
-
     .row {
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      margin-top:10px;
+    }
+
+    .row-between {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .kpi-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .kpi-card {
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.9);
+    }
+
+    .kpi-label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .kpi-value {
+      margin-top:4px;
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .kpi-sub {
+      font-size:11px;
+      color:var(--text-secondary);
+      margin-top:2px;
     }
 
     button {
@@ -224,15 +302,144 @@
     }
 
     button.secondary {
-      background: rgba(15,23,42,0.85);
+      background: var(--button-inactive-dark);
       color: var(--text-main);
       border: 1px solid rgba(148,163,184,0.4);
     }
 
     body.theme-light button.secondary {
-      background:#e5e7eb;
-      color:#111827;
-      border-color:#cbd5f5;
+      background: var(--button-inactive-light);
+      color: #111827;
+      border-color: #cbd5f5;
+    }
+
+    /* Botões desabilitados – idênticos ao operador: tema light usa #f2f0ec */
+    button:disabled {
+      cursor: not-allowed;
+      background: #e5e7eb;
+      color: #9ca3af;
+      border: 1px solid #d1d5db;
+    }
+
+    button.primary:disabled,
+    button.secondary:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      border: 1px solid #d1d5db;
+    }
+
+    body.theme-light button:disabled,
+    body.theme-light button.primary:disabled,
+    body.theme-light button.secondary:disabled {
+      background: #f2f0ec;
+      color: #9ca3af;
+      border-color: #e0ddd7;
+    }
+
+    .label-inline {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      margin-top:8px;
+      margin-bottom:2px;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+
+    table th,
+    table td {
+      padding:4px 3px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:left;
+      white-space:nowrap;
+    }
+
+    table th {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .status-badge {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,0.5);
+      color:var(--text-secondary);
+      gap:4px;
+    }
+
+    .status-badge.ativo {
+      border-color:rgba(34,197,94,0.8);
+      color:#bbf7d0;
+      background:var(--primary-soft);
+    }
+
+    .status-badge.inativo {
+      border-color:rgba(248,113,113,0.8);
+      color:#fecaca;
+      background:var(--danger-soft);
+    }
+
+    .map-toggle {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:12px;
+    }
+
+    .map-container {
+      width:100%;
+      height:260px;
+      border-radius:12px;
+      background:radial-gradient(circle at top, #1f2937, #020617);
+      border:1px dashed rgba(148,163,184,0.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text-secondary);
+      font-size:12px;
+      text-align:center;
+      padding:12px;
+    }
+
+    .tab-button.inner {
+      flex:initial;
+      padding:6px 10px;
+      font-size:11px;
+    }
+
+    .tab-panel.inner {
+      margin-top:8px;
+    }
+
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    input.filter-input {
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:#020617;
+      color:var(--text-main);
+      font-size:12px;
+    }
+
+    body.theme-light input.filter-input {
+      background:#f9fafb;
+      color:#020617;
+      border-color:#d1d5db;
     }
   </style>
 </head>
@@ -242,8 +449,8 @@
     <div class="logo-box">
       <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
       <div class="logo-text">
-        <span class="logo-title">SGO</span>
-        <span class="logo-subtitle">Painel do Gestor</span>
+        <span class="logo-title">SGO – Gestor</span>
+        <span class="logo-subtitle">Painel de Gestão de Operações</span>
       </div>
     </div>
     <div class="subtitle-header" id="subtitleGestor">
@@ -255,37 +462,316 @@
       <span class="icon" id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
-    <button class="btn-exit" type="button" id="btnVoltarOperador">
-      <span>←</span>
-      Voltar ao operador
+    <button class="secondary" type="button" id="btnVoltarOperador">
+      Painel do operador
+    </button>
+    <button class="btn-exit" type="button" id="btnSair">
+      <span>⏏</span>
+      Sair
     </button>
   </div>
 </header>
 
 <main>
-  <section class="card">
-    <h2>Painel do Gestor</h2>
-    <p class="small">
-      Aqui o gestor irá configurar escalas, visualizar indicadores e acompanhar o time (MVP em construção).
-    </p>
+  <div class="tabs-header">
+    <button class="tab-button active" data-tab="tab-dashboard">Dashboard</button>
+    <button class="tab-button" data-tab="tab-postos">Postos</button>
+    <button class="tab-button" data-tab="tab-equipes">Equipes</button>
+    <button class="tab-button" data-tab="tab-escalas">Escalas</button>
+    <button class="tab-button" data-tab="tab-operadores">Operadores</button>
+    <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
+  </div>
 
-    <div class="info-box">
-      <div class="info-label">Próximos passos</div>
-      <div class="info-value">
-        - Definir tela para criação/edição de escalas dos operadores.<br>
-        - Conectar este painel ao backend para salvar e distribuir as escalas.<br>
-        - Incluir visão geral de presença e produtividade.
+  <!-- DASHBOARD -->
+  <section id="tab-dashboard" class="tab-panel active">
+    <section class="card">
+      <h2>Dashboard</h2>
+      <p class="small">
+        Visão geral dos postos, operadores e equipes. Os dados abaixo são mock para o MVP local, prontos para integrar ao backend.
+      </p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Postos ativos</div>
+          <div class="kpi-value" id="kpiPostosAtivos">0</div>
+          <div class="kpi-sub">Total de postos cadastrado: <span id="kpiPostosTotal">0</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Operadores em expediente</div>
+          <div class="kpi-value" id="kpiOperadoresEmServico">0</div>
+          <div class="kpi-sub">Operadores cadastrados: <span id="kpiOperadoresTotal">0</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Equipes ativas</div>
+          <div class="kpi-value" id="kpiEquipesAtivas">0</div>
+          <div class="kpi-sub">Equipes cadastradas: <span id="kpiEquipesTotal">0</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ausências no dia</div>
+          <div class="kpi-value" id="kpiAusenciasDia">0</div>
+          <div class="kpi-sub">Ausências registradas (mock)</div>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <button class="primary" type="button" disabled>
-        Gerenciar escalas (em breve)
-      </button>
-      <button class="secondary" type="button" id="btnVoltarOperador2">
-        Ir para painel de operador
-      </button>
-    </div>
+      <div class="row-between" style="margin-top:10px;">
+        <div class="map-toggle">
+          <input type="checkbox" id="chkMostrarMapa" />
+          <label for="chkMostrarMapa">Exibir mapa com postos ativos</label>
+        </div>
+        <span class="small">Mapa baseado em OpenStreetMap/Leaflet na próxima fase.</span>
+      </div>
+
+      <div class="map-box" id="mapBox" style="margin-top:8px; display:none;">
+        <div class="map-container" id="mapContainer">
+          Mapa de postos ativos será exibido aqui (integrar Leaflet/OpenStreetMap).<br>
+          Para o MVP local, este é apenas um placeholder visual.
+        </div>
+      </div>
+
+      <div class="table-box" style="margin-top:10px;">
+        <div class="row-between">
+          <span class="small">Últimos registros de ponto (mock)</span>
+        </div>
+        <table>
+          <thead>
+          <tr>
+            <th>Data/hora</th>
+            <th>Operador</th>
+            <th>Posto</th>
+            <th>Tipo</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyUltimosPontos">
+          <!-- preenchido via JS mock -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <!-- POSTOS -->
+  <section id="tab-postos" class="tab-panel">
+    <section class="card">
+      <h2>Postos</h2>
+      <p class="small">
+        Controle de postos/bases, com status, localização e quantidade de operadores vinculados (dados mock).
+      </p>
+
+      <div class="row-between" style="margin-top:6px;">
+        <div>
+          <span class="small">Lista de postos (MVP local).</span>
+        </div>
+        <input type="text" id="filtroPostos" class="filter-input" placeholder="Filtrar por nome/cidade" />
+      </div>
+
+      <div class="table-box">
+        <table>
+          <thead>
+          <tr>
+            <th>Posto</th>
+            <th>Cidade</th>
+            <th>Status</th>
+            <th>Operadores</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyPostos">
+          <!-- mock via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <button class="secondary" type="button" disabled>
+          Cadastrar novo posto (em breve)
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <!-- EQUIPES -->
+  <section id="tab-equipes" class="tab-panel">
+    <section class="card">
+      <h2>Equipes</h2>
+      <p class="small">
+        Visualização das equipes, postos associados e operadores vinculados (dados mock).
+      </p>
+
+      <div class="table-box">
+        <table>
+          <thead>
+          <tr>
+            <th>Equipe</th>
+            <th>Posto</th>
+            <th>Turno</th>
+            <th>Operadores</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyEquipes">
+          <!-- mock via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <button class="secondary" type="button" disabled>
+          Criar/editar equipe (em breve)
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ESCALAS -->
+  <section id="tab-escalas" class="tab-panel">
+    <section class="card">
+      <h2>Escalas</h2>
+      <p class="small">
+        Visão consolidada das escalas por posto e mês, com status de execução e assinatura (mock).
+      </p>
+
+      <div class="table-box">
+        <table>
+          <thead>
+          <tr>
+            <th>Posto</th>
+            <th>Mês/Ano</th>
+            <th>Operadores</th>
+            <th>Status</th>
+            <th>Assinatura</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyEscalas">
+          <!-- mock via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <button class="secondary" type="button" disabled>
+          Gerar nova escala (em breve)
+        </button>
+        <button class="secondary" type="button" disabled>
+          Download em PDF (em breve)
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <!-- OPERADORES -->
+  <section id="tab-operadores" class="tab-panel">
+    <section class="card">
+      <h2>Operadores</h2>
+      <p class="small">
+        Consulta de operadores, matrículas, postos principais e status (dados mock).
+      </p>
+
+      <div class="row-between" style="margin-top:6px;">
+        <div>
+          <span class="small">Operadores cadastrados (MVP local, sem backend).</span>
+        </div>
+        <input type="text" id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula" />
+      </div>
+
+      <div class="table-box">
+        <table>
+          <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Usuário</th>
+            <th>Posto principal</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyOperadores">
+          <!-- mock via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <button class="secondary" type="button" disabled>
+          Cadastrar/editar operador (em breve)
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <!-- MENSAGENS -->
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card">
+      <h2>Mensagens</h2>
+      <p class="small">
+        Troca de mensagens entre gestores e operadores. Integração com backend será feita em fase posterior.
+      </p>
+
+      <div class="tabs-header" style="margin-top:8px;">
+        <button class="tab-button inner active" data-inner="msg-inbox">Caixa de entrada</button>
+        <button class="tab-button inner" data-inner="msg-enviadas">Enviadas</button>
+        <button class="tab-button inner" data-inner="msg-nova">Nova mensagem</button>
+      </div>
+
+      <div id="msg-inbox" class="tab-panel inner active">
+        <div class="table-box">
+          <table>
+            <thead>
+            <tr>
+              <th>Data/hora</th>
+              <th>De</th>
+              <th>Assunto</th>
+              <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>—</td>
+              <td>—</td>
+              <td>Sem mensagens (MVP)</td>
+              <td>—</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="msg-enviadas" class="tab-panel inner">
+        <div class="table-box">
+          <table>
+            <thead>
+            <tr>
+              <th>Data/hora</th>
+              <th>Para</th>
+              <th>Assunto</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>—</td>
+              <td>—</td>
+              <td>Sem mensagens enviadas (MVP)</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="msg-nova" class="tab-panel inner">
+        <div class="label-inline">Para (operador)</div>
+        <input type="text" class="filter-input" placeholder="Digite o nome ou matrícula (mock)" />
+
+        <div class="label-inline">Assunto</div>
+        <input type="text" class="filter-input" placeholder="Assunto" />
+
+        <div class="label-inline">Mensagem</div>
+        <textarea rows="4" style="width:100%;padding:7px 9px;border-radius:10px;border:1px solid rgba(148,163,184,0.45);background:#020617;color:var(--text-main);font-size:13px;"></textarea>
+
+        <div class="row" style="margin-top:8px;">
+          <button class="primary" type="button" disabled>
+            Enviar (MVP local)
+          </button>
+        </div>
+        <p class="small">Envio real será integrado ao backend em fase posterior.</p>
+      </div>
+    </section>
   </section>
 </main>
 
@@ -329,38 +815,240 @@
     }
   });
 
-  function carregarUsuario() {
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      window.location.href = 'index.html';
+    }
+  });
+
+  document.getElementById('btnVoltarOperador').addEventListener('click', () => {
+    window.location.href = 'operador.html';
+  });
+
+  // Tabs externas
+  const tabButtons = document.querySelectorAll('.tab-button:not(.inner)');
+  const tabPanels  = document.querySelectorAll('section.tab-panel:not(.inner)');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // Tabs internas de mensagens
+  const innerTabButtons = document.querySelectorAll('.tab-button.inner');
+  const innerPanels     = document.querySelectorAll('.tab-panel.inner');
+
+  innerTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.inner;
+      innerTabButtons.forEach(b => b.classList.remove('active'));
+      innerPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // Preencher info básica do gestor (mock a partir de sgo_usuario, se existir)
+  (function carregarGestor() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch(e) { return null; }
-  }
-
-  const usuario = carregarUsuario();
-  if (!usuario) {
-    // sem login, volta para tela inicial
-    window.location.href = 'index.html';
-  } else {
-    const roles = usuario.roles || [];
-    const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
-
-    if (!temGestor) {
-      // não é gestor/admin: volta para painel principal de operador
-      window.location.href = 'operador.html';
-    } else {
+      if (!raw) return;
+      const usuario = JSON.parse(raw);
       const nome = usuario.nome || usuario.username || 'Gestor';
-      document.getElementById('subtitleGestor').textContent =
-        `Gestor logado – ${nome}`;
-    }
+      document.getElementById('subtitleGestor').textContent = `Gestor logado – ${nome}`;
+    } catch(e) {}
+  })();
+
+  // Toggle mapa
+  const chkMostrarMapa = document.getElementById('chkMostrarMapa');
+  const mapBox = document.getElementById('mapBox');
+
+  chkMostrarMapa.addEventListener('change', () => {
+    mapBox.style.display = chkMostrarMapa.checked ? 'block' : 'none';
+  });
+
+  // Dados mock para dashboard/postos/equipes/operadores/escalas
+  const MOCK_POSTOS = [
+    { nome: 'Posto Central', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 12 },
+    { nome: 'Base Leste', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 8 },
+    { nome: 'Posto Norte', cidade: 'Guarulhos/SP', status: 'ATIVO', operadores: 5 },
+    { nome: 'Base Sul', cidade: 'Santo André/SP', status: 'INATIVO', operadores: 0 }
+  ];
+
+  const MOCK_EQUIPES = [
+    { nome: 'Equipe Alfa', posto: 'Posto Central', turno: 'Dia', operadores: 6 },
+    { nome: 'Equipe Bravo', posto: 'Posto Central', turno: 'Noite', operadores: 6 },
+    { nome: 'Equipe Leste 01', posto: 'Base Leste', turno: 'Comercial', operadores: 8 }
+  ];
+
+  const MOCK_OPERADORES = [
+    { nome: 'Ana Silva', matricula: '1001', usuario: 'ana.silva', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Bruno Costa', matricula: '1002', usuario: 'bruno.costa', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Carlos Souza', matricula: '1003', usuario: 'carlos.s', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Daniela Lima', matricula: '1004', usuario: 'dani.lima', posto: 'Base Sul', status: 'INATIVO' }
+  ];
+
+  const MOCK_ESCALAS = [
+    { posto: 'Posto Central', mesAno: '06/2026', operadores: 12, status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Base Leste', mesAno: '06/2026', operadores: 8, status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Posto Norte', mesAno: '06/2026', operadores: 5, status: 'Planejada', assinatura: '—' }
+  ];
+
+  const MOCK_PONTOS = [
+    { dataHora: '10/06/2026 07:58', operador: 'Ana Silva',   posto: 'Posto Central', tipo: 'Check-in' },
+    { dataHora: '10/06/2026 07:59', operador: 'Bruno Costa', posto: 'Base Leste',    tipo: 'Check-in' },
+    { dataHora: '10/06/2026 08:02', operador: 'Carlos Souza', posto: 'Posto Norte',  tipo: 'Check-in' }
+  ];
+
+  function atualizarKpis() {
+    const ativos = MOCK_POSTOS.filter(p => p.status === 'ATIVO').length;
+    const totalPostos = MOCK_POSTOS.length;
+    const totalOperadores = MOCK_OPERADORES.length;
+    const ativosOperadores = MOCK_OPERADORES.filter(o => o.status === 'ATIVO').length;
+    const equipesAtivas = MOCK_EQUIPES.length;
+
+    document.getElementById('kpiPostosAtivos').textContent = ativos;
+    document.getElementById('kpiPostosTotal').textContent = totalPostos;
+    document.getElementById('kpiOperadoresTotal').textContent = totalOperadores;
+    document.getElementById('kpiOperadoresEmServico').textContent = ativosOperadores; // mock
+    document.getElementById('kpiEquipesAtivas').textContent = equipesAtivas;
+    document.getElementById('kpiEquipesTotal').textContent = equipesAtivas;
+    document.getElementById('kpiAusenciasDia').textContent = 0; // mock
   }
 
-  const voltarOperador = () => {
-    window.location.href = 'operador.html';
-  };
+  function popularPostos() {
+    const tbody = document.getElementById('tbodyPostos');
+    tbody.innerHTML = '';
+    MOCK_POSTOS.forEach(p => {
+      const tr = document.createElement('tr');
+      const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status}</span>`;
+      tr.innerHTML = `
+        <td>${p.nome}</td>
+        <td>${p.cidade}</td>
+        <td>${statusBadge}</td>
+        <td>${p.operadores}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-  document.getElementById('btnVoltarOperador').addEventListener('click', voltarOperador);
-  document.getElementById('btnVoltarOperador2').addEventListener('click', voltarOperador);
+  function popularEquipes() {
+    const tbody = document.getElementById('tbodyEquipes');
+    tbody.innerHTML = '';
+    MOCK_EQUIPES.forEach(e => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.nome}</td>
+        <td>${e.posto}</td>
+        <td>${e.turno}</td>
+        <td>${e.operadores}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function popularOperadores() {
+    const tbody = document.getElementById('tbodyOperadores');
+    tbody.innerHTML = '';
+    MOCK_OPERADORES.forEach(o => {
+      const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status}</span>`;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${o.nome}</td>
+        <td>${o.matricula}</td>
+        <td>${o.usuario}</td>
+        <td>${o.posto}</td>
+        <td>${statusBadge}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function popularEscalas() {
+    const tbody = document.getElementById('tbodyEscalas');
+    tbody.innerHTML = '';
+    MOCK_ESCALAS.forEach(e => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.posto}</td>
+        <td>${e.mesAno}</td>
+        <td>${e.operadores}</td>
+        <td>${e.status}</td>
+        <td>${e.assinatura}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function popularUltimosPontos() {
+    const tbody = document.getElementById('tbodyUltimosPontos');
+    tbody.innerHTML = '';
+    MOCK_PONTOS.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.dataHora}</td>
+        <td>${p.operador}</td>
+        <td>${p.posto}</td>
+        <td>${p.tipo}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Filtros simples (frontend) para Postos e Operadores
+  document.getElementById('filtroPostos').addEventListener('input', (e) => {
+    const termo = e.target.value.toLowerCase();
+    const tbody = document.getElementById('tbodyPostos');
+    tbody.innerHTML = '';
+    MOCK_POSTOS
+      .filter(p => (p.nome + p.cidade).toLowerCase().includes(termo))
+      .forEach(p => {
+        const tr = document.createElement('tr');
+        const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status}</span>`;
+        tr.innerHTML = `
+          <td>${p.nome}</td>
+          <td>${p.cidade}</td>
+          <td>${statusBadge}</td>
+          <td>${p.operadores}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+  });
+
+  document.getElementById('filtroOperadores').addEventListener('input', (e) => {
+    const termo = e.target.value.toLowerCase();
+    const tbody = document.getElementById('tbodyOperadores');
+    tbody.innerHTML = '';
+    MOCK_OPERADORES
+      .filter(o => (o.nome + o.matricula).toLowerCase().includes(termo))
+      .forEach(o => {
+        const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status}</span>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${o.nome}</td>
+          <td>${o.matricula}</td>
+          <td>${o.usuario}</td>
+          <td>${o.posto}</td>
+          <td>${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+  });
+
+  // Inicialização
+  atualizarKpis();
+  popularPostos();
+  popularEquipes();
+  popularOperadores();
+  popularEscalas();
+  popularUltimosPontos();
 </script>
 </body>
 </html>
