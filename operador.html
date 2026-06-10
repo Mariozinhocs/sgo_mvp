@@ -49,7 +49,8 @@
     }
 
     body.theme-light input,
-    body.theme-light select {
+    body.theme-light select,
+    body.theme-light textarea {
       background: var(--input-light);
       color: #020617;
       border-color: var(--input-light-border);
@@ -367,7 +368,9 @@
       margin-bottom:2px;
     }
 
-    input.perfil-input, input.senha-input {
+    input.perfil-input,
+    input.senha-input,
+    textarea.perfil-input {
       width:100%;
       padding:7px 9px;
       border-radius:10px;
@@ -375,6 +378,10 @@
       background:#020617;
       color:var(--text-main);
       font-size:13px;
+    }
+
+    textarea.perfil-input {
+      resize: vertical;
     }
 
     .escala-header {
@@ -455,6 +462,41 @@
     .lista-escalas-anteriores li {
       margin-bottom:2px;
     }
+
+    /* Modal senha */
+    .modal-backdrop {
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+    }
+
+    .modal-card {
+      background:#020617;
+      border-radius:16px;
+      padding:16px 18px;
+      border:1px solid var(--border-subtle);
+      max-width:320px;
+      width:100%;
+    }
+
+    body.theme-light .modal-card {
+      background:#ffffff;
+    }
+
+    /* abas internas de mensagens */
+    .tab-button.inner {
+      flex:initial;
+      padding:6px 10px;
+      font-size:11px;
+    }
+
+    .tab-panel.inner {
+      margin-top:8px;
+    }
   </style>
 </head>
 <body>
@@ -494,10 +536,13 @@
     <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
   </div>
 
+  <!-- PERFIL -->
   <section id="tab-perfil" class="tab-panel active">
     <section class="card">
       <h2>Perfil</h2>
-      <p class="small">Dados pessoais básicos, foto e alteração de senha (MVP local).</p>
+      <p class="small">
+        Dados pessoais do operador. Foto e dados são gerenciados pelo administrador do sistema.
+      </p>
 
       <div class="perfil-grid">
         <div class="perfil-foto" id="fotoContainer">
@@ -520,29 +565,30 @@
       </div>
 
       <div class="label-inline">Foto de perfil</div>
-      <input id="inputFoto" class="perfil-input" type="file" accept="image/*" />
+      <p class="small">Foto gerenciada pelo administrador do sistema.</p>
 
-      <div class="label-inline">Alterar senha</div>
-      <input id="inputSenhaAtual" class="senha-input" type="password" placeholder="Senha atual" />
-      <input id="inputSenhaNova" class="senha-input" type="password" placeholder="Nova senha" style="margin-top:4px;" />
-      <input id="inputSenhaNova2" class="senha-input" type="password" placeholder="Confirmar nova senha" style="margin-top:4px;" />
-
-      <div class="row" style="margin-top:8px;">
-        <button id="btnSalvarSenha" class="primary" type="button">Salvar nova senha</button>
-      </div>
-
+      <div class="label-inline">Senha de acesso</div>
+      <button id="btnAbrirModalSenha" class="primary" type="button">
+        Alterar senha
+      </button>
       <p id="feedbackPerfil" class="small" style="margin-top:6px;"></p>
     </section>
   </section>
 
+  <!-- PONTO -->
   <section id="tab-ponto" class="tab-panel">
     <section class="card">
       <h2>Ponto</h2>
-      <p class="small">Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).</p>
+      <p class="small">
+        Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
+      </p>
 
       <div class="info-box">
         <div class="info-label">Operador</div>
         <div class="info-value" id="infoOperador">—</div>
+
+        <div class="info-label" style="margin-top:6px;">Posto / Base</div>
+        <div class="info-value" id="infoPosto">—</div>
 
         <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
         <div class="info-value" id="infoLocal">Localização não disponível.</div>
@@ -560,41 +606,110 @@
     </section>
   </section>
 
+  <!-- ESCALA -->
   <section id="tab-escala" class="tab-panel">
     <section class="card">
       <h2>Escala de turnos</h2>
-      <p class="small">A escala mensal é definida pelos supervisores. Visualize seus dias e horários e marque os dias já trabalhados.</p>
+      <p class="small">
+        Visualize a escala mensal atribuída. Cada dia é validado conforme o registro de ponto. Futuramente será gerado um PDF para assinatura eletrônica.
+      </p>
 
       <div class="escala-header">
         <div class="escala-selects">
           <select id="escalaMes"></select>
           <select id="escalaAno"></select>
         </div>
-        <div class="small">
-          Cada linha representa o dia da escala e o horário a ser cumprido.
+        <div>
+          <label class="small" for="selectEscalasAnteriores">Escalas anteriores (PDF)</label><br>
+          <select id="selectEscalasAnteriores">
+            <option value="">Nenhuma escala anterior (MVP)</option>
+          </select>
         </div>
       </div>
 
       <div class="escala-box" id="escalaBox"></div>
 
-      <div class="link-escala-anterior" id="linkEscalasAnteriores">
-        Ver escalas anteriores já cumpridas
+      <div class="row" style="margin-top:8px;">
+        <button id="btnGerarPdfEscala" class="secondary" type="button" disabled>
+          Gerar PDF da escala (em breve)
+        </button>
+        <button id="btnAssinarGovBr" class="secondary" type="button" disabled>
+          Assinar eletronicamente (gov.br em próxima fase)
+        </button>
       </div>
-      <ul class="lista-escalas-anteriores" id="listaEscalasAnteriores" style="display:none;"></ul>
     </section>
   </section>
 
+  <!-- MENSAGENS -->
   <section id="tab-mensagens" class="tab-panel">
     <section class="card">
       <h2>Mensagens</h2>
-      <p class="small">Aqui você pode visualizar mensagens internas (MVP ilustrativo).</p>
-      <div class="info-box">
-        <div class="info-label">Mensagens recentes</div>
-        <div class="info-value">Nenhuma mensagem recebida ainda.</div>
+      <p class="small">
+        Troca de mensagens entre operador e administradores. Não há mensagens entre operadores.
+      </p>
+
+      <div class="tabs-header" style="margin-top:8px;">
+        <button class="tab-button inner active" data-inner="msg-nova">Nova mensagem</button>
+        <button class="tab-button inner" data-inner="msg-recebidas">Recebidas</button>
+        <button class="tab-button inner" data-inner="msg-enviadas">Enviadas</button>
+      </div>
+
+      <div id="msg-nova" class="tab-panel inner active">
+        <div class="label-inline">Para</div>
+        <input type="text" class="perfil-input" value="Administradores do sistema" disabled />
+
+        <div class="label-inline">Assunto</div>
+        <input id="msgAssunto" type="text" class="perfil-input" placeholder="Descreva o assunto" />
+
+        <div class="label-inline">Mensagem</div>
+        <textarea id="msgCorpo" class="perfil-input" rows="4" placeholder="Digite sua mensagem"></textarea>
+
+        <div class="row" style="margin-top:8px;">
+          <button id="btnEnviarMsg" class="primary" type="button" disabled>
+            Enviar (MVP local)
+          </button>
+        </div>
+        <p class="small">Envio real será integrado ao backend em próxima fase.</p>
+      </div>
+
+      <div id="msg-recebidas" class="tab-panel inner">
+        <div class="info-box">
+          <div class="info-label">Recebidas</div>
+          <div class="info-value">Nenhuma mensagem recebida (MVP).</div>
+        </div>
+      </div>
+
+      <div id="msg-enviadas" class="tab-panel inner">
+        <div class="info-box">
+          <div class="info-label">Enviadas</div>
+          <div class="info-value">Nenhuma mensagem enviada (MVP).</div>
+        </div>
       </div>
     </section>
   </section>
 </main>
+
+<!-- MODAL ALTERAÇÃO DE SENHA -->
+<div id="modalSenha" class="modal-backdrop">
+  <div class="modal-card">
+    <h3 style="margin:0 0 6px;font-size:15px;">Alterar senha</h3>
+    <p class="small">Informe a senha atual e a nova senha.</p>
+
+    <div class="label-inline">Senha atual</div>
+    <input id="inputSenhaAtual" class="senha-input" type="password" />
+
+    <div class="label-inline">Nova senha</div>
+    <input id="inputSenhaNova" class="senha-input" type="password" />
+
+    <div class="label-inline">Confirmar nova senha</div>
+    <input id="inputSenhaNova2" class="senha-input" type="password" />
+
+    <div class="row" style="margin-top:8px;">
+      <button id="btnSalvarSenha" class="primary" type="button">Salvar</button>
+      <button id="btnFecharModalSenha" class="secondary" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const THEME_KEY = 'sgo_theme_login';
@@ -636,14 +751,27 @@
     }
   });
 
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabPanels  = document.querySelectorAll('.tab-panel');
+  const tabButtons = document.querySelectorAll('.tab-button:not(.inner)');
+  const tabPanels  = document.querySelectorAll('section.tab-panel:not(.inner)');
 
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
       tabButtons.forEach(b => b.classList.remove('active'));
       tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  const innerTabButtons = document.querySelectorAll('.tab-button.inner');
+  const innerPanels     = document.querySelectorAll('.tab-panel.inner');
+
+  innerTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.inner;
+      innerTabButtons.forEach(b => b.classList.remove('active'));
+      innerPanels.forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(target).classList.add('active');
     });
@@ -666,6 +794,7 @@
     const nome = usuario.nome || usuario.username || 'Operador';
     const matricula = usuario.matricula || '—';
     const username  = usuario.username || '';
+    const posto     = usuario.postoPrincipal || '—';
 
     document.getElementById('subtitleOperador').textContent = `Operador logado – ${nome}`;
     document.getElementById('perfilNome').textContent = nome;
@@ -675,6 +804,7 @@
     const iniciais = nome.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('fotoIniciais').textContent = iniciais;
     document.getElementById('infoOperador').textContent = `${nome} · Matrícula ${matricula}`;
+    document.getElementById('infoPosto').textContent = posto;
 
     const roles = usuario.roles || [];
     const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
@@ -731,6 +861,25 @@
   let emExpediente = false;
   let emIntervalo  = false;
 
+  function marcarDiaEscalaComoTrabalhadoHoje() {
+    const hoje = new Date();
+    const mes = hoje.getMonth();
+    const ano = hoje.getFullYear();
+    const dia = hoje.getDate();
+
+    const chave = chaveEscala(mes, ano);
+    let marcados = {};
+    try {
+      const raw = localStorage.getItem(chave);
+      if (raw) marcados = JSON.parse(raw) || {};
+    } catch(e) {}
+
+    marcados[dia] = true;
+    try {
+      localStorage.setItem(chave, JSON.stringify(marcados));
+    } catch(e) {}
+  }
+
   btnCheckin.addEventListener('click', () => {
     emExpediente = true;
     emIntervalo  = false;
@@ -742,6 +891,9 @@
     statusPonto.classList.remove('off');
     statusPonto.classList.add('ativo');
     statusPonto.textContent = 'Status: Em expediente';
+
+    marcarDiaEscalaComoTrabalhadoHoje();
+    atualizarEscalaAtual();
   });
 
   btnIntervalo.addEventListener('click', () => {
@@ -771,8 +923,19 @@
     statusPonto.textContent = 'Status: Fora do expediente';
   });
 
-  const btnSalvarSenha = document.getElementById('btnSalvarSenha');
-  const feedbackPerfil = document.getElementById('feedbackPerfil');
+  const btnAbrirModalSenha  = document.getElementById('btnAbrirModalSenha');
+  const modalSenha          = document.getElementById('modalSenha');
+  const btnFecharModalSenha = document.getElementById('btnFecharModalSenha');
+  const btnSalvarSenha      = document.getElementById('btnSalvarSenha');
+  const feedbackPerfil      = document.getElementById('feedbackPerfil');
+
+  btnAbrirModalSenha.addEventListener('click', () => {
+    modalSenha.style.display = 'flex';
+  });
+
+  btnFecharModalSenha.addEventListener('click', () => {
+    modalSenha.style.display = 'none';
+  });
 
   btnSalvarSenha.addEventListener('click', () => {
     const atual = document.getElementById('inputSenhaAtual').value.trim();
@@ -796,13 +959,13 @@
     document.getElementById('inputSenhaAtual').value = '';
     document.getElementById('inputSenhaNova').value  = '';
     document.getElementById('inputSenhaNova2').value = '';
+    modalSenha.style.display = 'none';
   });
 
   const escalaMes = document.getElementById('escalaMes');
   const escalaAno = document.getElementById('escalaAno');
   const escalaBox = document.getElementById('escalaBox');
-  const listaEscalasAnteriores = document.getElementById('listaEscalasAnteriores');
-  const linkEscalasAnteriores  = document.getElementById('linkEscalasAnteriores');
+  const selectEscalasAnteriores = document.getElementById('selectEscalasAnteriores');
 
   (function initMesAno() {
     const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -827,17 +990,23 @@
     }
   })();
 
+  function diasNoMes(mesIndex, ano) {
+    return new Date(ano, mesIndex + 1, 0).getDate();
+  }
+
   function chaveEscala(mes, ano) {
     return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
   }
 
-  function obterEscalaDoGestorMock() {
+  function obterEscalaDoGestorMock(mes, ano) {
+    const totalDias = diasNoMes(mes, ano);
     const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
     const dias = [];
-    for (let d = 1; d <= 7; d++) {
+    for (let d = 1; d <= totalDias; d++) {
       dias.push({
         dia: d,
-        horario: turnos[d % turnos.length]
+        horario: turnos[d % turnos.length],
+        posto: 'Posto principal (mock)'
       });
     }
     return dias;
@@ -860,6 +1029,7 @@
       <tr>
         <th>Dia</th>
         <th>Horário</th>
+        <th>Posto</th>
         <th>Trabalhado</th>
       </tr>
     `;
@@ -872,6 +1042,7 @@
       tr.innerHTML = `
         <td>${String(item.dia).padStart(2,'0')}</td>
         <td>${item.horario}</td>
+        <td>${item.posto}</td>
         <td><input type="checkbox" data-dia="${item.dia}"></td>
       `;
       tbody.appendChild(tr);
@@ -909,34 +1080,10 @@
   escalaAno.addEventListener('change', atualizarEscalaAtual);
   atualizarEscalaAtual();
 
-  linkEscalasAnteriores.addEventListener('click', () => {
-    if (listaEscalasAnteriores.style.display === 'none') {
-      listaEscalasAnteriores.style.display = 'block';
-      listaEscalasAnteriores.innerHTML = '';
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('sgo_escala_')) {
-          const val = localStorage.getItem(k);
-          try {
-            const parsed = JSON.parse(val);
-            if (parsed && Object.keys(parsed).length > 0) {
-              const li = document.createElement('li');
-              li.textContent = k.replace('sgo_escala_', '');
-              listaEscalasAnteriores.appendChild(li);
-            }
-          } catch(e) {}
-        }
-      }
-
-      if (!listaEscalasAnteriores.children.length) {
-        const li = document.createElement('li');
-        li.textContent = 'Nenhuma escala anterior registrada.';
-        listaEscalasAnteriores.appendChild(li);
-      }
-    } else {
-      listaEscalasAnteriores.style.display = 'none';
-    }
+  // Dropdown de escalas anteriores (por enquanto apenas placeholder)
+  selectEscalasAnteriores.addEventListener('change', () => {
+    if (!selectEscalasAnteriores.value) return;
+    alert('Consulta de PDF de escala anterior será implementada em próxima fase.');
   });
 </script>
 </body>
