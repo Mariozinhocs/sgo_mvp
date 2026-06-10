@@ -16,9 +16,11 @@
       --text-main: #e5e7eb;
       --text-secondary: #9ca3af;
       --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.12);
       --border-subtle: #1f2937;
     }
 
+    /* Tema claro */
     body.theme-light {
       background: #f3f4f6;
       color: #020617;
@@ -31,6 +33,11 @@
     }
 
     body.theme-light .logo-img {
+      background:#f9fafb;
+      border-color:#d1d5db;
+    }
+
+    body.theme-light .info-box {
       background:#f9fafb;
       border-color:#d1d5db;
     }
@@ -67,6 +74,7 @@
       gap:10px;
     }
 
+    /* mesmo logo das outras telas */
     .logo-img {
       width:54px;
       height:54px;
@@ -129,10 +137,10 @@
     .btn-exit {
       font-size: 13px;
       border-radius: 999px;
-      border: 1px solid rgba(248,113,113,0.6);
+      border: 1px solid rgba(148,163,113,0.6);
       padding: 6px 10px;
-      background: rgba(127,29,29,0.9);
-      color: #fee2e2;
+      background: rgba(31,41,55,0.9);
+      color: #e5e7eb;
       display:inline-flex;
       align-items:center;
       gap:6px;
@@ -168,6 +176,64 @@
       font-size: 12px;
       color: var(--text-secondary);
     }
+
+    .info-box {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.8);
+      font-size:12px;
+    }
+
+    .info-label {
+      text-transform:uppercase;
+      font-size:11px;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .info-value {
+      margin-top:2px;
+      font-size:13px;
+    }
+
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    button {
+      font: inherit;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: rgba(15,23,42,0.85);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    body.theme-light button.secondary {
+      background:#e5e7eb;
+      color:#111827;
+      border-color:#cbd5f5;
+    }
   </style>
 </head>
 <body>
@@ -202,6 +268,24 @@
     <p class="small">
       Aqui o gestor irá configurar escalas, visualizar indicadores e acompanhar o time (MVP em construção).
     </p>
+
+    <div class="info-box">
+      <div class="info-label">Próximos passos</div>
+      <div class="info-value">
+        - Definir tela para criação/edição de escalas dos operadores.<br>
+        - Conectar este painel ao backend para salvar e distribuir as escalas.<br>
+        - Incluir visão geral de presença e produtividade.
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="primary" type="button" disabled>
+        Gerenciar escalas (em breve)
+      </button>
+      <button class="secondary" type="button" id="btnVoltarOperador2">
+        Ir para painel de operador
+      </button>
+    </div>
   </section>
 </main>
 
@@ -245,7 +329,6 @@
     }
   });
 
-  // proteção de acesso: só gestor/admin
   function carregarUsuario() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -256,6 +339,7 @@
 
   const usuario = carregarUsuario();
   if (!usuario) {
+    // sem login, volta para tela inicial
     window.location.href = 'index.html';
   } else {
     const roles = usuario.roles || [];
@@ -271,9 +355,12 @@
     }
   }
 
-  document.getElementById('btnVoltarOperador').addEventListener('click', () => {
+  const voltarOperador = () => {
     window.location.href = 'operador.html';
-  });
+  };
+
+  document.getElementById('btnVoltarOperador').addEventListener('click', voltarOperador);
+  document.getElementById('btnVoltarOperador2').addEventListener('click', voltarOperador);
 </script>
 </body>
 </html>
