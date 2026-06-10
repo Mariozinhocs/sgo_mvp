@@ -281,7 +281,7 @@
       border-color: #cbd5f5;
     }
 
-    /* Botões desabilitados – cinza em ambos temas, mais claros no light */
+    /* Botões desabilitados – cinza em ambos temas; no light usa #f2f0ec */
     button:disabled {
       cursor: not-allowed;
       background: #e5e7eb;
@@ -299,9 +299,9 @@
     body.theme-light button:disabled,
     body.theme-light button.primary:disabled,
     body.theme-light button.secondary:disabled {
-      background: #f3f4f6;   /* ainda mais claro no tema light */
+      background: #f2f0ec;   /* cor solicitada para disable no tema light */
       color: #9ca3af;
-      border-color: #e5e7eb;
+      border-color: #e0ddd7;
     }
 
     .status-badge {
@@ -824,7 +824,7 @@
     const nome = usuario.nome || usuario.username || 'Operador';
     const matricula = usuario.matricula || '—';
     const username  = usuario.username || '';
-    const posto     = usuario.postoPrincipal || '—';
+    the posto     = usuario.postoPrincipal || '—';
 
     document.getElementById('subtitleOperador').textContent = `Operador logado – ${nome}`;
     document.getElementById('perfilNome').textContent = nome;
