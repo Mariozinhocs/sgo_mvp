@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#020826" />
+  <title>SGO – Operador</title>
+
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+  <link rel="icon" type="image/png" href="icons/icon-512.png" />
+
+  <style>
+    :root {
+      --bg-body: #0f172a;
+      --bg-card: #020617;
+      --text-main: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --primary: #22c55e;
+      --primary-soft: rgba(34,197,94,0.12);
+      --danger: #ef4444;
+      --danger-soft: rgba(248,113,113,0.12);
+      --border-subtle: #1f2937;
+      --input-light: #e5e7eb;
+      --input-light-border: #d1d5db;
+      --button-inactive-light: #e5e7eb;
+      --button-inactive-dark: #111827;
+    }
+
+    body.theme-light {
+      background: #f3f4f6;
+      color: #020617;
+    }
+
+    body.theme-light .card {
+      background: #ffffff;
+      border-color: #d1d5db;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.12);
+    }
+
+    body.theme-light .logo-img {
+      background:#f9fafb;
+      border-color:#d1d5db;
+    }
+
+    body.theme-light .info-box,
+    body.theme-light .escala-box {
+      background:#f9fafb;
+      border-color:#d1d5db;
+    }
+
+    body.theme-light input,
+    body.theme-light select,
+    body.theme-light textarea {
+      background: var(--input-light);
+      color: #020617;
+      border-color: var(--input-light-border);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      background: radial-gradient(circle at top, #1d283a, #020617 58%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 14px 14px 6px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      max-width:820px;
+      margin:0 auto;
+    }
+
+    .header-left {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .logo-box {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo-img {
+      width:54px;
+      height:54px;
+      border-radius:12px;
+      object-fit:contain;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.5);
+      padding:6px;
+    }
+
+    .logo-text {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .logo-title {
+      font-size:16px;
+      font-weight:600;
+    }
+
+    .logo-subtitle {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .subtitle-header {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+    }
+
+    .theme-toggle span.icon {
+      font-size:15px;
+    }
+
+    body.theme-light .theme-toggle {
+      background:#e5e7eb;
+      color:#020617;
+      border-color:#9ca3af;
+    }
+
+    .btn-exit {
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(248,113,113,0.6);
+      padding: 6px 10px;
+      background: rgba(127,29,29,0.9);
+      color: #fee2e2;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    .btn-exit span {
+      font-size:15px;
+    }
+
+    main {
+      padding: 8px 14px 24px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .tabs-header {
+      display:flex;
+      gap:6px;
+      margin: 4px 0 10px;
+      flex-wrap:wrap;
+    }
+
+    .tab-button {
+      flex:1;
+      text-align:center;
+      padding:8px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:rgba(15,23,42,0.85);
+      color:var(--text-secondary);
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .tab-button.active {
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#022c22;
+      font-weight:600;
+    }
+
+    .tab-panel {
+      display:none;
+    }
+
+    .tab-panel.active {
+      display:block;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: 18px;
+      padding: 14px 14px 16px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 17px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .info-box {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.8);
+      font-size:12px;
+    }
+
+    .info-label {
+      text-transform:uppercase;
+      font-size:11px;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    .info-value {
+      margin-top:2px;
+      font-size:13px;
+    }
+
+    .row {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    button {
+      font: inherit;
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: var(--button-inactive-dark);
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    body.theme-light button.secondary {
+      background: var(--button-inactive-light);
+      color: #111827;
+      border-color: #cbd5f5;
+    }
+
+    /* Botões desabilitados – cinza em ambos temas; no light usa #f2f0ec */
+    button:disabled {
+      cursor: not-allowed;
+      background: #e5e7eb;
+      color: #9ca3af;
+      border: 1px solid #d1d5db;
+    }
+
+    button.primary:disabled,
+    button.secondary:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      border: 1px solid #d1d5db;
+    }
+
+    body.theme-light button:disabled,
+    body.theme-light button.primary:disabled,
+    body.theme-light button.secondary:disabled {
+      background: #f2f0ec;
+      color: #9ca3af;
+      border-color: #e0ddd7;
+    }
+
+    /* Status do ponto – mais contrastante */
+    .status-badge {
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:600;
+      border:1px solid rgba(148,163,184,0.5);
+      gap:6px;
+      background:#020617;
+      color:#e5e7eb;
+    }
+
+    .status-badge::before {
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#9ca3af;
+    }
+
+    .status-badge.ativo {
+      border-color:rgba(34,197,94,0.9);
+      color:#bbf7d0;
+      background:rgba(22,163,74,0.18);
+    }
+
+    .status-badge.ativo::before {
+      background:#22c55e;
+    }
+
+    .status-badge.off {
+      border-color:rgba(248,113,113,0.9);
+      color:#fecaca;
+      background:rgba(127,29,29,0.25);
+    }
+
+    .status-badge.off::before {
+      background:#ef4444;
+    }
+
+    .perfil-grid {
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .perfil-foto {
+      width:90px;
+      height:90px;
+      border-radius:999px;
+      border:2px solid rgba(148,163,184,0.6);
+      background:#020617;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:32px;
+      font-weight:600;
+      color:var(--text-secondary);
+      overflow:hidden;
+    }
+
+    .perfil-foto img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .perfil-dados {
+      flex:1;
+      min-width:200px;
+    }
+
+    .perfil-campo {
+      margin-top:4px;
+      font-size:13px;
+    }
+
+    .perfil-campo span.label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      display:block;
+    }
+
+    .perfil-campo span.valor {
+      font-size:13px;
+    }
+
+    .label-inline {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+      margin-top:8px;
+      margin-bottom:2px;
+    }
+
+    input.perfil-input,
+    input.senha-input,
+    textarea.perfil-input {
+      width:100%;
+      padding:7px 9px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:#020617;
+      color:var(--text-main);
+      font-size:13px;
+    }
+
+    textarea.perfil-input {
+      resize: vertical;
+    }
+
+    .escala-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:6px;
+      flex-wrap:wrap;
+    }
+
+    .escala-selects {
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .escala-selects select {
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:#020617;
+      color:var(--text-main);
+      font-size:12px;
+    }
+
+    .escala-box {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.8);
+      font-size:12px;
+      overflow-x:auto;
+    }
+
+    table.escala {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+
+    table.escala th,
+    table.escala td {
+      padding:4px 3px;
+      border-bottom:1px solid rgba(31,41,55,0.9);
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    table.escala th {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      color:var(--text-secondary);
+    }
+
+    table.escala input[type="checkbox"] {
+      width:14px;
+      height:14px;
+      accent-color:#22c55e;
+      cursor:pointer;
+    }
+
+    .link-escala-anterior {
+      margin-top:8px;
+      font-size:12px;
+      color:#a5b4fc;
+      cursor:pointer;
+      text-decoration:underline;
+    }
+
+    .lista-escalas-anteriores {
+      margin-top:6px;
+      font-size:12px;
+    }
+
+    .lista-escalas-anteriores li {
+      margin-bottom:2px;
+    }
+
+    .modal-backdrop {
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.75);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+    }
+
+    .modal-card {
+      background:#020617;
+      border-radius:16px;
+      padding:16px 18px;
+      border:1px solid var(--border-subtle);
+      max-width:320px;
+      width:100%;
+    }
+
+    body.theme-light .modal-card {
+      background:#ffffff;
+    }
+
+    .tab-button.inner {
+      flex:initial;
+      padding:6px 10px;
+      font-size:11px;
+    }
+
+    .tab-panel.inner {
+      margin-top:8px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <div class="logo-box">
+      <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
+      <div class="logo-text">
+        <span class="logo-title">SGO</span>
+        <span class="logo-subtitle">Sistema de Gestão de Operações</span>
+      </div>
+    </div>
+    <div class="subtitle-header" id="subtitleOperador">
+      Operador logado
+    </div>
+  </div>
+  <div class="header-right">
+    <button id="btnTheme" class="theme-toggle" type="button">
+      <span class="icon" id="themeIcon">☀️</span>
+      <span id="themeLabel">Light</span>
+    </button>
+    <button id="btnPainelGestor" class="secondary" type="button" style="display:none;">
+      Painel do gestor
+    </button>
+    <button class="btn-exit" type="button" id="btnSair">
+      <span>⏏</span>
+      Sair
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="tabs-header">
+    <button class="tab-button active" data-tab="tab-perfil">Perfil</button>
+    <button class="tab-button" data-tab="tab-ponto">Ponto</button>
+    <button class="tab-button" data-tab="tab-escala">Escala</button>
+    <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
+  </div>
+
+  <!-- PERFIL -->
+  <section id="tab-perfil" class="tab-panel active">
+    <section class="card">
+      <h2>Perfil</h2>
+      <p class="small">
+        Dados pessoais do operador. Foto e dados são gerenciados pelo administrador do sistema.
+      </p>
+
+      <div class="perfil-grid">
+        <div class="perfil-foto" id="fotoContainer">
+          <span id="fotoIniciais">OP</span>
+        </div>
+        <div class="perfil-dados">
+          <div class="perfil-campo">
+            <span class="label">Nome</span>
+            <span class="valor" id="perfilNome">—</span>
+          </div>
+          <div class="perfil-campo">
+            <span class="label">Matrícula</span>
+            <span class="valor" id="perfilMatricula">—</span>
+          </div>
+          <div class="perfil-campo">
+            <span class="label">Usuário</span>
+            <span class="valor" id="perfilUsuario">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="label-inline">Foto de perfil</div>
+      <p class="small">Foto gerenciada pelo administrador do sistema.</p>
+
+      <div class="label-inline">Senha de acesso</div>
+      <button id="btnAbrirModalSenha" class="primary" type="button">
+        Alterar senha
+      </button>
+      <p id="feedbackPerfil" class="small" style="margin-top:6px;"></p>
+    </section>
+  </section>
+
+  <!-- PONTO -->
+  <section id="tab-ponto" class="tab-panel">
+    <section class="card">
+      <h2>Ponto</h2>
+      <p class="small">
+        Registre início e fim de expediente, além do intervalo. A localização é capturada automaticamente no login (MVP).
+      </p>
+
+      <div class="info-box">
+        <div class="info-label">Operador</div>
+        <div class="info-value" id="infoOperador">—</div>
+
+        <div class="info-label" style="margin-top:6px;">Posto / Base</div>
+        <div class="info-value" id="infoPosto">—</div>
+
+        <div class="info-label" style="margin-top:6px;">Localização (último login)</div>
+        <div class="info-value" id="infoLocal">Localização não disponível.</div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="btnCheckin" class="primary" type="button">Check-in</button>
+        <button id="btnIntervalo" class="secondary" type="button" disabled>Intervalo</button>
+        <button id="btnCheckout" class="secondary" type="button" disabled>Checkout</button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <span class="status-badge off" id="statusPonto">Status: Fora do expediente</span>
+      </div>
+    </section>
+  </section>
+
+  <!-- ESCALA -->
+  <section id="tab-escala" class="tab-panel">
+    <section class="card">
+      <h2>Escala de turnos</h2>
+      <p class="small">
+        Visualize a escala mensal atribuída. Cada dia é validado conforme o registro de ponto. Futuramente será gerado um PDF para assinatura eletrônica.
+      </p>
+
+      <div class="escala-header">
+        <div class="escala-selects">
+          <select id="escalaMes"></select>
+          <select id="escalaAno"></select>
+        </div>
+        <div>
+          <label class="small" for="selectEscalasAnteriores">Escalas anteriores (PDF)</label><br>
+          <select id="selectEscalasAnteriores">
+            <option value="">Nenhuma escala anterior (MVP)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="escala-box" id="escalaBox"></div>
+
+      <div class="row" style="margin-top:8px;">
+        <button id="btnGerarPdfEscala" class="secondary" type="button" disabled>
+          Gerar PDF da escala (em breve)
+        </button>
+        <button id="btnAssinarGovBr" class="secondary" type="button" disabled>
+          Assinar eletronicamente (gov.br em próxima fase)
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <!-- MENSAGENS -->
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card">
+      <h2>Mensagens</h2>
+      <p class="small">
+        Troca de mensagens entre operador e administradores. Não há mensagens entre operadores.
+      </p>
+
+      <div class="tabs-header" style="margin-top:8px;">
+        <button class="tab-button inner active" data-inner="msg-nova">Nova mensagem</button>
+        <button class="tab-button inner" data-inner="msg-recebidas">Recebidas</button>
+        <button class="tab-button inner" data-inner="msg-enviadas">Enviadas</button>
+      </div>
+
+      <div id="msg-nova" class="tab-panel inner active">
+        <div class="label-inline">Para</div>
+        <input type="text" class="perfil-input" value="Administradores do sistema" disabled />
+
+        <div class="label-inline">Assunto</div>
+        <input id="msgAssunto" type="text" class="perfil-input" placeholder="Descreva o assunto" />
+
+        <div class="label-inline">Mensagem</div>
+        <textarea id="msgCorpo" class="perfil-input" rows="4" placeholder="Digite sua mensagem"></textarea>
+
+        <div class="label-inline">Anexar imagem (câmera)</div>
+        <input
+          id="msgAnexo"
+          type="file"
+          class="perfil-input"
+          accept="image/*"
+          capture="environment"
+        />
+
+        <p class="small">
+          Em dispositivos móveis, ao tocar neste campo a câmera traseira será aberta para tirar uma foto
+          (em alguns navegadores também é possível escolher da galeria).
+        </p>
+
+        <div class="row" style="margin-top:8px;">
+          <button id="btnEnviarMsg" class="primary" type="button" disabled>
+            Enviar (MVP local)
+          </button>
+        </div>
+        <p class="small">Envio real será integrado ao backend em próxima fase.</p>
+      </div>
+
+      <div id="msg-recebidas" class="tab-panel inner">
+        <div class="info-box">
+          <div class="info-label">Recebidas</div>
+          <div class="info-value">Nenhuma mensagem recebida (MVP).</div>
+        </div>
+      </div>
+
+      <div id="msg-enviadas" class="tab-panel inner">
+        <div class="info-box">
+          <div class="info-label">Enviadas</div>
+          <div class="info-value">Nenhuma mensagem enviada (MVP).</div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<!-- MODAL ALTERAÇÃO DE SENHA -->
+<div id="modalSenha" class="modal-backdrop">
+  <div class="modal-card">
+    <h3 style="margin:0 0 6px;font-size:15px;">Alterar senha</h3>
+    <p class="small">Informe a senha atual e a nova senha.</p>
+
+    <div class="label-inline">Senha atual</div>
+    <input id="inputSenhaAtual" class="senha-input" type="password" />
+
+    <div class="label-inline">Nova senha</div>
+    <input id="inputSenhaNova" class="senha-input" type="password" />
+
+    <div class="label-inline">Confirmar nova senha</div>
+    <input id="inputSenhaNova2" class="senha-input" type="password" />
+
+    <div class="row" style="margin-top:8px;">
+      <button id="btnSalvarSenha" class="primary" type="button">Salvar</button>
+      <button id="btnFecharModalSenha" class="secondary" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const THEME_KEY = 'sgo_theme_login';
+
+  const btnTheme  = document.getElementById('btnTheme');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel= document.getElementById('themeLabel');
+
+  function aplicarTemaInicial() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+
+    if (saved === 'light') {
+      document.body.classList.add('theme-light');
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      document.body.classList.remove('theme-light');
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  }
+
+  aplicarTemaInicial();
+
+  btnTheme.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('theme-light');
+    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
+    if (isLight) {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Dark';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
+    } else {
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Light';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
+    }
+  });
+
+  const tabButtons = document.querySelectorAll('.tab-button:not(.inner)');
+  const tabPanels  = document.querySelectorAll('section.tab-panel:not(.inner)');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  const innerTabButtons = document.querySelectorAll('.tab-button.inner');
+  const innerPanels     = document.querySelectorAll('.tab-panel.inner');
+
+  innerTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.inner;
+      innerTabButtons.forEach(b => b.classList.remove('active'));
+      innerPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  function carregarUsuario() {
+    try {
+      const raw = localStorage.getItem('sgo_usuario');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch(e) {
+      return null;
+    }
+  }
+
+  const usuario = carregarUsuario();
+  if (!usuario) {
+    window.location.href = 'index.html';
+  } else {
+    const nome = usuario.nome || usuario.username || 'Operador';
+    const matricula = usuario.matricula || '—';
+    const username  = usuario.username || '';
+    const posto     = usuario.postoPrincipal || '—';
+
+    document.getElementById('subtitleOperador').textContent = `Operador logado – ${nome}`;
+    document.getElementById('perfilNome').textContent = nome;
+    document.getElementById('perfilMatricula').textContent = matricula;
+    document.getElementById('perfilUsuario').textContent = username;
+
+    const iniciais = nome.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('fotoIniciais').textContent = iniciais;
+    document.getElementById('infoOperador').textContent = `${nome} · Matrícula ${matricula}`;
+    document.getElementById('infoPosto').textContent = posto;
+
+    const roles = usuario.roles || [];
+    const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
+    const btnPainelGestor = document.getElementById('btnPainelGestor');
+    if (btnPainelGestor && temGestor) {
+      btnPainelGestor.style.display = 'inline-flex';
+      btnPainelGestor.addEventListener('click', () => {
+        window.location.href = 'gestor.html';
+      });
+    }
+  }
+
+  document.getElementById('btnSair').addEventListener('click', () => {
+    if (confirm('Deseja realmente sair?')) {
+      localStorage.removeItem('sgo_auth_token');
+      localStorage.removeItem('sgo_usuario');
+      window.location.href = 'index.html';
+    }
+  });
+
+  (function carregarGeoPosLogin() {
+    const infoLocal = document.getElementById('infoLocal');
+    try {
+      const raw = localStorage.getItem('sgo_geo_pos');
+      if (!raw) {
+        infoLocal.textContent = 'Localização não disponível.';
+        return;
+      }
+      const data = JSON.parse(raw);
+      if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') {
+        infoLocal.textContent = 'Localização não disponível.';
+        return;
+      }
+
+      const lat = data.lat.toFixed(6);
+      const lng = data.lng.toFixed(6);
+
+      const ts = data.ts ? new Date(data.ts) : null;
+      const tsStr = ts
+        ? ts.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+        : 'horário desconhecido';
+
+      infoLocal.textContent = `Lat ${lat} · Lng ${lng} (capturado em ${tsStr})`;
+    } catch (e) {
+      infoLocal.textContent = 'Localização não disponível.';
+    }
+  })();
+
+  const btnCheckin   = document.getElementById('btnCheckin');
+  const btnIntervalo = document.getElementById('btnIntervalo');
+  const btnCheckout  = document.getElementById('btnCheckout');
+  const statusPonto  = document.getElementById('statusPonto');
+
+  let emExpediente = false;
+  let emIntervalo  = false;
+
+  function marcarDiaEscalaComoTrabalhadoHoje() {
+    const hoje = new Date();
+    const mes = hoje.getMonth();
+    const ano = hoje.getFullYear();
+    const dia = hoje.getDate();
+
+    const chave = chaveEscala(mes, ano);
+    let marcados = {};
+    try {
+      const raw = localStorage.getItem(chave);
+      if (raw) marcados = JSON.parse(raw) || {};
+    } catch(e) {}
+
+    marcados[dia] = true;
+    try {
+      localStorage.setItem(chave, JSON.stringify(marcados));
+    } catch(e) {}
+  }
+
+  btnCheckin.addEventListener('click', () => {
+    emExpediente = true;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = true;
+    btnIntervalo.disabled = false;
+    btnCheckout.disabled  = false;
+
+    statusPonto.classList.remove('off');
+    statusPonto.classList.add('ativo');
+    statusPonto.textContent = 'Status: Em expediente';
+
+    marcarDiaEscalaComoTrabalhadoHoje();
+    atualizarEscalaAtual();
+  });
+
+  btnIntervalo.addEventListener('click', () => {
+    if (!emExpediente) return;
+
+    emIntervalo = !emIntervalo;
+
+    if (emIntervalo) {
+      statusPonto.textContent = 'Status: Em intervalo';
+      statusPonto.classList.remove('ativo');
+      statusPonto.classList.add('off');
+    } else {
+      statusPonto.textContent = 'Status: Em expediente';
+      statusPonto.classList.remove('off');
+      statusPonto.classList.add('ativo');
+    }
+  });
+
+  btnCheckout.addEventListener('click', () => {
+    emExpediente = false;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = false;
+    btnIntervalo.disabled = true;
+    btnCheckout.disabled  = true;
+
+    statusPonto.classList.remove('ativo');
+    statusPonto.classList.add('off');
+    statusPonto.textContent = 'Status: Fora do expediente';
+  });
+
+  const btnAbrirModalSenha  = document.getElementById('btnAbrirModalSenha');
+  const modalSenha          = document.getElementById('modalSenha');
+  const btnFecharModalSenha = document.getElementById('btnFecharModalSenha');
+  const btnSalvarSenha      = document.getElementById('btnSalvarSenha');
+  const feedbackPerfil      = document.getElementById('feedbackPerfil');
+
+  btnAbrirModalSenha.addEventListener('click', () => {
+    modalSenha.style.display = 'flex';
+  });
+
+  btnFecharModalSenha.addEventListener('click', () => {
+    modalSenha.style.display = 'none';
+  });
+
+  btnSalvarSenha.addEventListener('click', () => {
+    const atual = document.getElementById('inputSenhaAtual').value.trim();
+    const nova  = document.getElementById('inputSenhaNova').value.trim();
+    const nova2 = document.getElementById('inputSenhaNova2').value.trim();
+
+    if (!atual || !nova || !nova2) {
+      feedbackPerfil.textContent = 'Preencha todos os campos de senha.';
+      return;
+    }
+    if (nova !== nova2) {
+      feedbackPerfil.textContent = 'Nova senha e confirmação não conferem.';
+      return;
+    }
+
+    try {
+      localStorage.setItem('sgo_senha_alterada', '1');
+    } catch(e) {}
+
+    feedbackPerfil.textContent = 'Senha alterada (mock local, sem backend).';
+    document.getElementById('inputSenhaAtual').value = '';
+    document.getElementById('inputSenhaNova').value  = '';
+    document.getElementById('inputSenhaNova2').value = '';
+    modalSenha.style.display = 'none';
+  });
+
+  const escalaMes = document.getElementById('escalaMes');
+  const escalaAno = document.getElementById('escalaAno');
+  const escalaBox = document.getElementById('escalaBox');
+  const selectEscalasAnteriores = document.getElementById('selectEscalasAnteriores');
+
+  (function initMesAno() {
+    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = hoje.getMonth();
+
+    meses.forEach((m, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = m;
+      if (idx === mesAtual) opt.selected = true;
+      escalaMes.appendChild(opt);
+    });
+
+    for (let a = anoAtual - 1; a <= anoAtual + 1; a++) {
+      const opt = document.createElement('option');
+      opt.value = a;
+      opt.textContent = a;
+      if (a === anoAtual) opt.selected = true;
+      escalaAno.appendChild(opt);
+    }
+  })();
+
+  function diasNoMes(mesIndex, ano) {
+    return new Date(ano, mesIndex + 1, 0).getDate();
+  }
+
+  function chaveEscala(mes, ano) {
+    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
+  }
+
+  function obterEscalaDoGestorMock(mes, ano) {
+    const totalDias = diasNoMes(mes, ano);
+    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
+    const dias = [];
+    for (let d = 1; d <= totalDias; d++) {
+      dias.push({
+        dia: d,
+        horario: turnos[d % turnos.length],
+        posto: 'Posto principal (mock)'
+      });
+    }
+    return dias;
+  }
+
+  function gerarEscalaMes(mes, ano) {
+    const dias = obterEscalaDoGestorMock(mes, ano);
+
+    let marcados = {};
+    try {
+      const raw = localStorage.getItem(chaveEscala(mes, ano));
+      if (raw) marcados = JSON.parse(raw) || {};
+    } catch(e) {}
+
+    const table = document.createElement('table');
+    table.className = 'escala';
+
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+      <tr>
+        <th>Dia</th>
+        <th>Horário</th>
+        <th>Posto</th>
+        <th>Trabalhado</th>
+      </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    dias.forEach(item => {
+      const tr = document.createElement('tr');
+      const mesLabel = String(mes + 1).padStart(2, '0');
+      const diaLabel = String(item.dia).padStart(2, '0');
+      const labelDia = `${diaLabel}/${mesLabel}`;
+      tr.innerHTML = `
+        <td>${labelDia}</td>
+        <td>${item.horario}</td>
+        <td>${item.posto}</td>
+        <td><input type="checkbox" data-dia="${item.dia}"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    escalaBox.innerHTML = '';
+    escalaBox.appendChild(table);
+
+    const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(chk => {
+      const dia = chk.dataset.dia;
+      if (marcados[dia]) chk.checked = true;
+
+      chk.addEventListener('change', () => {
+        if (chk.checked) {
+          marcados[dia] = true;
+        } else {
+          delete marcados[dia];
+        }
+        try {
+          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcados));
+        } catch(e) {}
+      });
+    });
+  }
+
+  function atualizarEscalaAtual() {
+    const mes = parseInt(escalaMes.value, 10);
+    const ano = parseInt(escalaAno.value, 10);
+    gerarEscalaMes(mes, ano);
+  }
+
+  escalaMes.addEventListener('change', atualizarEscalaAtual);
+  escalaAno.addEventListener('change', atualizarEscalaAtual);
+  atualizarEscalaAtual();
+
+  selectEscalasAnteriores.addEventListener('change', () => {
+    if (!selectEscalasAnteriores.value) return;
+    alert('Consulta de PDF de escala anterior será implementada em próxima fase.');
+  });
+</script>
+</body>
+</html>
