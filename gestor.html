@@ -24,8 +24,8 @@
       --input-light-border: #d1d5db;
       --button-inactive-light: #e5e7eb;
       --button-inactive-dark: #111827;
-      --kpi-base: #0E2E20;     /* base dos KPIs */
-      --kpi-critical: #861211; /* crítico */
+      --kpi-base: #0E2E20;
+      --kpi-critical: #861211;
       --kpi-normal-text: #8FEDC2;
     }
 
@@ -57,7 +57,9 @@
 
     body.theme-light .info-box,
     body.theme-light .table-box,
-    body.theme-light .map-box {
+    body.theme-light .map-box,
+    body.theme-light .posto-detail,
+    body.theme-light .operador-profile {
       background:#f9fafb;
       border-color:#d1d5db;
     }
@@ -264,7 +266,7 @@
       padding:8px 10px;
       border-radius:10px;
       border:1px solid var(--border-subtle);
-      background:var(--kpi-base); /* base E2E20 ~ 0E2E20 */
+      background:var(--kpi-base);
       cursor:pointer;
       transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
     }
@@ -275,7 +277,6 @@
       box-shadow: 0 8px 18px rgba(0,0,0,0.35);
     }
 
-    /* KPI crítico: usa fundo vermelho escuro */
     .kpi-card.kpi-critical {
       background:var(--kpi-critical);
       border-color:#b91c1c;
@@ -322,7 +323,6 @@
       color:var(--kpi-normal-text);
     }
 
-    /* número em KPI crítico fica vermelho escuro */
     .kpi-card.kpi-critical .kpi-value {
       color:#fecaca;
     }
@@ -455,6 +455,25 @@
       background:var(--danger-soft);
     }
 
+    /* mais contraste no modo LIGHT para status */
+    body.theme-light .status-badge {
+      border-color:#9ca3af;
+      background:#e5e7eb;
+      color:#374151;
+    }
+
+    body.theme-light .status-badge.ativo {
+      border-color:#16a34a;
+      background:#dcfce7;
+      color:#065f46;
+    }
+
+    body.theme-light .status-badge.inativo {
+      border-color:#dc2626;
+      background:#fee2e2;
+      color:#7f1d1d;
+    }
+
     .map-toggle {
       display:flex;
       align-items:center;
@@ -513,6 +532,138 @@
       color:var(--text-secondary);
       white-space:normal;
       max-width:260px;
+    }
+
+    /* Detalhe de posto (aba Postos) */
+    .posto-detail {
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.9);
+      font-size:12px;
+      animation: fadeInUp 0.16s ease-out;
+    }
+
+    .posto-detail-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:6px;
+    }
+
+    .posto-detail-title {
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .posto-detail-sub {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    .posto-detail-equipes {
+      margin-top:6px;
+    }
+
+    .posto-detail-equipes h3 {
+      margin:4px 0 4px;
+      font-size:13px;
+    }
+
+    .badge-turno {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:11px;
+      border:1px solid rgba(148,163,184,0.45);
+      color:var(--text-secondary);
+      gap:4px;
+    }
+
+    .operadores-list {
+      margin-top:6px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      overflow:hidden;
+    }
+
+    .operadores-list-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:4px 8px;
+      font-size:12px;
+      cursor:pointer;
+      transition: background 0.12s;
+    }
+
+    .operadores-list-row:nth-child(odd) {
+      background:rgba(15,23,42,0.8);
+    }
+
+    .operadores-list-row:nth-child(even) {
+      background:rgba(15,23,42,0.6);
+    }
+
+    .operadores-list-row:hover {
+      background:rgba(31,41,55,0.9);
+    }
+
+    body.theme-light .operadores-list-row:nth-child(odd) {
+      background:#ffffff;
+    }
+
+    body.theme-light .operadores-list-row:nth-child(even) {
+      background:#f3f4f6;
+    }
+
+    body.theme-light .operadores-list-row:hover {
+      background:#e5e7eb;
+    }
+
+    .operador-name {
+      font-weight:500;
+    }
+
+    .operador-meta {
+      font-size:11px;
+      color:var(--text-secondary);
+    }
+
+    /* Perfil compacto do operador (sobreposto no detalhe do posto) */
+    .operador-profile {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border-subtle);
+      background:rgba(15,23,42,0.95);
+      font-size:12px;
+      animation: fadeInUp 0.14s ease-out;
+    }
+
+    .operador-profile-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:4px;
+    }
+
+    .operador-profile-title {
+      font-weight:600;
+      font-size:13px;
+    }
+
+    .operador-profile-body div {
+      margin-bottom:2px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity:0; transform:translateY(4px); }
+      to   { opacity:1; transform:translateY(0); }
     }
   </style>
 </head>
@@ -618,23 +769,7 @@
         </table>
       </div>
 
-      <div class="table-box" style="margin-top:10px;">
-        <div class="row-between">
-          <span class="small">Últimos registros de ponto (mock)</span>
-        </div>
-        <table>
-          <thead>
-          <tr>
-            <th>Data/hora</th>
-            <th>Operador</th>
-            <th>Posto</th>
-            <th>Tipo</th>
-          </tr>
-          </thead>
-          <tbody id="tbodyUltimosPontos">
-          </tbody>
-        </table>
-      </div>
+      <!-- bloco de "Últimos registros de ponto" removido do dashboard principal -->
     </section>
   </section>
 
@@ -648,7 +783,7 @@
 
       <div class="row-between" style="margin-top:6px;">
         <div>
-          <span class="small">Lista de postos (MVP local).</span>
+          <span class="small">Clique em um posto para ver a equipe empenhada.</span>
         </div>
         <input type="text" id="filtroPostos" class="filter-input" placeholder="Filtrar por nome/cidade" />
       </div>
@@ -667,6 +802,9 @@
           </tbody>
         </table>
       </div>
+
+      <!-- detalhe do posto clicado (abre na mesma aba) -->
+      <div id="postoDetailContainer"></div>
 
       <div class="row" style="margin-top:8px;">
         <button class="secondary" type="button" disabled>
@@ -966,28 +1104,28 @@
 
   const MOCK_POSTOS = [
     { nome: 'Posto Central', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 12 },
-    { nome: 'Base Leste', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 8 },
-    { nome: 'Posto Norte', cidade: 'Guarulhos/SP', status: 'ATIVO', operadores: 5 },
-    { nome: 'Base Sul', cidade: 'Santo André/SP', status: 'INATIVO', operadores: 0 }
+    { nome: 'Base Leste',   cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 8 },
+    { nome: 'Posto Norte',  cidade: 'Guarulhos/SP', status: 'ATIVO', operadores: 5 },
+    { nome: 'Base Sul',     cidade: 'Santo André/SP', status: 'INATIVO', operadores: 0 }
   ];
 
   const MOCK_EQUIPES = [
-    { nome: 'Equipe Alfa', posto: 'Posto Central', turno: 'Dia', operadores: 6 },
-    { nome: 'Equipe Bravo', posto: 'Posto Central', turno: 'Noite', operadores: 6 },
+    { nome: 'Equipe Alfa',   posto: 'Posto Central', turno: 'Dia',       operadores: 6 },
+    { nome: 'Equipe Bravo',  posto: 'Posto Central', turno: 'Noite',     operadores: 6 },
     { nome: 'Equipe Leste 01', posto: 'Base Leste', turno: 'Comercial', operadores: 8 }
   ];
 
   const MOCK_OPERADORES = [
-    { nome: 'Ana Silva', matricula: '1001', usuario: 'ana.silva', posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Bruno Costa', matricula: '1002', usuario: 'bruno.costa', posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Carlos Souza', matricula: '1003', usuario: 'carlos.s', posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'Daniela Lima', matricula: '1004', usuario: 'dani.lima', posto: 'Base Sul', status: 'INATIVO' }
+    { nome: 'Ana Silva',    matricula: '1001', usuario: 'ana.silva',   posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Bruno Costa',  matricula: '1002', usuario: 'bruno.costa', posto: 'Base Leste',   status: 'ATIVO' },
+    { nome: 'Carlos Souza', matricula: '1003', usuario: 'carlos.s',    posto: 'Posto Norte',  status: 'ATIVO' },
+    { nome: 'Daniela Lima', matricula: '1004', usuario: 'dani.lima',   posto: 'Base Sul',     status: 'INATIVO' }
   ];
 
   const MOCK_ESCALAS = [
     { posto: 'Posto Central', mesAno: '06/2026', operadores: 12, status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Base Leste', mesAno: '06/2026', operadores: 8, status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Posto Norte', mesAno: '06/2026', operadores: 5, status: 'Planejada', assinatura: '—' }
+    { posto: 'Base Leste',    mesAno: '06/2026', operadores: 8,  status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Posto Norte',   mesAno: '06/2026', operadores: 5,  status: 'Planejada',   assinatura: '—' }
   ];
 
   const MOCK_PONTOS = [
@@ -1012,12 +1150,13 @@
     document.getElementById('kpiAusenciasDia').textContent = 0;
   }
 
-  function popularPostos() {
+  function popularPostos(lista = MOCK_POSTOS) {
     const tbody = document.getElementById('tbodyPostos');
     tbody.innerHTML = '';
-    MOCK_POSTOS.forEach(p => {
+    lista.forEach(p => {
       const tr = document.createElement('tr');
       tr.classList.add('clickable-row');
+      tr.dataset.postoNome = p.nome;
       const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       tr.innerHTML = `
         <td>${p.nome}</td>
@@ -1045,10 +1184,10 @@
     });
   }
 
-  function popularOperadores() {
-    const tbody = document.getElementById('tbodyOperadores');
+  function popularOperadores(lista = MOCK_OPERADORES, tbodyId = 'tbodyOperadores') {
+    const tbody = document.getElementById(tbodyId);
     tbody.innerHTML = '';
-    MOCK_OPERADORES.forEach(o => {
+    lista.forEach(o => {
       const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       const tr = document.createElement('tr');
       tr.classList.add('clickable-row');
@@ -1080,8 +1219,9 @@
     });
   }
 
-  function popularUltimosPontos() {
-    const tbody = document.getElementById('tbodyUltimosPontos');
+  function popularUltimosPontos(tbodyId = 'tbodyUltimosPontos') {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
     tbody.innerHTML = '';
     MOCK_PONTOS.forEach(p => {
       const tr = document.createElement('tr');
@@ -1167,47 +1307,21 @@
     tbody.appendChild(tr);
   }
 
+  // filtro Postos
   document.getElementById('filtroPostos').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
-    const tbody = document.getElementById('tbodyPostos');
-    tbody.innerHTML = '';
-    MOCK_POSTOS
-      .filter(p => (p.nome + p.cidade).toLowerCase().includes(termo))
-      .forEach(p => {
-        const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
-        const tr = document.createElement('tr');
-        tr.classList.add('clickable-row');
-        tr.innerHTML = `
-          <td>${p.nome}</td>
-          <td>${p.cidade}</td>
-          <td>${statusBadge}</td>
-          <td>${p.operadores}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    const filtrados = MOCK_POSTOS.filter(p => (p.nome + p.cidade).toLowerCase().includes(termo));
+    popularPostos(filtrados);
   });
 
+  // filtro Operadores (aba Operadores)
   document.getElementById('filtroOperadores').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
-    const tbody = document.getElementById('tbodyOperadores');
-    tbody.innerHTML = '';
-    MOCK_OPERADORES
-      .filter(o => (o.nome + o.matricula).toLowerCase().includes(termo))
-      .forEach(o => {
-        const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
-        const tr = document.createElement('tr');
-        tr.classList.add('clickable-row');
-        tr.innerHTML = `
-          <td>${o.nome}</td>
-          <td>${o.matricula}</td>
-          <td>${o.usuario}</td>
-          <td>${o.posto}</td>
-          <td>${statusBadge}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    const filtrados = MOCK_OPERADORES.filter(o => (o.nome + o.matricula).toLowerCase().includes(termo));
+    popularOperadores(filtrados);
   });
 
+  // KPI -> navegação de abas
   document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card => {
     card.addEventListener('click', () => {
       const target = card.getAttribute('data-goto-tab');
@@ -1215,16 +1329,12 @@
     });
   });
 
-  document.getElementById('tbodyUltimosPontos').addEventListener('click', (e) => {
-    const row = e.target.closest('tr');
-    if (!row) return;
-    ativarAbaPorId('tab-operadores');
-  });
-
+  // clique em linhas principais para manter consistência de navegação
   document.getElementById('tbodyPostos').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
-    ativarAbaPorId('tab-postos');
+    const postoNome = row.dataset.postoNome;
+    if (postoNome) abrirDetalhePosto(postoNome);
   });
 
   document.getElementById('tbodyEquipes').addEventListener('click', (e) => {
@@ -1244,6 +1354,117 @@
     if (!row) return;
     ativarAbaPorId('tab-escalas');
   });
+
+  // detalhe de posto (aba Postos)
+  const postoDetailContainer = document.getElementById('postoDetailContainer');
+
+  function abrirDetalhePosto(nomePosto) {
+    const posto = MOCK_POSTOS.find(p => p.nome === nomePosto);
+    if (!posto) {
+      postoDetailContainer.innerHTML = '';
+      return;
+    }
+
+    const equipesDoPosto = MOCK_EQUIPES.filter(e => e.posto === nomePosto);
+    const operadoresDoPosto = MOCK_OPERADORES.filter(o => o.posto === nomePosto);
+
+    let htmlEquipes = '';
+    if (!equipesDoPosto.length) {
+      htmlEquipes = '<p class="small">Nenhuma equipe vinculada a este posto (mock).</p>';
+    } else {
+      htmlEquipes = equipesDoPosto.map(eq => `
+        <div class="posto-detail-equipes">
+          <div class="row-between">
+            <div>
+              <span class="posto-detail-title">${eq.nome}</span>
+              <div class="posto-detail-sub">
+                <span class="badge-turno">${eq.turno}</span>
+              </div>
+            </div>
+            <div class="small">Operadores planejados: ${eq.operadores}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    const operadoresHtml = operadoresDoPosto.map(op => {
+      const statusBadge = `<span class="status-badge ${op.status === 'ATIVO' ? 'ativo' : 'inativo'}">${op.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
+      return `
+        <div class="operadores-list-row" data-op-matricula="${op.matricula}">
+          <div>
+            <div class="operador-name">${op.nome}</div>
+            <div class="operador-meta">Matrícula ${op.matricula} • ${op.usuario}</div>
+          </div>
+          <div>${statusBadge}</div>
+        </div>
+      `;
+    }).join('');
+
+    postoDetailContainer.innerHTML = `
+      <div class="posto-detail">
+        <div class="posto-detail-header">
+          <div>
+            <div class="posto-detail-title">${posto.nome}</div>
+            <div class="posto-detail-sub">${posto.cidade} • ${posto.operadores} operadores (mock)</div>
+          </div>
+          <button type="button" class="secondary" id="btnFecharPostoDetail">
+            Fechar
+          </button>
+        </div>
+
+        ${htmlEquipes}
+
+        <div class="posto-detail-equipes">
+          <h3>Equipe empenhada neste posto</h3>
+          <div class="small">Clique no operador para ver um perfil rápido.</div>
+          <div class="operadores-list" id="listaOperadoresPosto">
+            ${operadoresHtml || '<div class="small" style="padding:6px 8px;">Nenhum operador vinculado (mock).</div>'}
+          </div>
+        </div>
+
+        <div id="operadorProfileContainer"></div>
+      </div>
+    `;
+
+    document.getElementById('btnFecharPostoDetail')
+      .addEventListener('click', () => postoDetailContainer.innerHTML = '');
+
+    const listaOpsEl = document.getElementById('listaOperadoresPosto');
+    listaOpsEl.addEventListener('click', (e) => {
+      const row = e.target.closest('.operadores-list-row');
+      if (!row) return;
+      const mat = row.dataset.opMatricula;
+      if (mat) abrirPerfilOperador(mat);
+    });
+  }
+
+  function abrirPerfilOperador(matricula) {
+    const op = MOCK_OPERADORES.find(o => o.matricula === matricula);
+    const cont = document.getElementById('operadorProfileContainer');
+    if (!op || !cont) {
+      if (cont) cont.innerHTML = '';
+      return;
+    }
+    const statusBadge = `<span class="status-badge ${op.status === 'ATIVO' ? 'ativo' : 'inativo'}">${op.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
+    cont.innerHTML = `
+      <div class="operador-profile">
+        <div class="operador-profile-header">
+          <div class="operador-profile-title">${op.nome}</div>
+          <button type="button" class="secondary" id="btnFecharPerfilOperador">
+            Fechar perfil
+          </button>
+        </div>
+        <div class="operador-profile-body">
+          <div>Matrícula: ${op.matricula}</div>
+          <div>Usuário: ${op.usuario}</div>
+          <div>Posto principal: ${op.posto}</div>
+          <div>Status: ${statusBadge}</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('btnFecharPerfilOperador')
+      .addEventListener('click', () => cont.innerHTML = '');
+  }
 
   atualizarKpis();
   popularPostos();
