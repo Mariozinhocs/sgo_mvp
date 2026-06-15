@@ -22,7 +22,7 @@
       --border-subtle: #1f2937;
       --input-light: #e5e7eb;
       --input-light-border: #d1d5db;
-      --button-inactive-light: #e5f0ec;
+      --button-inactive-light: #e5e7eb;    /* igual Operador */
       --button-inactive-dark: #111827;
     }
 
@@ -262,6 +262,21 @@
       border-radius:10px;
       border:1px solid var(--border-subtle);
       background:rgba(15,23,42,0.9);
+      cursor:pointer;              /* clicável para mudar de aba */
+      transition: background 0.15s, transform 0.12s;
+    }
+
+    .kpi-card:hover {
+      background:rgba(31,41,55,0.95);
+      transform: translateY(-1px);
+    }
+
+    body.theme-light .kpi-card {
+      background:#ffffff;
+    }
+
+    body.theme-light .kpi-card:hover {
+      background:#f3f4f6;
     }
 
     .kpi-label {
@@ -313,7 +328,6 @@
       border-color: #cbd5f5;
     }
 
-    /* Botões desabilitados – idênticos ao operador: tema light usa #f2f0ec */
     button:disabled {
       cursor: not-allowed;
       background: #e5e7eb;
@@ -364,6 +378,19 @@
       text-transform:uppercase;
       letter-spacing:0.06em;
       color:var(--text-secondary);
+    }
+
+    tbody tr.clickable-row {
+      cursor:pointer;
+      transition: background 0.12s;
+    }
+
+    tbody tr.clickable-row:hover {
+      background:rgba(31,41,55,0.7);
+    }
+
+    body.theme-light tbody tr.clickable-row:hover {
+      background:#e5e7eb;
     }
 
     .status-badge {
@@ -441,6 +468,13 @@
       color:#020617;
       border-color:#d1d5db;
     }
+
+    .escala-log-small {
+      font-size:11px;
+      color:var(--text-secondary);
+      white-space:normal;
+      max-width:260px;
+    }
   </style>
 </head>
 <body>
@@ -487,27 +521,27 @@
     <section class="card">
       <h2>Dashboard</h2>
       <p class="small">
-        Visão geral dos postos, operadores e equipes. Os dados abaixo são mock para o MVP local, prontos para integrar ao backend.
+        Visão geral (mock local) de postos, operadores e equipes. Integração real com backend será feita em fase posterior.
       </p>
 
       <div class="kpi-grid">
-        <div class="kpi-card">
+        <div class="kpi-card" data-goto-tab="tab-postos">
           <div class="kpi-label">Postos ativos</div>
           <div class="kpi-value" id="kpiPostosAtivos">0</div>
           <div class="kpi-sub">Total de postos cadastrado: <span id="kpiPostosTotal">0</span></div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Operadores em expediente</div>
+        <div class="kpi-card" data-goto-tab="tab-operadores">
+          <div class="kpi-label">Operadores ativos (mock)</div>
           <div class="kpi-value" id="kpiOperadoresEmServico">0</div>
-          <div class="kpi-sub">Operadores cadastrados: <span id="kpiOperadoresTotal">0</span></div>
+          <div class="kpi-sub">Operadores cadastrados (mock): <span id="kpiOperadoresTotal">0</span></div>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card" data-goto-tab="tab-equipes">
           <div class="kpi-label">Equipes ativas</div>
           <div class="kpi-value" id="kpiEquipesAtivas">0</div>
           <div class="kpi-sub">Equipes cadastradas: <span id="kpiEquipesTotal">0</span></div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Ausências no dia</div>
+        <div class="kpi-card" data-goto-tab="tab-escalas">
+          <div class="kpi-label">Ausências no dia (mock)</div>
           <div class="kpi-value" id="kpiAusenciasDia">0</div>
           <div class="kpi-sub">Ausências registradas (mock)</div>
         </div>
@@ -526,6 +560,24 @@
           Mapa de postos ativos será exibido aqui (integrar Leaflet/OpenStreetMap).<br>
           Para o MVP local, este é apenas um placeholder visual.
         </div>
+      </div>
+
+      <div class="table-box" style="margin-top:10px;">
+        <div class="row-between">
+          <span class="small">Escala do dia – operador deste dispositivo (logs locais de status)</span>
+        </div>
+        <table>
+          <thead>
+          <tr>
+            <th>Dia</th>
+            <th>Logs de status</th>
+            <th>Último status</th>
+          </tr>
+          </thead>
+          <tbody id="tbodyEscalaHojeGestor">
+          <!-- preenchido via JS com sgo_escala_YYYY-MM -->
+          </tbody>
+        </table>
       </div>
 
       <div class="table-box" style="margin-top:10px;">
@@ -831,13 +883,22 @@
   const tabButtons = document.querySelectorAll('.tab-button:not(.inner)');
   const tabPanels  = document.querySelectorAll('section.tab-panel:not(.inner)');
 
+  function ativarAbaPorId(idTab) {
+    const alvo = document.getElementById(idTab);
+    if (!alvo) return;
+    const btn = document.querySelector(`.tab-button[data-tab="${idTab}"]`);
+    if (!btn) return;
+
+    tabButtons.forEach(b => b.classList.remove('active'));
+    tabPanels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    alvo.classList.add('active');
+  }
+
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
+      ativarAbaPorId(target);
     });
   });
 
@@ -928,7 +989,8 @@
     tbody.innerHTML = '';
     MOCK_POSTOS.forEach(p => {
       const tr = document.createElement('tr');
-      const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status}</span>`;
+      tr.classList.add('clickable-row');
+      const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       tr.innerHTML = `
         <td>${p.nome}</td>
         <td>${p.cidade}</td>
@@ -944,6 +1006,7 @@
     tbody.innerHTML = '';
     MOCK_EQUIPES.forEach(e => {
       const tr = document.createElement('tr');
+      tr.classList.add('clickable-row');
       tr.innerHTML = `
         <td>${e.nome}</td>
         <td>${e.posto}</td>
@@ -958,8 +1021,9 @@
     const tbody = document.getElementById('tbodyOperadores');
     tbody.innerHTML = '';
     MOCK_OPERADORES.forEach(o => {
-      const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status}</span>`;
+      const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       const tr = document.createElement('tr');
+      tr.classList.add('clickable-row');
       tr.innerHTML = `
         <td>${o.nome}</td>
         <td>${o.matricula}</td>
@@ -976,6 +1040,7 @@
     tbody.innerHTML = '';
     MOCK_ESCALAS.forEach(e => {
       const tr = document.createElement('tr');
+      tr.classList.add('clickable-row');
       tr.innerHTML = `
         <td>${e.posto}</td>
         <td>${e.mesAno}</td>
@@ -992,6 +1057,7 @@
     tbody.innerHTML = '';
     MOCK_PONTOS.forEach(p => {
       const tr = document.createElement('tr');
+      tr.classList.add('clickable-row');
       tr.innerHTML = `
         <td>${p.dataHora}</td>
         <td>${p.operador}</td>
@@ -1002,6 +1068,78 @@
     });
   }
 
+  // Escala do dia (leitura de localStorage gerado pelo painel do Operador)
+  function chaveEscala(mes, ano) {
+    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
+  }
+
+  function carregarMarcacoes(mes, ano) {
+    const chave = chaveEscala(mes, ano);
+    try {
+      const raw = localStorage.getItem(chave);
+      if (!raw) return {};
+      return JSON.parse(raw) || {};
+    } catch(e) {
+      return {};
+    }
+  }
+
+  function obterEscalaHojeParaGestor() {
+    const hoje = new Date();
+    const mes = hoje.getMonth();
+    const ano = hoje.getFullYear();
+    const dia = hoje.getDate();
+    const marcados = carregarMarcacoes(mes, ano);
+    const diaKey = String(dia);
+    return marcados[diaKey] || null;
+  }
+
+  function statusFinalDeLogs(logs) {
+    if (!logs || !logs.length) return null;
+    const ultimo = logs[logs.length - 1];
+    if (ultimo.includes('Ativo')) return 'ATIVO';
+    if (ultimo.toLowerCase().includes('intervalo')) return 'INATIVO_INTERVALO';
+    return 'INATIVO';
+  }
+
+  function popularEscalaHojeGestor() {
+    const tbody = document.getElementById('tbodyEscalaHojeGestor');
+    tbody.innerHTML = '';
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const labelDia = `${dia}/${mes}`;
+
+    const infoDia = obterEscalaHojeParaGestor();
+    if (!infoDia || !infoDia.logs || !infoDia.logs.length) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${labelDia}</td>
+        <td class="escala-log-small">Sem registros de status no painel do operador deste dispositivo.</td>
+        <td><span class="status-badge inativo">Inativo</span></td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    const logsHtml = infoDia.logs.map(l => `<div>${l}</div>`).join('');
+    const sFinal = statusFinalDeLogs(infoDia.logs);
+    let badgeHtml = '<span class="status-badge inativo">Inativo</span>';
+    if (sFinal === 'ATIVO') {
+      badgeHtml = '<span class="status-badge ativo">Ativo</span>';
+    } else if (sFinal === 'INATIVO_INTERVALO') {
+      badgeHtml = '<span class="status-badge inativo">Inativo (intervalo)</span>';
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${labelDia}</td>
+      <td class="escala-log-small">${logsHtml}</td>
+      <td>${badgeHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
   // Filtros simples (frontend) para Postos e Operadores
   document.getElementById('filtroPostos').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
@@ -1010,8 +1148,9 @@
     MOCK_POSTOS
       .filter(p => (p.nome + p.cidade).toLowerCase().includes(termo))
       .forEach(p => {
+        const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
         const tr = document.createElement('tr');
-        const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status}</span>`;
+        tr.classList.add('clickable-row');
         tr.innerHTML = `
           <td>${p.nome}</td>
           <td>${p.cidade}</td>
@@ -1029,8 +1168,9 @@
     MOCK_OPERADORES
       .filter(o => (o.nome + o.matricula).toLowerCase().includes(termo))
       .forEach(o => {
-        const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status}</span>`;
+        const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
         const tr = document.createElement('tr');
+        tr.classList.add('clickable-row');
         tr.innerHTML = `
           <td>${o.nome}</td>
           <td>${o.matricula}</td>
@@ -1042,6 +1182,49 @@
       });
   });
 
+  // Navegação por clique em KPI / linhas de tabela
+  document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card => {
+    card.addEventListener('click', () => {
+      const target = card.getAttribute('data-goto-tab');
+      if (target) ativarAbaPorId(target);
+    });
+  });
+
+  // Dashboard "Últimos pontos" leva à aba Operadores
+  document.getElementById('tbodyUltimosPontos').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    ativarAbaPorId('tab-operadores');
+  });
+
+  // Linhas de Postos levam à aba Postos (já está nela, efeito neutro mas consistente)
+  document.getElementById('tbodyPostos').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    ativarAbaPorId('tab-postos');
+  });
+
+  // Linhas de Equipes levam à aba Equipes
+  document.getElementById('tbodyEquipes').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    ativarAbaPorId('tab-equipes');
+  });
+
+  // Linhas de Operadores levam à aba Operadores (já nela)
+  document.getElementById('tbodyOperadores').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    ativarAbaPorId('tab-operadores');
+  });
+
+  // Linhas de Escalas levam à aba Escalas
+  document.getElementById('tbodyEscalas').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    ativarAbaPorId('tab-escalas');
+  });
+
   // Inicialização
   atualizarKpis();
   popularPostos();
@@ -1049,6 +1232,7 @@
   popularOperadores();
   popularEscalas();
   popularUltimosPontos();
+  popularEscalaHojeGestor();
 </script>
 </body>
 </html>
