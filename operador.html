@@ -338,7 +338,7 @@
 
     .status-badge.off {
       border-color:rgba(248,113,113,0.9);
-      color:#f97373; /* texto vermelho para “Em intervalo” e “Fora do expediente” */
+      color:#f97373; /* texto vermelho para Em intervalo / Fora do expediente */
       background:rgba(127,29,29,0.25);
     }
 
@@ -508,6 +508,7 @@
       align-items:center;
       justify-content:center;
       z-index:50;
+      pointer-events:none; /* não bloqueia cliques quando “escondido” */
     }
 
     .modal-card {
@@ -982,10 +983,12 @@
 
   btnAbrirModalSenha.addEventListener('click', () => {
     modalSenha.style.display = 'flex';
+    modalSenha.style.pointerEvents = 'auto';
   });
 
   btnFecharModalSenha.addEventListener('click', () => {
     modalSenha.style.display = 'none';
+    modalSenha.style.pointerEvents = 'none';
   });
 
   btnSalvarSenha.addEventListener('click', () => {
@@ -1011,6 +1014,7 @@
     document.getElementById('inputSenhaNova').value  = '';
     document.getElementById('inputSenhaNova2').value = '';
     modalSenha.style.display = 'none';
+    modalSenha.style.pointerEvents = 'none';
   });
 
   const escalaMes = document.getElementById('escalaMes');
@@ -1092,7 +1096,7 @@
       const tr = document.createElement('tr');
       const mesLabel = String(mes + 1).padStart(2, '0');
       const diaLabel = String(item.dia).padStart(2, '0');
-      const labelDia = \`\${diaLabel}/\${mesLabel}\`;
+      const labelDia = `${diaLabel}/${mesLabel}`;
       tr.innerHTML = `
         <td>${labelDia}</td>
         <td>${item.horario}</td>
