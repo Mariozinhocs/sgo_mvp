@@ -22,7 +22,7 @@
       --border-subtle: #1f2937;
       --input-light: #e5e7eb;
       --input-light-border: #d1d5db;
-      --button-inactive-light: #e5e7eb;    /* igual Operador */
+      --button-inactive-light: #e5e7eb;
       --button-inactive-dark: #111827;
     }
 
@@ -262,13 +262,14 @@
       border-radius:10px;
       border:1px solid var(--border-subtle);
       background:rgba(15,23,42,0.9);
-      cursor:pointer;              /* clicável para mudar de aba */
-      transition: background 0.15s, transform 0.12s;
+      cursor:pointer;
+      transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
     }
 
     .kpi-card:hover {
       background:rgba(31,41,55,0.95);
       transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
     }
 
     body.theme-light .kpi-card {
@@ -277,6 +278,7 @@
 
     body.theme-light .kpi-card:hover {
       background:#f3f4f6;
+      box-shadow: 0 6px 14px rgba(15,23,42,0.18);
     }
 
     .kpi-label {
@@ -286,10 +288,16 @@
       color:var(--text-secondary);
     }
 
+    /* números mais destacados */
     .kpi-value {
       margin-top:4px;
-      font-size:18px;
-      font-weight:600;
+      font-size:26px;
+      font-weight:700;
+      color:#f9fafb;
+    }
+
+    body.theme-light .kpi-value {
+      color:#111827;
     }
 
     .kpi-sub {
@@ -575,7 +583,6 @@
           </tr>
           </thead>
           <tbody id="tbodyEscalaHojeGestor">
-          <!-- preenchido via JS com sgo_escala_YYYY-MM -->
           </tbody>
         </table>
       </div>
@@ -594,7 +601,6 @@
           </tr>
           </thead>
           <tbody id="tbodyUltimosPontos">
-          <!-- preenchido via JS mock -->
           </tbody>
         </table>
       </div>
@@ -627,7 +633,6 @@
           </tr>
           </thead>
           <tbody id="tbodyPostos">
-          <!-- mock via JS -->
           </tbody>
         </table>
       </div>
@@ -659,7 +664,6 @@
           </tr>
           </thead>
           <tbody id="tbodyEquipes">
-          <!-- mock via JS -->
           </tbody>
         </table>
       </div>
@@ -692,7 +696,6 @@
           </tr>
           </thead>
           <tbody id="tbodyEscalas">
-          <!-- mock via JS -->
           </tbody>
         </table>
       </div>
@@ -735,7 +738,6 @@
           </tr>
           </thead>
           <tbody id="tbodyOperadores">
-          <!-- mock via JS -->
           </tbody>
         </table>
       </div>
@@ -879,7 +881,6 @@
     window.location.href = 'operador.html';
   });
 
-  // Tabs externas
   const tabButtons = document.querySelectorAll('.tab-button:not(.inner)');
   const tabPanels  = document.querySelectorAll('section.tab-panel:not(.inner)');
 
@@ -902,7 +903,6 @@
     });
   });
 
-  // Tabs internas de mensagens
   const innerTabButtons = document.querySelectorAll('.tab-button.inner');
   const innerPanels     = document.querySelectorAll('.tab-panel.inner');
 
@@ -916,7 +916,6 @@
     });
   });
 
-  // Preencher info básica do gestor (mock a partir de sgo_usuario, se existir)
   (function carregarGestor() {
     try {
       const raw = localStorage.getItem('sgo_usuario');
@@ -927,7 +926,6 @@
     } catch(e) {}
   })();
 
-  // Toggle mapa
   const chkMostrarMapa = document.getElementById('chkMostrarMapa');
   const mapBox = document.getElementById('mapBox');
 
@@ -935,7 +933,6 @@
     mapBox.style.display = chkMostrarMapa.checked ? 'block' : 'none';
   });
 
-  // Dados mock para dashboard/postos/equipes/operadores/escalas
   const MOCK_POSTOS = [
     { nome: 'Posto Central', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 12 },
     { nome: 'Base Leste', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 8 },
@@ -978,10 +975,10 @@
     document.getElementById('kpiPostosAtivos').textContent = ativos;
     document.getElementById('kpiPostosTotal').textContent = totalPostos;
     document.getElementById('kpiOperadoresTotal').textContent = totalOperadores;
-    document.getElementById('kpiOperadoresEmServico').textContent = ativosOperadores; // mock
+    document.getElementById('kpiOperadoresEmServico').textContent = ativosOperadores;
     document.getElementById('kpiEquipesAtivas').textContent = equipesAtivas;
     document.getElementById('kpiEquipesTotal').textContent = equipesAtivas;
-    document.getElementById('kpiAusenciasDia').textContent = 0; // mock
+    document.getElementById('kpiAusenciasDia').textContent = 0;
   }
 
   function popularPostos() {
@@ -1068,7 +1065,6 @@
     });
   }
 
-  // Escala do dia (leitura de localStorage gerado pelo painel do Operador)
   function chaveEscala(mes, ano) {
     return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
   }
@@ -1140,7 +1136,6 @@
     tbody.appendChild(tr);
   }
 
-  // Filtros simples (frontend) para Postos e Operadores
   document.getElementById('filtroPostos').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
     const tbody = document.getElementById('tbodyPostos');
@@ -1182,7 +1177,6 @@
       });
   });
 
-  // Navegação por clique em KPI / linhas de tabela
   document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card => {
     card.addEventListener('click', () => {
       const target = card.getAttribute('data-goto-tab');
@@ -1190,42 +1184,36 @@
     });
   });
 
-  // Dashboard "Últimos pontos" leva à aba Operadores
   document.getElementById('tbodyUltimosPontos').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
     ativarAbaPorId('tab-operadores');
   });
 
-  // Linhas de Postos levam à aba Postos (já está nela, efeito neutro mas consistente)
   document.getElementById('tbodyPostos').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
     ativarAbaPorId('tab-postos');
   });
 
-  // Linhas de Equipes levam à aba Equipes
   document.getElementById('tbodyEquipes').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
     ativarAbaPorId('tab-equipes');
   });
 
-  // Linhas de Operadores levam à aba Operadores (já nela)
   document.getElementById('tbodyOperadores').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
     ativarAbaPorId('tab-operadores');
   });
 
-  // Linhas de Escalas levam à aba Escalas
   document.getElementById('tbodyEscalas').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
     ativarAbaPorId('tab-escalas');
   });
 
-  // Inicialização
   atualizarKpis();
   popularPostos();
   popularEquipes();
