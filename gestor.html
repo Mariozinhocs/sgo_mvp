@@ -24,6 +24,9 @@
       --input-light-border: #d1d5db;
       --button-inactive-light: #e5e7eb;
       --button-inactive-dark: #111827;
+      --kpi-base: #0E2E20;     /* base dos KPIs */
+      --kpi-critical: #861211; /* crítico */
+      --kpi-normal-text: #8FEDC2;
     }
 
     body {
@@ -261,15 +264,26 @@
       padding:8px 10px;
       border-radius:10px;
       border:1px solid var(--border-subtle);
-      background:rgba(15,23,42,0.9);
+      background:var(--kpi-base); /* base E2E20 ~ 0E2E20 */
       cursor:pointer;
       transition: background 0.15s, transform 0.12s, box-shadow 0.12s;
     }
 
     .kpi-card:hover {
-      background:rgba(31,41,55,0.95);
+      background:#10402B;
       transform: translateY(-1px);
       box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    /* KPI crítico: usa fundo vermelho escuro */
+    .kpi-card.kpi-critical {
+      background:var(--kpi-critical);
+      border-color:#b91c1c;
+    }
+
+    .kpi-card.kpi-critical:hover {
+      background:#a01413;
+      box-shadow:0 10px 22px rgba(134,18,17,0.6);
     }
 
     body.theme-light .kpi-card {
@@ -281,6 +295,15 @@
       box-shadow: 0 6px 14px rgba(15,23,42,0.18);
     }
 
+    body.theme-light .kpi-card.kpi-critical {
+      background:#fee2e2;
+      border-color:#b91c1c;
+    }
+
+    body.theme-light .kpi-card.kpi-critical:hover {
+      background:#fecaca;
+    }
+
     .kpi-label {
       font-size:11px;
       text-transform:uppercase;
@@ -288,16 +311,24 @@
       color:var(--text-secondary);
     }
 
-    /* números mais destacados e com cor de status normal (#8FEDC2) */
     .kpi-value {
       margin-top:4px;
       font-size:26px;
       font-weight:700;
-      color:#8FEDC2;
+      color:var(--kpi-normal-text);
     }
 
     body.theme-light .kpi-value {
-      color:#8FEDC2;
+      color:var(--kpi-normal-text);
+    }
+
+    /* número em KPI crítico fica vermelho escuro */
+    .kpi-card.kpi-critical .kpi-value {
+      color:#fecaca;
+    }
+
+    body.theme-light .kpi-card.kpi-critical .kpi-value {
+      color:#861211;
     }
 
     .kpi-sub {
