@@ -24,8 +24,8 @@
       --input-light-border: #d1d5db;
       --button-inactive-light: #e5e7eb;
       --button-inactive-dark: #111827;
-      --kpi-base: #0E2E20;
-      --kpi-critical: #861211;
+      --kpi-base: #0E2E20;       /* base KPIs */
+      --kpi-critical: #861211;   /* crítico */
       --kpi-normal-text: #8FEDC2;
     }
 
@@ -455,7 +455,6 @@
       background:var(--danger-soft);
     }
 
-    /* mais contraste no modo LIGHT para status */
     body.theme-light .status-badge {
       border-color:#9ca3af;
       background:#e5e7eb;
@@ -534,7 +533,6 @@
       max-width:260px;
     }
 
-    /* Detalhe de posto (aba Postos) */
     .posto-detail {
       margin-top:10px;
       padding:10px 12px;
@@ -588,6 +586,8 @@
       border-radius:10px;
       border:1px solid var(--border-subtle);
       overflow:hidden;
+      max-height:260px;
+      overflow-y:auto;
     }
 
     .operadores-list-row {
@@ -633,7 +633,6 @@
       color:var(--text-secondary);
     }
 
-    /* Perfil compacto do operador (sobreposto no detalhe do posto) */
     .operador-profile {
       margin-top:8px;
       padding:8px 10px;
@@ -768,8 +767,6 @@
           </tbody>
         </table>
       </div>
-
-      <!-- bloco de "Últimos registros de ponto" removido do dashboard principal -->
     </section>
   </section>
 
@@ -803,7 +800,6 @@
         </table>
       </div>
 
-      <!-- detalhe do posto clicado (abre na mesma aba) -->
       <div id="postoDetailContainer"></div>
 
       <div class="row" style="margin-top:8px;">
@@ -895,7 +891,7 @@
         <input type="text" id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula" />
       </div>
 
-      <div class="table-box">
+      <div class="table-box" style="max-height:320px;overflow-y:auto;">
         <table>
           <thead>
           <tr>
@@ -1103,45 +1099,81 @@
   });
 
   const MOCK_POSTOS = [
-    { nome: 'Posto Central', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 12 },
-    { nome: 'Base Leste',   cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 8 },
-    { nome: 'Posto Norte',  cidade: 'Guarulhos/SP', status: 'ATIVO', operadores: 5 },
-    { nome: 'Base Sul',     cidade: 'Santo André/SP', status: 'INATIVO', operadores: 0 }
+    { nome: 'Posto Central', cidade: 'São Paulo/SP',     status: 'ATIVO',   operadores: 18 },
+    { nome: 'Base Leste',    cidade: 'São Paulo/SP',     status: 'ATIVO',   operadores: 14 },
+    { nome: 'Posto Norte',   cidade: 'Guarulhos/SP',     status: 'ATIVO',   operadores: 9  },
+    { nome: 'Base Sul',      cidade: 'Santo André/SP',   status: 'INATIVO', operadores: 4  }
   ];
 
   const MOCK_EQUIPES = [
-    { nome: 'Equipe Alfa',   posto: 'Posto Central', turno: 'Dia',       operadores: 6 },
-    { nome: 'Equipe Bravo',  posto: 'Posto Central', turno: 'Noite',     operadores: 6 },
-    { nome: 'Equipe Leste 01', posto: 'Base Leste', turno: 'Comercial', operadores: 8 }
+    { nome: 'Equipe Alfa',      posto: 'Posto Central', turno: 'Dia',       operadores: 9 },
+    { nome: 'Equipe Bravo',     posto: 'Posto Central', turno: 'Noite',     operadores: 9 },
+    { nome: 'Equipe Leste 01',  posto: 'Base Leste',    turno: 'Comercial', operadores: 8 },
+    { nome: 'Equipe Leste 02',  posto: 'Base Leste',    turno: 'Noite',     operadores: 6 },
+    { nome: 'Equipe Norte 01',  posto: 'Posto Norte',   turno: '12x36',     operadores: 9 }
   ];
 
+  // Lista estendida de operadores mock (ativos e inativos)
   const MOCK_OPERADORES = [
-    { nome: 'Ana Silva',    matricula: '1001', usuario: 'ana.silva',   posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Bruno Costa',  matricula: '1002', usuario: 'bruno.costa', posto: 'Base Leste',   status: 'ATIVO' },
-    { nome: 'Carlos Souza', matricula: '1003', usuario: 'carlos.s',    posto: 'Posto Norte',  status: 'ATIVO' },
-    { nome: 'Daniela Lima', matricula: '1004', usuario: 'dani.lima',   posto: 'Base Sul',     status: 'INATIVO' }
+    // Posto Central
+    { nome: 'Ana Silva',        matricula: '1001', usuario: 'ana.silva',      posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Bruno Costa',      matricula: '1002', usuario: 'bruno.costa',    posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Carlos Souza',     matricula: '1003', usuario: 'carlos.souza',   posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Diego Martins',    matricula: '1004', usuario: 'diego.martins',  posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Eduardo Lima',     matricula: '1005', usuario: 'edu.lima',       posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Fernanda Alves',   matricula: '1006', usuario: 'fernanda.alves', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Gabriel Rocha',    matricula: '1007', usuario: 'gabriel.rocha',  posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Helena Prado',     matricula: '1008', usuario: 'helena.prado',   posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Igor Moreira',     matricula: '1009', usuario: 'igor.moreira',   posto: 'Posto Central', status: 'INATIVO' },
+
+    // Base Leste
+    { nome: 'João Pedro',       matricula: '1010', usuario: 'joao.pedro',     posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Kelly Santos',     matricula: '1011', usuario: 'kelly.santos',   posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Lucas Ferreira',   matricula: '1012', usuario: 'lucas.ferreira', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Marina Costa',     matricula: '1013', usuario: 'marina.costa',   posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Nicolas Moraes',   matricula: '1014', usuario: 'nicolas.m',      posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Olivia Andrade',   matricula: '1015', usuario: 'olivia.a',       posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Paulo Henrique',   matricula: '1016', usuario: 'paulo.h',        posto: 'Base Leste', status: 'INATIVO' },
+    { nome: 'Rafaela Dias',     matricula: '1017', usuario: 'rafa.dias',      posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Samuel Teixeira',  matricula: '1018', usuario: 'sam.teixeira',   posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Tatiane Souza',    matricula: '1019', usuario: 'tati.souza',     posto: 'Base Leste', status: 'INATIVO' },
+
+    // Posto Norte
+    { nome: 'Ursula Mendes',    matricula: '1020', usuario: 'ursula.m',       posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Victor Hugo',      matricula: '1021', usuario: 'victor.h',       posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'William Santos',   matricula: '1022', usuario: 'will.santos',    posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Xavier Oliveira',  matricula: '1023', usuario: 'xavier.oli',     posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Yasmin Farias',    matricula: '1024', usuario: 'yasmin.f',       posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Zeca Carvalho',    matricula: '1025', usuario: 'zeca.carv',      posto: 'Posto Norte', status: 'INATIVO' },
+
+    // Base Sul (mista para avaliar contraste de inativos)
+    { nome: 'Alberto Nunes',    matricula: '1026', usuario: 'alberto.n',      posto: 'Base Sul', status: 'INATIVO' },
+    { nome: 'Bianca Ribeiro',   matricula: '1027', usuario: 'bianca.r',       posto: 'Base Sul', status: 'INATIVO' },
+    { nome: 'Caio Barbosa',     matricula: '1028', usuario: 'caio.b',         posto: 'Base Sul', status: 'ATIVO' },
+    { nome: 'Daniela Lima',     matricula: '1029', usuario: 'dani.lima',      posto: 'Base Sul', status: 'INATIVO' }
   ];
 
   const MOCK_ESCALAS = [
-    { posto: 'Posto Central', mesAno: '06/2026', operadores: 12, status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Base Leste',    mesAno: '06/2026', operadores: 8,  status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Posto Norte',   mesAno: '06/2026', operadores: 5,  status: 'Planejada',   assinatura: '—' }
+    { posto: 'Posto Central', mesAno: '06/2026', operadores: 18, status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Base Leste',    mesAno: '06/2026', operadores: 14, status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Posto Norte',   mesAno: '06/2026', operadores: 9,  status: 'Planejada',   assinatura: '—' },
+    { posto: 'Base Sul',      mesAno: '06/2026', operadores: 4,  status: 'Parcial',     assinatura: 'Pendente' }
   ];
 
   const MOCK_PONTOS = [
-    { dataHora: '10/06/2026 07:58', operador: 'Ana Silva',   posto: 'Posto Central', tipo: 'Check-in' },
-    { dataHora: '10/06/2026 07:59', operador: 'Bruno Costa', posto: 'Base Leste',    tipo: 'Check-in' },
-    { dataHora: '10/06/2026 08:02', operador: 'Carlos Souza', posto: 'Posto Norte',  tipo: 'Check-in' }
+    { dataHora: '10/06/2026 07:58', operador: 'Ana Silva',     posto: 'Posto Central', tipo: 'Check-in' },
+    { dataHora: '10/06/2026 07:59', operador: 'João Pedro',    posto: 'Base Leste',    tipo: 'Check-in' },
+    { dataHora: '10/06/2026 08:02', operador: 'Victor Hugo',   posto: 'Posto Norte',   tipo: 'Check-in' }
   ];
 
   function atualizarKpis() {
-    const ativos = MOCK_POSTOS.filter(p => p.status === 'ATIVO').length;
+    const ativosPostos = MOCK_POSTOS.filter(p => p.status === 'ATIVO').length;
     const totalPostos = MOCK_POSTOS.length;
     const totalOperadores = MOCK_OPERADORES.length;
     const ativosOperadores = MOCK_OPERADORES.filter(o => o.status === 'ATIVO').length;
     const equipesAtivas = MOCK_EQUIPES.length;
 
-    document.getElementById('kpiPostosAtivos').textContent = ativos;
+    document.getElementById('kpiPostosAtivos').textContent = ativosPostos;
     document.getElementById('kpiPostosTotal').textContent = totalPostos;
     document.getElementById('kpiOperadoresTotal').textContent = totalOperadores;
     document.getElementById('kpiOperadoresEmServico').textContent = ativosOperadores;
@@ -1307,21 +1339,20 @@
     tbody.appendChild(tr);
   }
 
-  // filtro Postos
   document.getElementById('filtroPostos').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
     const filtrados = MOCK_POSTOS.filter(p => (p.nome + p.cidade).toLowerCase().includes(termo));
     popularPostos(filtrados);
   });
 
-  // filtro Operadores (aba Operadores)
   document.getElementById('filtroOperadores').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
-    const filtrados = MOCK_OPERADORES.filter(o => (o.nome + o.matricula).toLowerCase().includes(termo));
+    const filtrados = MOCK_OPERADORES.filter(o =>
+      (o.nome + o.matricula + o.posto).toLowerCase().includes(termo)
+    );
     popularOperadores(filtrados);
   });
 
-  // KPI -> navegação de abas
   document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card => {
     card.addEventListener('click', () => {
       const target = card.getAttribute('data-goto-tab');
@@ -1329,7 +1360,6 @@
     });
   });
 
-  // clique em linhas principais para manter consistência de navegação
   document.getElementById('tbodyPostos').addEventListener('click', (e) => {
     const row = e.target.closest('tr');
     if (!row) return;
@@ -1355,7 +1385,6 @@
     ativarAbaPorId('tab-escalas');
   });
 
-  // detalhe de posto (aba Postos)
   const postoDetailContainer = document.getElementById('postoDetailContainer');
 
   function abrirDetalhePosto(nomePosto) {
