@@ -281,7 +281,6 @@
       border-color: #cbd5f5;
     }
 
-    /* Botões desabilitados – cinza em ambos temas; no light usa #f2f0ec */
     button:disabled {
       cursor: not-allowed;
       background: #e5e7eb;
@@ -304,7 +303,7 @@
       border-color: #e0ddd7;
     }
 
-    /* Status do ponto – mais contrastante, vermelho quando off */
+    /* Status do ponto – badge */
     .status-badge {
       display:inline-flex;
       align-items:center;
@@ -338,7 +337,7 @@
 
     .status-badge.off {
       border-color:rgba(248,113,113,0.9);
-      color:#f97373; /* texto vermelho para Em intervalo / Fora do expediente */
+      color:#f97373;
       background:rgba(127,29,29,0.25);
     }
 
@@ -483,21 +482,12 @@
       cursor:pointer;
     }
 
-    .link-escala-anterior {
-      margin-top:8px;
-      font-size:12px;
-      color:#a5b4fc;
-      cursor:pointer;
-      text-decoration:underline;
-    }
-
-    .lista-escalas-anteriores {
-      margin-top:6px;
-      font-size:12px;
-    }
-
-    .lista-escalas-anteriores li {
-      margin-bottom:2px;
+    .escala-status-log {
+      font-size:11px;
+      color:var(--text-secondary);
+      text-align:left;
+      white-space:normal;
+      max-width:200px;
     }
 
     .modal-backdrop {
@@ -508,7 +498,7 @@
       align-items:center;
       justify-content:center;
       z-index:50;
-      pointer-events:none; /* não bloqueia cliques quando “escondido” */
+      pointer-events:none;
     }
 
     .modal-card {
@@ -637,7 +627,7 @@
       </div>
 
       <div style="margin-top:10px;">
-        <span class="status-badge off" id="statusPonto">Status: Fora do expediente</span>
+        <span class="status-badge off" id="statusPonto">Status: Inativo</span>
       </div>
     </section>
   </section>
@@ -647,7 +637,7 @@
     <section class="card">
       <h2>Escala de turnos</h2>
       <p class="small">
-        Visualize a escala mensal atribuída. Cada dia é validado conforme o registro de ponto. Futuramente será gerado um PDF para assinatura eletrônica.
+        Visualize a escala mensal atribuída. Cada dia é validado conforme o registro de ponto. Mudanças de status registram horário neste quadro local. 
       </p>
 
       <div class="escala-header">
@@ -665,7 +655,7 @@
 
       <div class="escala-box" id="escalaBox"></div>
 
-      <div class="row" style="margin-top:8px;">
+      <div class="row" style="margin-top:8px%;">
         <button id="btnGerarPdfEscala" class="secondary" type="button" disabled>
           Gerar PDF da escala (em breve)
         </button>
@@ -911,23 +901,110 @@
   let emExpediente = false;
   let emIntervalo  = false;
 
+  /* Utilidades escala + log de status */
+
+  const escalaMes = document.getElementById('escalaMes');
+  const escalaAno = document.getElementById('escalaAno');
+  const escalaBox = document.getElementById('escalaBox');
+  const selectEscalasAnteriores = document.getElementById('selectEscalasAnteriores');
+
+  function diasNoMes(mesIndex, ano) {
+    return new Date(ano, mesIndex + 1, 0).getDate();
+  }
+
+  function chaveEscala(mes, ano) {
+    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
+  }
+
+  function obterEscalaDoGestorMock(mes, ano) {
+    const totalDias = diasNoMes(mes, ano);
+    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
+    const dias = [];
+    for (let d = 1; d <= totalDias; d++) {
+      dias.push({
+        dia: d,
+        horario: turnos[d % turnos.length],
+        posto: 'Posto principal (mock)'
+      });
+    }
+    return dias;
+  }
+
+  function carregarMarcacoes(mes, ano) {
+    const chave = chaveEscala(mes, ano);
+    try {
+      const raw = localStorage.getItem(chave);
+      if (!raw) return {};
+      return JSON.parse(raw) || {};
+    } catch(e) {
+      return {};
+    }
+  }
+
+  function salvarMarcacoes(mes, ano, obj) {
+    const chave = chaveEscala(mes, ano);
+    try {
+      localStorage.setItem(chave, JSON.stringify(obj));
+    } catch(e) {}
+  }
+
+  function formatarHoraAtual() {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function registrarStatusNaEscala(statusLabel) {
+    const agora = new Date();
+    const mes = agora.getMonth();
+    const ano = agora.getFullYear();
+    const dia = agora.getDate();
+
+    const marcados = carregarMarcacoes(mes, ano);
+    const diaKey = String(dia);
+
+    if (!marcados[diaKey]) {
+      marcados[diaKey] = {
+        trabalhado: false,
+        logs: []
+      };
+    }
+
+    const hora = formatarHoraAtual();
+    marcados[diaKey].logs.push(`${hora} – ${statusLabel}`);
+
+    // mantém compatibilidade com checkbox "Trabalhado"
+    if (statusLabel === 'Ativo') {
+      marcados[diaKey].trabalhado = true;
+    }
+
+    salvarMarcacoes(mes, ano, marcados);
+
+    // se o operador estiver visualizando o mês/ano atuais, atualiza a tabela
+    const mesSelecionado = parseInt(escalaMes.value, 10);
+    const anoSelecionado = parseInt(escalaAno.value, 10);
+    if (mesSelecionado === mes && anoSelecionado === ano) {
+      gerarEscalaMes(mes, ano);
+    }
+  }
+
+  /* Botões de ponto */
+
   function marcarDiaEscalaComoTrabalhadoHoje() {
     const hoje = new Date();
     const mes = hoje.getMonth();
     const ano = hoje.getFullYear();
     const dia = hoje.getDate();
 
-    const chave = chaveEscala(mes, ano);
-    let marcados = {};
-    try {
-      const raw = localStorage.getItem(chave);
-      if (raw) marcados = JSON.parse(raw) || {};
-    } catch(e) {}
+    const marcados = carregarMarcacoes(mes, ano);
+    const diaKey = String(dia);
 
-    marcados[dia] = true;
-    try {
-      localStorage.setItem(chave, JSON.stringify(marcados));
-    } catch(e) {}
+    if (!marcados[diaKey]) {
+      marcados[diaKey] = { trabalhado: true, logs: [] };
+    } else {
+      marcados[diaKey].trabalhado = true;
+      marcados[diaKey].logs = marcados[diaKey].logs || [];
+    }
+
+    salvarMarcacoes(mes, ano, marcados);
   }
 
   btnCheckin.addEventListener('click', () => {
@@ -940,9 +1017,10 @@
 
     statusPonto.classList.remove('off');
     statusPonto.classList.add('ativo');
-    statusPonto.textContent = 'Status: Em expediente';
+    statusPonto.textContent = 'Status: Ativo';
 
     marcarDiaEscalaComoTrabalhadoHoje();
+    registrarStatusNaEscala('Ativo');
     atualizarEscalaAtual();
   });
 
@@ -952,13 +1030,15 @@
     emIntervalo = !emIntervalo;
 
     if (emIntervalo) {
-      statusPonto.textContent = 'Status: Em intervalo';
+      statusPonto.textContent = 'Status: Inativo (intervalo)';
       statusPonto.classList.remove('ativo');
       statusPonto.classList.add('off');
+      registrarStatusNaEscala('Inativo (intervalo)');
     } else {
-      statusPonto.textContent = 'Status: Em expediente';
+      statusPonto.textContent = 'Status: Ativo';
       statusPonto.classList.remove('off');
       statusPonto.classList.add('ativo');
+      registrarStatusNaEscala('Ativo');
     }
   });
 
@@ -972,8 +1052,12 @@
 
     statusPonto.classList.remove('ativo');
     statusPonto.classList.add('off');
-    statusPonto.textContent = 'Status: Fora do expediente';
+    statusPonto.textContent = 'Status: Inativo';
+
+    registrarStatusNaEscala('Inativo');
   });
+
+  /* Modal senha */
 
   const btnAbrirModalSenha  = document.getElementById('btnAbrirModalSenha');
   const modalSenha          = document.getElementById('modalSenha');
@@ -1017,10 +1101,7 @@
     modalSenha.style.pointerEvents = 'none';
   });
 
-  const escalaMes = document.getElementById('escalaMes');
-  const escalaAno = document.getElementById('escalaAno');
-  const escalaBox = document.getElementById('escalaBox');
-  const selectEscalasAnteriores = document.getElementById('selectEscalasAnteriores');
+  /* Escala: selects, geração de tabela e logs */
 
   (function initMesAno() {
     const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -1045,36 +1126,9 @@
     }
   })();
 
-  function diasNoMes(mesIndex, ano) {
-    return new Date(ano, mesIndex + 1, 0).getDate();
-  }
-
-  function chaveEscala(mes, ano) {
-    return `sgo_escala_${ano}-${String(mes+1).padStart(2,'0')}`;
-  }
-
-  function obterEscalaDoGestorMock(mes, ano) {
-    const totalDias = diasNoMes(mes, ano);
-    const turnos = ['08:00–14:00','14:00–20:00','20:00–02:00'];
-    const dias = [];
-    for (let d = 1; d <= totalDias; d++) {
-      dias.push({
-        dia: d,
-        horario: turnos[d % turnos.length],
-        posto: 'Posto principal (mock)'
-      });
-    }
-    return dias;
-  }
-
   function gerarEscalaMes(mes, ano) {
     const dias = obterEscalaDoGestorMock(mes, ano);
-
-    let marcados = {};
-    try {
-      const raw = localStorage.getItem(chaveEscala(mes, ano));
-      if (raw) marcados = JSON.parse(raw) || {};
-    } catch(e) {}
+    const marcados = carregarMarcacoes(mes, ano);
 
     const table = document.createElement('table');
     table.className = 'escala';
@@ -1086,6 +1140,7 @@
         <th>Horário</th>
         <th>Posto</th>
         <th>Trabalhado</th>
+        <th>Log de status</th>
       </tr>
     `;
     table.appendChild(thead);
@@ -1097,11 +1152,21 @@
       const mesLabel = String(mes + 1).padStart(2, '0');
       const diaLabel = String(item.dia).padStart(2, '0');
       const labelDia = `${diaLabel}/${mesLabel}`;
+      const diaKey = String(item.dia);
+      const infoDia = marcados[diaKey] || {};
+      const trabalhado = !!infoDia.trabalhado;
+      const logs = infoDia.logs || [];
+
+      const logsHtml = logs.length
+        ? logs.map(l => `<div>${l}</div>`).join('')
+        : '<span class="small">Sem registros</span>';
+
       tr.innerHTML = `
         <td>${labelDia}</td>
         <td>${item.horario}</td>
         <td>${item.posto}</td>
-        <td><input type="checkbox" data-dia="${item.dia}"></td>
+        <td><input type="checkbox" data-dia="${item.dia}" ${trabalhado ? 'checked' : ''}></td>
+        <td class="escala-status-log">${logsHtml}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -1113,17 +1178,16 @@
     const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(chk => {
       const dia = chk.dataset.dia;
-      if (marcados[dia]) chk.checked = true;
-
       chk.addEventListener('change', () => {
-        if (chk.checked) {
-          marcados[dia] = true;
+        const m = carregarMarcacoes(mes, ano);
+        const diaKey = String(dia);
+        if (!m[diaKey]) {
+          m[diaKey] = { trabalhado: chk.checked, logs: [] };
         } else {
-          delete marcados[dia];
+          m[diaKey].trabalhado = chk.checked;
+          m[diaKey].logs = m[diaKey].logs || [];
         }
-        try {
-          localStorage.setItem(chaveEscala(mes, ano), JSON.stringify(marcados));
-        } catch(e) {}
+        salvarMarcacoes(mes, ano, m);
       });
     });
   }
