@@ -304,7 +304,7 @@
       border-color: #e0ddd7;
     }
 
-    /* Status do ponto – mais contrastante */
+    /* Status do ponto – mais contrastante, vermelho quando off */
     .status-badge {
       display:inline-flex;
       align-items:center;
@@ -338,7 +338,7 @@
 
     .status-badge.off {
       border-color:rgba(248,113,113,0.9);
-      color:#fecaca;
+      color:#f97373; /* texto vermelho para “Em intervalo” e “Fora do expediente” */
       background:rgba(127,29,29,0.25);
     }
 
@@ -1092,7 +1092,7 @@
       const tr = document.createElement('tr');
       const mesLabel = String(mes + 1).padStart(2, '0');
       const diaLabel = String(item.dia).padStart(2, '0');
-      const labelDia = `${diaLabel}/${mesLabel}`;
+      const labelDia = \`\${diaLabel}/\${mesLabel}\`;
       tr.innerHTML = `
         <td>${labelDia}</td>
         <td>${item.horario}</td>
