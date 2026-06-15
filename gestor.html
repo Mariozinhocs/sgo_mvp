@@ -24,8 +24,8 @@
       --input-light-border: #d1d5db;
       --button-inactive-light: #e5e7eb;
       --button-inactive-dark: #111827;
-      --kpi-base: #0E2E20;       /* base KPIs */
-      --kpi-critical: #861211;   /* crítico */
+      --kpi-base: #0E2E20;
+      --kpi-critical: #861211;
       --kpi-normal-text: #8FEDC2;
     }
 
@@ -59,7 +59,9 @@
     body.theme-light .table-box,
     body.theme-light .map-box,
     body.theme-light .posto-detail,
-    body.theme-light .operador-profile {
+    body.theme-light .operador-profile,
+    body.theme-light .operador-info-box,
+    body.theme-light .overlay-panel {
       background:#f9fafb;
       border-color:#d1d5db;
     }
@@ -230,7 +232,6 @@
       color: var(--text-secondary);
     }
 
-    .info-box,
     .table-box,
     .map-box {
       margin-top:8px;
@@ -369,13 +370,6 @@
 
     button:disabled {
       cursor: not-allowed;
-      background: #e5e7eb;
-      color: #9ca3af;
-      border: 1px solid #d1d5db;
-    }
-
-    button.primary:disabled,
-    button.secondary:disabled {
       background: #e5e7eb;
       color: #9ca3af;
       border: 1px solid #d1d5db;
@@ -561,15 +555,6 @@
       color:var(--text-secondary);
     }
 
-    .posto-detail-equipes {
-      margin-top:6px;
-    }
-
-    .posto-detail-equipes h3 {
-      margin:4px 0 4px;
-      font-size:13px;
-    }
-
     .badge-turno {
       display:inline-flex;
       align-items:center;
@@ -624,16 +609,12 @@
       background:#e5e7eb;
     }
 
-    .operador-name {
-      font-weight:500;
-    }
+    .operador-name { font-weight:500; }
+    .operador-meta { font-size:11px; color:var(--text-secondary); }
 
-    .operador-meta {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .operador-profile {
+    .operador-profile,
+    .operador-info-box,
+    .overlay-panel {
       margin-top:8px;
       padding:8px 10px;
       border-radius:10px;
@@ -643,7 +624,9 @@
       animation: fadeInUp 0.14s ease-out;
     }
 
-    .operador-profile-header {
+    .operador-profile-header,
+    .operador-info-header,
+    .overlay-panel-header {
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -651,13 +634,67 @@
       margin-bottom:4px;
     }
 
-    .operador-profile-title {
+    .operador-profile-title,
+    .operador-info-title {
       font-weight:600;
       font-size:13px;
     }
 
-    .operador-profile-body div {
+    .operador-profile-body div,
+    .operador-info-body div {
       margin-bottom:2px;
+    }
+
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,0.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 18px;
+    }
+
+    .overlay-backdrop.open {
+      display:flex;
+    }
+
+    .overlay-panel {
+      width:min(900px, 100%);
+      max-height:min(85vh, 900px);
+      overflow:auto;
+      box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    }
+
+    .overlay-title {
+      font-size:15px;
+      font-weight:700;
+    }
+
+    .overlay-sub {
+      font-size:11px;
+      color:var(--text-secondary);
+      margin-top:2px;
+    }
+
+    .overlay-section {
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid rgba(148,163,184,0.16);
+    }
+
+    .overlay-list {
+      margin: 6px 0 0;
+      padding-left: 16px;
+      color: var(--text-main);
+      font-size:12px;
+    }
+
+    .overlay-list li { margin-bottom:6px; }
+
+    body.theme-light .overlay-list {
+      color:#020617;
     }
 
     @keyframes fadeInUp {
@@ -667,6 +704,19 @@
   </style>
 </head>
 <body>
+<div id="overlayBackdrop" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayDesc">
+    <div class="overlay-panel-header">
+      <div>
+        <div class="overlay-title" id="overlayTitle">Perfil do operador</div>
+        <div class="overlay-sub" id="overlayDesc">Selecione um operador para ver os detalhes.</div>
+      </div>
+      <button type="button" class="secondary" id="btnCloseOverlay">Fechar</button>
+    </div>
+    <div id="overlayContent"></div>
+  </div>
+</div>
+
 <header>
   <div class="header-left">
     <div class="logo-box">
@@ -676,18 +726,14 @@
         <span class="logo-subtitle">Painel de Gestão de Operações</span>
       </div>
     </div>
-    <div class="subtitle-header" id="subtitleGestor">
-      Gestor logado
-    </div>
+    <div class="subtitle-header" id="subtitleGestor">Gestor logado</div>
   </div>
   <div class="header-right">
     <button id="btnTheme" class="theme-toggle" type="button">
       <span class="icon" id="themeIcon">☀️</span>
       <span id="themeLabel">Light</span>
     </button>
-    <button class="secondary" type="button" id="btnVoltarOperador">
-      Painel do operador
-    </button>
+    <button class="secondary" type="button" id="btnVoltarOperador">Painel do operador</button>
     <button class="btn-exit" type="button" id="btnSair">
       <span>⏏</span>
       Sair
@@ -705,13 +751,10 @@
     <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
   </div>
 
-  <!-- DASHBOARD -->
   <section id="tab-dashboard" class="tab-panel active">
     <section class="card">
       <h2>Dashboard</h2>
-      <p class="small">
-        Visão geral (mock local) de postos, operadores e equipes. Integração real com backend será feita em fase posterior.
-      </p>
+      <p class="small">Visão geral (mock local) de postos, operadores e equipes. Integração real com backend será feita em fase posterior.</p>
 
       <div class="kpi-grid">
         <div class="kpi-card" data-goto-tab="tab-postos">
@@ -745,10 +788,7 @@
       </div>
 
       <div class="map-box" id="mapBox" style="margin-top:8px; display:none;">
-        <div class="map-container" id="mapContainer">
-          Mapa de postos ativos será exibido aqui (integrar Leaflet/OpenStreetMap).<br>
-          Para o MVP local, este é apenas um placeholder visual.
-        </div>
+        <div class="map-container" id="mapContainer">Mapa de postos ativos será exibido aqui.</div>
       </div>
 
       <div class="table-box" style="margin-top:10px;">
@@ -763,25 +803,19 @@
             <th>Último status</th>
           </tr>
           </thead>
-          <tbody id="tbodyEscalaHojeGestor">
-          </tbody>
+          <tbody id="tbodyEscalaHojeGestor"></tbody>
         </table>
       </div>
     </section>
   </section>
 
-  <!-- POSTOS -->
   <section id="tab-postos" class="tab-panel">
     <section class="card">
       <h2>Postos</h2>
-      <p class="small">
-        Controle de postos/bases, com status, localização e quantidade de operadores vinculados (dados mock).
-      </p>
+      <p class="small">Controle de postos/bases, com status, localização e quantidade de operadores vinculados (dados mock).</p>
 
       <div class="row-between" style="margin-top:6px;">
-        <div>
-          <span class="small">Clique em um posto para ver a equipe empenhada.</span>
-        </div>
+        <div><span class="small">Clique em um posto para ver a equipe empenhada.</span></div>
         <input type="text" id="filtroPostos" class="filter-input" placeholder="Filtrar por nome/cidade" />
       </div>
 
@@ -795,28 +829,22 @@
             <th>Operadores</th>
           </tr>
           </thead>
-          <tbody id="tbodyPostos">
-          </tbody>
+          <tbody id="tbodyPostos"></tbody>
         </table>
       </div>
 
       <div id="postoDetailContainer"></div>
 
       <div class="row" style="margin-top:8px;">
-        <button class="secondary" type="button" disabled>
-          Cadastrar novo posto (em breve)
-        </button>
+        <button class="secondary" type="button" disabled>Cadastrar novo posto (em breve)</button>
       </div>
     </section>
   </section>
 
-  <!-- EQUIPES -->
   <section id="tab-equipes" class="tab-panel">
     <section class="card">
       <h2>Equipes</h2>
-      <p class="small">
-        Visualização das equipes, postos associados e operadores vinculados (dados mock).
-      </p>
+      <p class="small">Visualização das equipes, postos associados e operadores vinculados (dados mock).</p>
 
       <div class="table-box">
         <table>
@@ -828,26 +856,20 @@
             <th>Operadores</th>
           </tr>
           </thead>
-          <tbody id="tbodyEquipes">
-          </tbody>
+          <tbody id="tbodyEquipes"></tbody>
         </table>
       </div>
 
       <div class="row" style="margin-top:8px;">
-        <button class="secondary" type="button" disabled>
-          Criar/editar equipe (em breve)
-        </button>
+        <button class="secondary" type="button" disabled>Criar/editar equipe (em breve)</button>
       </div>
     </section>
   </section>
 
-  <!-- ESCALAS -->
   <section id="tab-escalas" class="tab-panel">
     <section class="card">
       <h2>Escalas</h2>
-      <p class="small">
-        Visão consolidada das escalas por posto e mês, com status de execução e assinatura (mock).
-      </p>
+      <p class="small">Visão consolidada das escalas por posto e mês, com status de execução e assinatura (mock).</p>
 
       <div class="table-box">
         <table>
@@ -860,34 +882,19 @@
             <th>Assinatura</th>
           </tr>
           </thead>
-          <tbody id="tbodyEscalas">
-          </tbody>
+          <tbody id="tbodyEscalas"></tbody>
         </table>
-      </div>
-
-      <div class="row" style="margin-top:8px;">
-        <button class="secondary" type="button" disabled>
-          Gerar nova escala (em breve)
-        </button>
-        <button class="secondary" type="button" disabled>
-          Download em PDF (em breve)
-        </button>
       </div>
     </section>
   </section>
 
-  <!-- OPERADORES -->
   <section id="tab-operadores" class="tab-panel">
     <section class="card">
       <h2>Operadores</h2>
-      <p class="small">
-        Consulta de operadores, matrículas, postos principais e status (dados mock).
-      </p>
+      <p class="small">Consulta de operadores, matrículas, postos principais e status (dados mock).</p>
 
       <div class="row-between" style="margin-top:6px;">
-        <div>
-          <span class="small">Operadores cadastrados (MVP local, sem backend).</span>
-        </div>
+        <div><span class="small">Operadores cadastrados (MVP local, sem backend).</span></div>
         <input type="text" id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula" />
       </div>
 
@@ -902,101 +909,22 @@
             <th>Status</th>
           </tr>
           </thead>
-          <tbody id="tbodyOperadores">
-          </tbody>
+          <tbody id="tbodyOperadores"></tbody>
         </table>
-      </div>
-
-      <div class="row" style="margin-top:8px;">
-        <button class="secondary" type="button" disabled>
-          Cadastrar/editar operador (em breve)
-        </button>
       </div>
     </section>
   </section>
 
-  <!-- MENSAGENS -->
   <section id="tab-mensagens" class="tab-panel">
     <section class="card">
       <h2>Mensagens</h2>
-      <p class="small">
-        Troca de mensagens entre gestores e operadores. Integração com backend será feita em fase posterior.
-      </p>
-
-      <div class="tabs-header" style="margin-top:8px;">
-        <button class="tab-button inner active" data-inner="msg-inbox">Caixa de entrada</button>
-        <button class="tab-button inner" data-inner="msg-enviadas">Enviadas</button>
-        <button class="tab-button inner" data-inner="msg-nova">Nova mensagem</button>
-      </div>
-
-      <div id="msg-inbox" class="tab-panel inner active">
-        <div class="table-box">
-          <table>
-            <thead>
-            <tr>
-              <th>Data/hora</th>
-              <th>De</th>
-              <th>Assunto</th>
-              <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>—</td>
-              <td>—</td>
-              <td>Sem mensagens (MVP)</td>
-              <td>—</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="msg-enviadas" class="tab-panel inner">
-        <div class="table-box">
-          <table>
-            <thead>
-            <tr>
-              <th>Data/hora</th>
-              <th>Para</th>
-              <th>Assunto</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>—</td>
-              <td>—</td>
-              <td>Sem mensagens enviadas (MVP)</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="msg-nova" class="tab-panel inner">
-        <div class="label-inline">Para (operador)</div>
-        <input type="text" class="filter-input" placeholder="Digite o nome ou matrícula (mock)" />
-
-        <div class="label-inline">Assunto</div>
-        <input type="text" class="filter-input" placeholder="Assunto" />
-
-        <div class="label-inline">Mensagem</div>
-        <textarea rows="4" style="width:100%;padding:7px 9px;border-radius:10px;border:1px solid rgba(148,163,184,0.45);background:#020617;color:var(--text-main);font-size:13px;"></textarea>
-
-        <div class="row" style="margin-top:8px;">
-          <button class="primary" type="button" disabled>
-            Enviar (MVP local)
-          </button>
-        </div>
-        <p class="small">Envio real será integrado ao backend em fase posterior.</p>
-      </div>
+      <p class="small">Troca de mensagens entre gestores e operadores. Integração com backend será feita em fase posterior.</p>
     </section>
   </section>
 </main>
 
 <script>
   const THEME_KEY = 'sgo_theme_login';
-
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel= document.getElementById('themeLabel');
@@ -1004,7 +932,6 @@
   function aplicarTemaInicial() {
     let saved = null;
     try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
-
     if (saved === 'light') {
       document.body.classList.add('theme-light');
       themeIcon.textContent = '🌙';
@@ -1054,7 +981,6 @@
     if (!alvo) return;
     const btn = document.querySelector(`.tab-button[data-tab="${idTab}"]`);
     if (!btn) return;
-
     tabButtons.forEach(b => b.classList.remove('active'));
     tabPanels.forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
@@ -1062,23 +988,7 @@
   }
 
   tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-      ativarAbaPorId(target);
-    });
-  });
-
-  const innerTabButtons = document.querySelectorAll('.tab-button.inner');
-  const innerPanels     = document.querySelectorAll('.tab-panel.inner');
-
-  innerTabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.inner;
-      innerTabButtons.forEach(b => b.classList.remove('active'));
-      innerPanels.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(target).classList.add('active');
-    });
+    btn.addEventListener('click', () => ativarAbaPorId(btn.dataset.tab));
   });
 
   (function carregarGestor() {
@@ -1093,77 +1003,104 @@
 
   const chkMostrarMapa = document.getElementById('chkMostrarMapa');
   const mapBox = document.getElementById('mapBox');
-
   chkMostrarMapa.addEventListener('change', () => {
     mapBox.style.display = chkMostrarMapa.checked ? 'block' : 'none';
   });
 
   const MOCK_POSTOS = [
-    { nome: 'Posto Central', cidade: 'São Paulo/SP',     status: 'ATIVO',   operadores: 18 },
-    { nome: 'Base Leste',    cidade: 'São Paulo/SP',     status: 'ATIVO',   operadores: 14 },
-    { nome: 'Posto Norte',   cidade: 'Guarulhos/SP',     status: 'ATIVO',   operadores: 9  },
-    { nome: 'Base Sul',      cidade: 'Santo André/SP',   status: 'INATIVO', operadores: 4  }
+    { nome: 'Posto Central', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 18 },
+    { nome: 'Base Leste', cidade: 'São Paulo/SP', status: 'ATIVO', operadores: 14 },
+    { nome: 'Posto Norte', cidade: 'Guarulhos/SP', status: 'ATIVO', operadores: 9 },
+    { nome: 'Base Sul', cidade: 'Santo André/SP', status: 'INATIVO', operadores: 4 }
   ];
 
   const MOCK_EQUIPES = [
-    { nome: 'Equipe Alfa',      posto: 'Posto Central', turno: 'Dia',       operadores: 9 },
-    { nome: 'Equipe Bravo',     posto: 'Posto Central', turno: 'Noite',     operadores: 9 },
-    { nome: 'Equipe Leste 01',  posto: 'Base Leste',    turno: 'Comercial', operadores: 8 },
-    { nome: 'Equipe Leste 02',  posto: 'Base Leste',    turno: 'Noite',     operadores: 6 },
-    { nome: 'Equipe Norte 01',  posto: 'Posto Norte',   turno: '12x36',     operadores: 9 }
+    { nome: 'Equipe Alfa', posto: 'Posto Central', turno: 'Dia', operadores: 9 },
+    { nome: 'Equipe Bravo', posto: 'Posto Central', turno: 'Noite', operadores: 9 },
+    { nome: 'Equipe Leste 01', posto: 'Base Leste', turno: 'Comercial', operadores: 8 },
+    { nome: 'Equipe Leste 02', posto: 'Base Leste', turno: 'Noite', operadores: 6 },
+    { nome: 'Equipe Norte 01', posto: 'Posto Norte', turno: '12x36', operadores: 9 }
   ];
 
-  // Lista estendida de operadores mock (ativos e inativos)
   const MOCK_OPERADORES = [
-    // Posto Central
-    { nome: 'Ana Silva',        matricula: '1001', usuario: 'ana.silva',      posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Bruno Costa',      matricula: '1002', usuario: 'bruno.costa',    posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Carlos Souza',     matricula: '1003', usuario: 'carlos.souza',   posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Diego Martins',    matricula: '1004', usuario: 'diego.martins',  posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Eduardo Lima',     matricula: '1005', usuario: 'edu.lima',       posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Fernanda Alves',   matricula: '1006', usuario: 'fernanda.alves', posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Gabriel Rocha',    matricula: '1007', usuario: 'gabriel.rocha',  posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Helena Prado',     matricula: '1008', usuario: 'helena.prado',   posto: 'Posto Central', status: 'ATIVO' },
-    { nome: 'Igor Moreira',     matricula: '1009', usuario: 'igor.moreira',   posto: 'Posto Central', status: 'INATIVO' },
-
-    // Base Leste
-    { nome: 'João Pedro',       matricula: '1010', usuario: 'joao.pedro',     posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Kelly Santos',     matricula: '1011', usuario: 'kelly.santos',   posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Lucas Ferreira',   matricula: '1012', usuario: 'lucas.ferreira', posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Marina Costa',     matricula: '1013', usuario: 'marina.costa',   posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Nicolas Moraes',   matricula: '1014', usuario: 'nicolas.m',      posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Olivia Andrade',   matricula: '1015', usuario: 'olivia.a',       posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Paulo Henrique',   matricula: '1016', usuario: 'paulo.h',        posto: 'Base Leste', status: 'INATIVO' },
-    { nome: 'Rafaela Dias',     matricula: '1017', usuario: 'rafa.dias',      posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Samuel Teixeira',  matricula: '1018', usuario: 'sam.teixeira',   posto: 'Base Leste', status: 'ATIVO' },
-    { nome: 'Tatiane Souza',    matricula: '1019', usuario: 'tati.souza',     posto: 'Base Leste', status: 'INATIVO' },
-
-    // Posto Norte
-    { nome: 'Ursula Mendes',    matricula: '1020', usuario: 'ursula.m',       posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'Victor Hugo',      matricula: '1021', usuario: 'victor.h',       posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'William Santos',   matricula: '1022', usuario: 'will.santos',    posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'Xavier Oliveira',  matricula: '1023', usuario: 'xavier.oli',     posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'Yasmin Farias',    matricula: '1024', usuario: 'yasmin.f',       posto: 'Posto Norte', status: 'ATIVO' },
-    { nome: 'Zeca Carvalho',    matricula: '1025', usuario: 'zeca.carv',      posto: 'Posto Norte', status: 'INATIVO' },
-
-    // Base Sul (mista para avaliar contraste de inativos)
-    { nome: 'Alberto Nunes',    matricula: '1026', usuario: 'alberto.n',      posto: 'Base Sul', status: 'INATIVO' },
-    { nome: 'Bianca Ribeiro',   matricula: '1027', usuario: 'bianca.r',       posto: 'Base Sul', status: 'INATIVO' },
-    { nome: 'Caio Barbosa',     matricula: '1028', usuario: 'caio.b',         posto: 'Base Sul', status: 'ATIVO' },
-    { nome: 'Daniela Lima',     matricula: '1029', usuario: 'dani.lima',      posto: 'Base Sul', status: 'INATIVO' }
+    { nome: 'Ana Silva', matricula: '1001', usuario: 'ana.silva', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Bruno Costa', matricula: '1002', usuario: 'bruno.costa', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Carlos Souza', matricula: '1003', usuario: 'carlos.souza', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Diego Martins', matricula: '1004', usuario: 'diego.martins', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Eduardo Lima', matricula: '1005', usuario: 'edu.lima', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Fernanda Alves', matricula: '1006', usuario: 'fernanda.alves', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Gabriel Rocha', matricula: '1007', usuario: 'gabriel.rocha', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Helena Prado', matricula: '1008', usuario: 'helena.prado', posto: 'Posto Central', status: 'ATIVO' },
+    { nome: 'Igor Moreira', matricula: '1009', usuario: 'igor.moreira', posto: 'Posto Central', status: 'INATIVO' },
+    { nome: 'João Pedro', matricula: '1010', usuario: 'joao.pedro', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Kelly Santos', matricula: '1011', usuario: 'kelly.santos', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Lucas Ferreira', matricula: '1012', usuario: 'lucas.ferreira', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Marina Costa', matricula: '1013', usuario: 'marina.costa', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Nicolas Moraes', matricula: '1014', usuario: 'nicolas.m', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Olivia Andrade', matricula: '1015', usuario: 'olivia.a', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Paulo Henrique', matricula: '1016', usuario: 'paulo.h', posto: 'Base Leste', status: 'INATIVO' },
+    { nome: 'Rafaela Dias', matricula: '1017', usuario: 'rafa.dias', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Samuel Teixeira', matricula: '1018', usuario: 'sam.teixeira', posto: 'Base Leste', status: 'ATIVO' },
+    { nome: 'Tatiane Souza', matricula: '1019', usuario: 'tati.souza', posto: 'Base Leste', status: 'INATIVO' },
+    { nome: 'Ursula Mendes', matricula: '1020', usuario: 'ursula.m', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Victor Hugo', matricula: '1021', usuario: 'victor.h', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'William Santos', matricula: '1022', usuario: 'will.santos', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Xavier Oliveira', matricula: '1023', usuario: 'xavier.oli', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Yasmin Farias', matricula: '1024', usuario: 'yasmin.f', posto: 'Posto Norte', status: 'ATIVO' },
+    { nome: 'Zeca Carvalho', matricula: '1025', usuario: 'zeca.carv', posto: 'Posto Norte', status: 'INATIVO' },
+    { nome: 'Alberto Nunes', matricula: '1026', usuario: 'alberto.n', posto: 'Base Sul', status: 'INATIVO' },
+    { nome: 'Bianca Ribeiro', matricula: '1027', usuario: 'bianca.r', posto: 'Base Sul', status: 'INATIVO' },
+    { nome: 'Caio Barbosa', matricula: '1028', usuario: 'caio.b', posto: 'Base Sul', status: 'ATIVO' },
+    { nome: 'Daniela Lima', matricula: '1029', usuario: 'dani.lima', posto: 'Base Sul', status: 'INATIVO' }
   ];
+
+  const MOCK_ROTINAS = {
+    '1001': [
+      '08:00 – abertura do posto e checagem de rádio.',
+      '12:00 – ronda interna e apoio no acesso principal.',
+      '18:00 – fechamento parcial e conferência de registros.'
+    ],
+    '1010': [
+      '06:00 – inspeção de equipamentos e conferência de escala.',
+      '14:00 – apoio ao fluxo de entrada e saída.',
+      '22:00 – passagem de turno com relatório resumido.'
+    ],
+    '1020': [
+      '07:00 – alinhamento operacional com equipe do turno.',
+      '11:30 – verificação de rondas e pendências.',
+      '16:30 – conferência de ocorrências e logs.'
+    ]
+  };
+
+  const MOCK_OBSERVACOES = {
+    '1001': [
+      'Mantém boa comunicação com supervisão.',
+      'Alta aderência à rotina.',
+      'Atuar em conjunto com apoio de base quando houver pico.'
+    ],
+    '1010': [
+      'Mais sensível para apoio em horário de fluxo intenso.',
+      'Pontualidade consistente.',
+      'Evitar troca de posto sem validação do líder.'
+    ],
+    '1020': [
+      'Bom desempenho em ocorrências de rotina.',
+      'Precisa reforçar o fechamento de checklists.',
+      'Mantém bom relacionamento com a base.'
+    ]
+  };
 
   const MOCK_ESCALAS = [
     { posto: 'Posto Central', mesAno: '06/2026', operadores: 18, status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Base Leste',    mesAno: '06/2026', operadores: 14, status: 'Em execução', assinatura: 'Pendente' },
-    { posto: 'Posto Norte',   mesAno: '06/2026', operadores: 9,  status: 'Planejada',   assinatura: '—' },
-    { posto: 'Base Sul',      mesAno: '06/2026', operadores: 4,  status: 'Parcial',     assinatura: 'Pendente' }
+    { posto: 'Base Leste', mesAno: '06/2026', operadores: 14, status: 'Em execução', assinatura: 'Pendente' },
+    { posto: 'Posto Norte', mesAno: '06/2026', operadores: 9, status: 'Planejada', assinatura: '—' },
+    { posto: 'Base Sul', mesAno: '06/2026', operadores: 4, status: 'Parcial', assinatura: 'Pendente' }
   ];
 
   const MOCK_PONTOS = [
-    { dataHora: '10/06/2026 07:58', operador: 'Ana Silva',     posto: 'Posto Central', tipo: 'Check-in' },
-    { dataHora: '10/06/2026 07:59', operador: 'João Pedro',    posto: 'Base Leste',    tipo: 'Check-in' },
-    { dataHora: '10/06/2026 08:02', operador: 'Victor Hugo',   posto: 'Posto Norte',   tipo: 'Check-in' }
+    { dataHora: '10/06/2026 07:58', operador: 'Ana Silva', posto: 'Posto Central', tipo: 'Check-in' },
+    { dataHora: '10/06/2026 07:59', operador: 'João Pedro', posto: 'Base Leste', tipo: 'Check-in' },
+    { dataHora: '10/06/2026 08:02', operador: 'Victor Hugo', posto: 'Posto Norte', tipo: 'Check-in' }
   ];
 
   function atualizarKpis() {
@@ -1182,6 +1119,10 @@
     document.getElementById('kpiAusenciasDia').textContent = 0;
   }
 
+  function statusBadgeHtml(status) {
+    return `<span class="status-badge ${status === 'ATIVO' ? 'ativo' : 'inativo'}">${status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
+  }
+
   function popularPostos(lista = MOCK_POSTOS) {
     const tbody = document.getElementById('tbodyPostos');
     tbody.innerHTML = '';
@@ -1189,11 +1130,10 @@
       const tr = document.createElement('tr');
       tr.classList.add('clickable-row');
       tr.dataset.postoNome = p.nome;
-      const statusBadge = `<span class="status-badge ${p.status === 'ATIVO' ? 'ativo' : 'inativo'}">${p.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       tr.innerHTML = `
         <td>${p.nome}</td>
         <td>${p.cidade}</td>
-        <td>${statusBadge}</td>
+        <td>${statusBadgeHtml(p.status)}</td>
         <td>${p.operadores}</td>
       `;
       tbody.appendChild(tr);
@@ -1216,19 +1156,19 @@
     });
   }
 
-  function popularOperadores(lista = MOCK_OPERADORES, tbodyId = 'tbodyOperadores') {
-    const tbody = document.getElementById(tbodyId);
+  function popularOperadores(lista = MOCK_OPERADORES) {
+    const tbody = document.getElementById('tbodyOperadores');
     tbody.innerHTML = '';
     lista.forEach(o => {
-      const statusBadge = `<span class="status-badge ${o.status === 'ATIVO' ? 'ativo' : 'inativo'}">${o.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
       const tr = document.createElement('tr');
       tr.classList.add('clickable-row');
+      tr.dataset.matricula = o.matricula;
       tr.innerHTML = `
         <td>${o.nome}</td>
         <td>${o.matricula}</td>
         <td>${o.usuario}</td>
         <td>${o.posto}</td>
-        <td>${statusBadge}</td>
+        <td>${statusBadgeHtml(o.status)}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -1246,23 +1186,6 @@
         <td>${e.operadores}</td>
         <td>${e.status}</td>
         <td>${e.assinatura}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function popularUltimosPontos(tbodyId = 'tbodyUltimosPontos') {
-    const tbody = document.getElementById(tbodyId);
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    MOCK_PONTOS.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.classList.add('clickable-row');
-      tr.innerHTML = `
-        <td>${p.dataHora}</td>
-        <td>${p.operador}</td>
-        <td>${p.posto}</td>
-        <td>${p.tipo}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -1289,8 +1212,7 @@
     const ano = hoje.getFullYear();
     const dia = hoje.getDate();
     const marcados = carregarMarcacoes(mes, ano);
-    const diaKey = String(dia);
-    return marcados[diaKey] || null;
+    return marcados[String(dia)] || null;
   }
 
   function statusFinalDeLogs(logs) {
@@ -1324,11 +1246,8 @@
     const logsHtml = infoDia.logs.map(l => `<div>${l}</div>`).join('');
     const sFinal = statusFinalDeLogs(infoDia.logs);
     let badgeHtml = '<span class="status-badge inativo">Inativo</span>';
-    if (sFinal === 'ATIVO') {
-      badgeHtml = '<span class="status-badge ativo">Ativo</span>';
-    } else if (sFinal === 'INATIVO_INTERVALO') {
-      badgeHtml = '<span class="status-badge inativo">Inativo (intervalo)</span>';
-    }
+    if (sFinal === 'ATIVO') badgeHtml = '<span class="status-badge ativo">Ativo</span>';
+    else if (sFinal === 'INATIVO_INTERVALO') badgeHtml = '<span class="status-badge inativo">Inativo (intervalo)</span>';
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1341,93 +1260,50 @@
 
   document.getElementById('filtroPostos').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
-    const filtrados = MOCK_POSTOS.filter(p => (p.nome + p.cidade).toLowerCase().includes(termo));
-    popularPostos(filtrados);
+    popularPostos(MOCK_POSTOS.filter(p => (p.nome + p.cidade).toLowerCase().includes(termo)));
   });
 
   document.getElementById('filtroOperadores').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
-    const filtrados = MOCK_OPERADORES.filter(o =>
-      (o.nome + o.matricula + o.posto).toLowerCase().includes(termo)
-    );
-    popularOperadores(filtrados);
+    popularOperadores(MOCK_OPERADORES.filter(o => (o.nome + o.matricula + o.posto).toLowerCase().includes(termo)));
   });
 
   document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card => {
-    card.addEventListener('click', () => {
-      const target = card.getAttribute('data-goto-tab');
-      if (target) ativarAbaPorId(target);
-    });
-  });
-
-  document.getElementById('tbodyPostos').addEventListener('click', (e) => {
-    const row = e.target.closest('tr');
-    if (!row) return;
-    const postoNome = row.dataset.postoNome;
-    if (postoNome) abrirDetalhePosto(postoNome);
-  });
-
-  document.getElementById('tbodyEquipes').addEventListener('click', (e) => {
-    const row = e.target.closest('tr');
-    if (!row) return;
-    ativarAbaPorId('tab-equipes');
-  });
-
-  document.getElementById('tbodyOperadores').addEventListener('click', (e) => {
-    const row = e.target.closest('tr');
-    if (!row) return;
-    ativarAbaPorId('tab-operadores');
-  });
-
-  document.getElementById('tbodyEscalas').addEventListener('click', (e) => {
-    const row = e.target.closest('tr');
-    if (!row) return;
-    ativarAbaPorId('tab-escalas');
+    card.addEventListener('click', () => ativarAbaPorId(card.getAttribute('data-goto-tab')));
   });
 
   const postoDetailContainer = document.getElementById('postoDetailContainer');
 
   function abrirDetalhePosto(nomePosto) {
     const posto = MOCK_POSTOS.find(p => p.nome === nomePosto);
-    if (!posto) {
-      postoDetailContainer.innerHTML = '';
-      return;
-    }
+    if (!posto) return;
 
     const equipesDoPosto = MOCK_EQUIPES.filter(e => e.posto === nomePosto);
     const operadoresDoPosto = MOCK_OPERADORES.filter(o => o.posto === nomePosto);
 
-    let htmlEquipes = '';
-    if (!equipesDoPosto.length) {
-      htmlEquipes = '<p class="small">Nenhuma equipe vinculada a este posto (mock).</p>';
-    } else {
-      htmlEquipes = equipesDoPosto.map(eq => `
+    const operadoresHtml = operadoresDoPosto.map(op => `
+      <div class="operadores-list-row" data-op-matricula="${op.matricula}">
+        <div>
+          <div class="operador-name">${op.nome}</div>
+          <div class="operador-meta">Matrícula ${op.matricula} • ${op.usuario}</div>
+        </div>
+        <div>${statusBadgeHtml(op.status)}</div>
+      </div>
+    `).join('');
+
+    const equipesHtml = equipesDoPosto.length
+      ? equipesDoPosto.map(eq => `
         <div class="posto-detail-equipes">
           <div class="row-between">
             <div>
               <span class="posto-detail-title">${eq.nome}</span>
-              <div class="posto-detail-sub">
-                <span class="badge-turno">${eq.turno}</span>
-              </div>
+              <div class="posto-detail-sub"><span class="badge-turno">${eq.turno}</span></div>
             </div>
             <div class="small">Operadores planejados: ${eq.operadores}</div>
           </div>
         </div>
-      `).join('');
-    }
-
-    const operadoresHtml = operadoresDoPosto.map(op => {
-      const statusBadge = `<span class="status-badge ${op.status === 'ATIVO' ? 'ativo' : 'inativo'}">${op.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
-      return `
-        <div class="operadores-list-row" data-op-matricula="${op.matricula}">
-          <div>
-            <div class="operador-name">${op.nome}</div>
-            <div class="operador-meta">Matrícula ${op.matricula} • ${op.usuario}</div>
-          </div>
-          <div>${statusBadge}</div>
-        </div>
-      `;
-    }).join('');
+      `).join('')
+      : '<p class="small">Nenhuma equipe vinculada a este posto (mock).</p>';
 
     postoDetailContainer.innerHTML = `
       <div class="posto-detail">
@@ -1436,71 +1312,135 @@
             <div class="posto-detail-title">${posto.nome}</div>
             <div class="posto-detail-sub">${posto.cidade} • ${posto.operadores} operadores (mock)</div>
           </div>
-          <button type="button" class="secondary" id="btnFecharPostoDetail">
-            Fechar
-          </button>
+          <button type="button" class="secondary" id="btnFecharPostoDetail">Fechar</button>
         </div>
 
-        ${htmlEquipes}
+        ${equipesHtml}
 
         <div class="posto-detail-equipes">
-          <h3>Equipe empenhada neste posto</h3>
-          <div class="small">Clique no operador para ver um perfil rápido.</div>
+          <div class="row-between">
+            <div>
+              <h3>Equipe empenhada neste posto</h3>
+              <div class="small">Clique no operador para abrir a sessão resumida.</div>
+            </div>
+          </div>
           <div class="operadores-list" id="listaOperadoresPosto">
             ${operadoresHtml || '<div class="small" style="padding:6px 8px;">Nenhum operador vinculado (mock).</div>'}
           </div>
         </div>
 
-        <div id="operadorProfileContainer"></div>
+        <div id="operadorSessionContainer"></div>
       </div>
     `;
 
-    document.getElementById('btnFecharPostoDetail')
-      .addEventListener('click', () => postoDetailContainer.innerHTML = '');
+    document.getElementById('btnFecharPostoDetail').addEventListener('click', () => {
+      postoDetailContainer.innerHTML = '';
+    });
 
-    const listaOpsEl = document.getElementById('listaOperadoresPosto');
-    listaOpsEl.addEventListener('click', (e) => {
+    document.getElementById('listaOperadoresPosto').addEventListener('click', (e) => {
       const row = e.target.closest('.operadores-list-row');
       if (!row) return;
-      const mat = row.dataset.opMatricula;
-      if (mat) abrirPerfilOperador(mat);
+      abrirSessaoOperador(row.dataset.opMatricula);
     });
   }
 
-  function abrirPerfilOperador(matricula) {
+  function abrirSessaoOperador(matricula) {
     const op = MOCK_OPERADORES.find(o => o.matricula === matricula);
-    const cont = document.getElementById('operadorProfileContainer');
-    if (!op || !cont) {
-      if (cont) cont.innerHTML = '';
-      return;
-    }
-    const statusBadge = `<span class="status-badge ${op.status === 'ATIVO' ? 'ativo' : 'inativo'}">${op.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</span>`;
+    const cont = document.getElementById('operadorSessionContainer');
+    if (!op || !cont) return;
+
+    const rotinas = MOCK_ROTINAS[matricula] || [
+      '08:00 – conferência inicial da rotina.',
+      '12:00 – apoio operacional no posto.',
+      '18:00 – fechamento e envio de observações.'
+    ];
+
+    const observacoes = MOCK_OBSERVACOES[matricula] || [
+      'Sem observações adicionais cadastradas neste mock.'
+    ];
+
     cont.innerHTML = `
       <div class="operador-profile">
         <div class="operador-profile-header">
-          <div class="operador-profile-title">${op.nome}</div>
-          <button type="button" class="secondary" id="btnFecharPerfilOperador">
-            Fechar perfil
-          </button>
+          <div>
+            <div class="operador-profile-title">${op.nome}</div>
+            <div class="small">Sessão travada até fechar. Não é possível abrir outro operador antes de encerrar esta visualização.</div>
+          </div>
+          <button type="button" class="secondary" id="btnCloseOperatorSession">Fechar</button>
         </div>
+
         <div class="operador-profile-body">
-          <div>Matrícula: ${op.matricula}</div>
-          <div>Usuário: ${op.usuario}</div>
-          <div>Posto principal: ${op.posto}</div>
-          <div>Status: ${statusBadge}</div>
+          <div><strong>Matrícula:</strong> ${op.matricula}</div>
+          <div><strong>Usuário:</strong> ${op.usuario}</div>
+          <div><strong>Posto principal:</strong> ${op.posto}</div>
+          <div><strong>Status:</strong> ${statusBadgeHtml(op.status)}</div>
+        </div>
+
+        <div class="overlay-section">
+          <div class="row-between">
+            <div class="operador-info-title">Rotina do mês</div>
+            <button type="button" class="secondary" id="btnMoreInfoOperator">+ Info</button>
+          </div>
+          <div id="operatorMoreInfo" style="display:none;margin-top:8px;">
+            <div class="operador-info-box">
+              <div class="operador-info-header">
+                <div class="operador-info-title">Rotinas e observações</div>
+                <div class="small">Mês corrente (mock)</div>
+              </div>
+              <div class="operador-info-body">
+                <div><strong>Rotinas:</strong></div>
+                <ul class="overlay-list">
+                  ${rotinas.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+                <div style="margin-top:8px;"><strong>Observações:</strong></div>
+                <ul class="overlay-list">
+                  ${observacoes.map(o => `<li>${o}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
-    document.getElementById('btnFecharPerfilOperador')
-      .addEventListener('click', () => cont.innerHTML = '');
+
+    document.getElementById('btnCloseOperatorSession').addEventListener('click', () => {
+      cont.innerHTML = '';
+    });
+
+    document.getElementById('btnMoreInfoOperator').addEventListener('click', () => {
+      const box = document.getElementById('operatorMoreInfo');
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    });
   }
+
+  document.getElementById('tbodyPostos').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    const postoNome = row.dataset.postoNome;
+    if (postoNome) abrirDetalhePosto(postoNome);
+  });
+
+  document.getElementById('tbodyOperadores').addEventListener('click', (e) => {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    const mat = row.dataset.matricula;
+    if (mat) {
+      ativarAbaPorId('tab-postos');
+      const posto = MOCK_OPERADORES.find(o => o.matricula === mat)?.posto;
+      if (posto) abrirDetalhePosto(posto);
+      setTimeout(() => {
+        const targetRow = [...document.querySelectorAll('#listaOperadoresPosto .operadores-list-row')]
+          .find(el => el.dataset.opMatricula === mat);
+        if (targetRow) targetRow.click();
+      }, 0);
+    }
+  });
 
   atualizarKpis();
   popularPostos();
   popularEquipes();
   popularOperadores();
   popularEscalas();
-  popularUltimosPontos();
   popularEscalaHojeGestor();
 </script>
 </body>
