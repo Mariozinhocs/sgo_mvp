@@ -83,9 +83,8 @@
     .secondary{background:var(--btnDark);color:var(--text);border:1px solid rgba(148,163,184,.4)}
     body.theme-light .secondary{background:var(--btnLight);color:#111827;border-color:#cbd5f5}
     .primary{background:var(--green);color:#022c22;font-weight:700}
-    .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap}
-    .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
-    .subtabs{margin-top:8px}
+
+    .top-tabs{display:flex;gap:6px;flex-wrap:wrap;max-width:1200px;margin:4px auto 10px;padding:0 14px}
     .tab-button{
       flex:1;text-align:center;padding:8px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.4);
       background:rgba(15,23,42,.85);color:var(--muted);font-size:12px;cursor:pointer
@@ -93,6 +92,7 @@
     .tab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
     .tab-panel{display:none}
     .tab-panel.active{display:block}
+
     main{max-width:1200px;margin:0 auto;padding:8px 14px 24px}
     .card{
       background:linear-gradient(145deg,#020617,#020617);border-radius:18px;padding:14px 14px 16px;
@@ -102,6 +102,7 @@
     .small{font-size:12px;color:var(--muted)}
     .row,.row-between{display:flex;gap:8px;flex-wrap:wrap}
     .row-between{justify-content:space-between;align-items:center}
+
     .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
     .kpi-card{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--kpi);cursor:pointer}
     .kpi-card.critical{background:var(--kpiCritical);border-color:#b91c1c}
@@ -109,6 +110,7 @@
     .kpi-value{margin-top:4px;font-size:26px;font-weight:800;color:var(--goodText)}
     .kpi-card.critical .kpi-value{color:#fecaca}
     .kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
     .table-box,.info-box,.detail-box,.panel-box,.calendar-box,.shift-panel{
       margin-top:8px;padding:10px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(15,23,42,.8)
     }
@@ -117,6 +119,7 @@
     th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
     tr.clickable-row{cursor:pointer}
     tr.clickable-row:hover{background:rgba(31,41,55,.7)}
+
     .status-badge{
       display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;
       border:1px solid rgba(148,163,184,.5);color:var(--muted);gap:4px
@@ -124,18 +127,21 @@
     .status-badge.active{border-color:rgba(34,197,94,.8);color:#bbf7d0;background:rgba(34,197,94,.12)}
     .status-badge.inactive{border-color:rgba(248,113,113,.8);color:#fecaca;background:rgba(248,113,113,.12)}
     .status-badge.pending{border-color:rgba(245,158,11,.8);color:#fde68a;background:rgba(245,158,11,.12)}
+
     .filter-input, .plain-input, textarea, select{
       padding:7px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.45);background:#020617;color:var(--text);font-size:12px
     }
     textarea{border-radius:10px;width:100%;min-height:90px}
     .plain-input{width:100%}
     body.theme-light .filter-input{background:#f9fafb;color:#020617;border-color:#d1d5db}
+
     .list-row{
       display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:12px;cursor:pointer
     }
     .list-row:nth-child(odd){background:rgba(15,23,42,.8)}
     .list-row:nth-child(even){background:rgba(15,23,42,.6)}
     .list-row:hover{background:rgba(31,41,55,.9)}
+
     .overlay-backdrop{
       position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;
       z-index:9999;padding:18px
@@ -151,6 +157,7 @@
     .overlay-section{margin-top:10px;padding-top:10px;border-top:1px solid rgba(148,163,184,.16)}
     .overlay-list{margin:6px 0 0;padding-left:16px;font-size:12px}
     .overlay-list li{margin-bottom:6px}
+
     .calendar-grid{
       display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));gap:6px
     }
@@ -162,12 +169,28 @@
     .shift-chip{
       display:block;margin-bottom:4px;padding:4px 6px;border-radius:8px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);font-size:11px
     }
+
     .legend{display:flex;gap:8px;flex-wrap:wrap}
     .legend-item{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
     .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
     .dot.green{background:#22c55e}.dot.yellow{background:#f59e0b}.dot.red{background:#ef4444}.dot.gray{background:#64748b}
+
     .section-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:12px}
-    @media (max-width: 900px){ .section-grid{grid-template-columns:1fr} .calendar-grid{grid-template-columns:repeat(2,minmax(90px,1fr))} }
+    @media (max-width: 900px){
+      .section-grid{grid-template-columns:1fr}
+      .calendar-grid{grid-template-columns:repeat(2,minmax(90px,1fr))}
+    }
+
+    .subtabs{
+      display:flex;gap:6px;flex-wrap:wrap;margin-top:8px
+    }
+    .subtab-button{
+      padding:5px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.4);
+      background:rgba(15,23,42,.85);color:var(--muted);font-size:11px;cursor:pointer
+    }
+    .subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
+    .subtab-panel{display:none}
+    .subtab-panel.active{display:block}
   </style>
 </head>
 <body>
@@ -207,11 +230,8 @@
   <button class="tab-button" data-tab="tab-postos">Postos</button>
   <button class="tab-button" data-tab="tab-equipes">Equipes</button>
   <button class="tab-button" data-tab="tab-escalas">Escalas</button>
-  <button class="tab-button" data-tab="tab-planejamento">Planejamento</button>
-  <button class="tab-button" data-tab="tab-disponibilidade">Disponibilidade</button>
-  <button class="tab-button" data-tab="tab-trocas">Trocas</button>
-  <button class="tab-button" data-tab="tab-historico">Histórico</button>
   <button class="tab-button" data-tab="tab-operadores">Operadores</button>
+  <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
 </nav>
 
 <main>
@@ -223,7 +243,7 @@
         <div class="kpi-card" data-goto-tab="tab-postos"><div class="kpi-label">Postos ativos</div><div class="kpi-value" id="kpiPostosAtivos">0</div><div class="kpi-sub">Total: <span id="kpiPostosTotal">0</span></div></div>
         <div class="kpi-card" data-goto-tab="tab-operadores"><div class="kpi-label">Operadores ativos</div><div class="kpi-value" id="kpiOperadoresAtivos">0</div><div class="kpi-sub">Total: <span id="kpiOperadoresTotal">0</span></div></div>
         <div class="kpi-card" data-goto-tab="tab-equipes"><div class="kpi-label">Equipes ativas</div><div class="kpi-value" id="kpiEquipesAtivas">0</div><div class="kpi-sub">Total: <span id="kpiEquipesTotal">0</span></div></div>
-        <div class="kpi-card critical" data-goto-tab="tab-trocas"><div class="kpi-label">Pendências</div><div class="kpi-value" id="kpiPendencias">0</div><div class="kpi-sub">Trocas, folgas e aprovações</div></div>
+        <div class="kpi-card critical" data-goto-tab="tab-escalas"><div class="kpi-label">Pendências</div><div class="kpi-value" id="kpiPendencias">0</div><div class="kpi-sub">Trocas, folgas e aprovações</div></div>
       </div>
       <div class="table-box" style="margin-top:10px;">
         <table>
@@ -247,7 +267,6 @@
           <tbody id="tbodyPostos"></tbody>
         </table>
       </div>
-      <div id="postoDetailContainer"></div>
     </section>
   </section>
 
@@ -264,137 +283,125 @@
           <tbody id="tbodyEquipes"></tbody>
         </table>
       </div>
-      <div id="equipeDetailContainer"></div>
     </section>
   </section>
 
+  <!-- ESCALAS COM SUB-ABAS -->
   <section id="tab-escalas" class="tab-panel">
     <section class="card">
       <h2>Escalas</h2>
-      <div class="row-between">
-        <div class="small">Escalas consolidadas por posto e mês.</div>
-        <div class="legend">
-          <span class="legend-item"><span class="dot green"></span>Publicada</span>
-          <span class="legend-item"><span class="dot yellow"></span>Rascunho</span>
-          <span class="legend-item"><span class="dot red"></span>Conflito</span>
-          <span class="legend-item"><span class="dot gray"></span>Sem cobertura</span>
-        </div>
-      </div>
-      <div class="table-box">
-        <table>
-          <thead><tr><th>Posto</th><th>Mês/Ano</th><th>Operadores</th><th>Status</th><th>Assinatura</th></tr></thead>
-          <tbody id="tbodyEscalas"></tbody>
-        </table>
-      </div>
-    </section>
-  </section>
+      <p class="small">Controle de escala por posto, com planejamento, disponibilidade, trocas e histórico em sub-abas.</p>
 
-  <section id="tab-planejamento" class="tab-panel">
-    <section class="card">
-      <h2>Planejamento de escala</h2>
-      <p class="small">Mock de calendário semanal/mensal para montar, revisar e publicar a escala.</p>
-      <div class="row-between">
-        <div class="legend">
-          <span class="legend-item"><span class="dot green"></span>Confirmado</span>
-          <span class="legend-item"><span class="dot yellow"></span>Rascunho</span>
-          <span class="legend-item"><span class="dot red"></span>Conflito</span>
-        </div>
-        <div class="row">
-          <button class="primary" type="button">Gerar escala</button>
-          <button class="secondary" type="button">Salvar rascunho</button>
-          <button class="secondary" type="button">Publicar</button>
-        </div>
+      <div class="subtabs" role="tablist" aria-label="Sub-abas de escala">
+        <button class="subtab-button active" data-subtab="sub-planejamento" role="tab" aria-selected="true">Planejamento</button>
+        <button class="subtab-button" data-subtab="sub-disponibilidade" role="tab" aria-selected="false">Disponibilidade</button>
+        <button class="subtab-button" data-subtab="sub-trocas" role="tab" aria-selected="false">Trocas</button>
+        <button class="subtab-button" data-subtab="sub-historico" role="tab" aria-selected="false">Histórico</button>
       </div>
-      <div class="section-grid">
-        <div class="calendar-box">
-          <div class="row-between">
-            <div><strong>Semana atual</strong></div>
-            <select>
-              <option>Junho / 2026</option>
-              <option>Julho / 2026</option>
-            </select>
+
+      <!-- Planejamento -->
+      <div id="sub-planejamento" class="subtab-panel active" role="tabpanel">
+        <div class="row-between" style="margin-top:10px;">
+          <div class="legend">
+            <span class="legend-item"><span class="dot green"></span>Confirmado</span>
+            <span class="legend-item"><span class="dot yellow"></span>Rascunho</span>
+            <span class="legend-item"><span class="dot red"></span>Conflito</span>
           </div>
-          <div class="calendar-grid" id="planningCalendar"></div>
+          <div class="row">
+            <button class="primary" type="button">Gerar escala</button>
+            <button class="secondary" type="button">Salvar rascunho</button>
+            <button class="secondary" type="button">Publicar</button>
+          </div>
         </div>
-        <div class="panel-box">
-          <div class="row-between">
-            <div>
-              <strong>Fila de planejamento</strong>
-              <div class="small">Turnos sugeridos e itens sem cobertura.</div>
+        <div class="section-grid">
+          <div class="calendar-box">
+            <div class="row-between">
+              <div><strong>Semana atual</strong></div>
+              <select>
+                <option>Junho / 2026</option>
+                <option>Julho / 2026</option>
+              </select>
             </div>
-            <button class="secondary" type="button">+ Novo turno</button>
+            <div class="calendar-grid" id="planningCalendar"></div>
           </div>
-          <div id="planningQueue" style="margin-top:8px;"></div>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <section id="tab-disponibilidade" class="tab-panel">
-    <section class="card">
-      <h2>Disponibilidade</h2>
-      <p class="small">Cadastro rápido de disponibilidade, folgas, férias e restrições por operador.</p>
-      <div class="section-grid">
-        <div class="panel-box">
-          <div class="row-between">
-            <strong>Operadores</strong>
-            <input id="filtroDisponibilidade" class="filter-input" placeholder="Filtrar operador">
-          </div>
-          <div class="table-box" style="max-height:380px;overflow:auto;">
-            <table>
-              <thead><tr><th>Nome</th><th>Posto</th><th>Disponibilidade</th></tr></thead>
-              <tbody id="tbodyDisponibilidade"></tbody>
-            </table>
+          <div class="panel-box">
+            <div class="row-between">
+              <div>
+                <strong>Fila de planejamento</strong>
+                <div class="small">Turnos sugeridos e itens sem cobertura.</div>
+              </div>
+              <button class="secondary" type="button">+ Novo turno</button>
+            </div>
+            <div id="planningQueue" style="margin-top:8px;"></div>
           </div>
         </div>
-        <div class="panel-box">
-          <strong>Registro de disponibilidade</strong>
-          <div class="info-box" style="margin-top:8px;">
-            <div class="small">Operador selecionado</div>
-            <div id="dispSelected" style="font-weight:700;margin-top:2px;">—</div>
+        <div class="table-box" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Posto</th><th>Mês/Ano</th><th>Operadores</th><th>Status</th><th>Assinatura</th></tr></thead>
+            <tbody id="tbodyEscalas"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Disponibilidade -->
+      <div id="sub-disponibilidade" class="subtab-panel" role="tabpanel">
+        <div class="section-grid" style="margin-top:10px;">
+          <div class="panel-box">
+            <div class="row-between">
+              <strong>Operadores</strong>
+              <input id="filtroDisponibilidade" class="filter-input" placeholder="Filtrar operador">
+            </div>
+            <div class="table-box" style="max-height:380px;overflow:auto;">
+              <table>
+                <thead><tr><th>Nome</th><th>Posto</th><th>Disponibilidade</th></tr></thead>
+                <tbody id="tbodyDisponibilidade"></tbody>
+              </table>
+            </div>
           </div>
-          <label class="small">Status</label>
-          <select id="dispStatus" style="width:100%;margin:6px 0 8px;border-radius:10px;">
-            <option>Disponível</option>
-            <option>Folga</option>
-            <option>Férias</option>
-            <option>Restrição de horário</option>
-            <option>Indisponível</option>
-          </select>
-          <label class="small">Observação</label>
-          <textarea id="dispObs" placeholder="Observações da disponibilidade"></textarea>
-          <div class="row" style="margin-top:8px;">
-            <button class="primary" type="button">Salvar disponibilidade</button>
-            <button class="secondary" type="button">Limpar</button>
+          <div class="panel-box">
+            <strong>Registro de disponibilidade</strong>
+            <div class="info-box" style="margin-top:8px;">
+              <div class="small">Operador selecionado</div>
+              <div id="dispSelected" style="font-weight:700;margin-top:2px;">—</div>
+            </div>
+            <label class="small" style="margin-top:8px;">Status</label>
+            <select id="dispStatus" style="width:100%;margin:6px 0 8px;border-radius:10px;">
+              <option>Disponível</option>
+              <option>Folga</option>
+              <option>Férias</option>
+              <option>Restrição de horário</option>
+              <option>Indisponível</option>
+            </select>
+            <label class="small">Observação</label>
+            <textarea id="dispObs" placeholder="Observações da disponibilidade"></textarea>
+            <div class="row" style="margin-top:8px;">
+              <button class="primary" type="button">Salvar disponibilidade</button>
+              <button class="secondary" type="button">Limpar</button>
+            </div>
           </div>
         </div>
       </div>
-    </section>
-  </section>
 
-  <section id="tab-trocas" class="tab-panel">
-    <section class="card">
-      <h2>Trocas e pendências</h2>
-      <p class="small">Fila de aprovação para trocas de turno, coberturas e solicitações abertas.</p>
-      <div class="table-box">
-        <table>
-          <thead><tr><th>Solicitação</th><th>Operador</th><th>Turno</th><th>Status</th><th>Ação</th></tr></thead>
-          <tbody id="tbodyTrocas"></tbody>
-        </table>
+      <!-- Trocas -->
+      <div id="sub-trocas" class="subtab-panel" role="tabpanel">
+        <div class="table-box" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>Solicitação</th><th>Operador</th><th>Turno</th><th>Status</th><th>Ação</th></tr></thead>
+            <tbody id="tbodyTrocas"></tbody>
+          </table>
+        </div>
       </div>
-    </section>
-  </section>
 
-  <section id="tab-historico" class="tab-panel">
-    <section class="card">
-      <h2>Histórico</h2>
-      <p class="small">Mudanças recentes, aprovações, recusas e alterações de escala.</p>
-      <div class="table-box">
-        <table>
-          <thead><tr><th>Data/hora</th><th>Evento</th><th>Responsável</th><th>Detalhe</th></tr></thead>
-          <tbody id="tbodyHistorico"></tbody>
-        </table>
+      <!-- Histórico -->
+      <div id="sub-historico" class="subtab-panel" role="tabpanel">
+        <div class="table-box" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>Data/hora</th><th>Evento</th><th>Responsável</th><th>Detalhe</th></tr></thead>
+            <tbody id="tbodyHistorico"></tbody>
+          </table>
+        </div>
       </div>
+
     </section>
   </section>
 
@@ -411,6 +418,13 @@
           <tbody id="tbodyOperadores"></tbody>
         </table>
       </div>
+    </section>
+  </section>
+
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card">
+      <h2>Mensagens</h2>
+      <p class="small">Área mock para comunicação futura.</p>
     </section>
   </section>
 </main>
@@ -498,7 +512,7 @@
   const planningData = [
     {day:'Seg', shifts:['07:00 Ana Silva','13:00 Bruno Costa'], status:'confirmed'},
     {day:'Ter', shifts:['07:00 Carlos Souza','13:00 Diego Martins'], status:'draft'},
-    {day:'Qua', shifts:['07:00 Joao Pedro','13:00 Kelly Santos'], status:'conflict'},
+    {day:'Qua', shifts:['07:00 João Pedro','13:00 Kelly Santos'], status:'conflict'},
     {day:'Qui', shifts:['07:00 Victor Hugo'], status:'confirmed'},
     {day:'Sex', shifts:['07:00 Yasmin Farias','13:00 Caio Barbosa'], status:'draft'},
     {day:'Sáb', shifts:['Cobertura aberta'], status:'conflict'},
@@ -512,11 +526,12 @@
 
   function badge(status){
     const s=(status||'').toLowerCase();
-    if(s.includes('publicada')||s.includes('confirmed')||s==='ativo') return '<span class="status-badge active">Ativo</span>';
+    if(s.includes('publicada')||s.includes('confirm')||s==='ativo') return '<span class="status-badge active">Ativo</span>';
     if(s.includes('rascunho')||s.includes('draft')) return '<span class="status-badge pending">Rascunho</span>';
     if(s.includes('conflito')) return '<span class="status-badge inactive">Conflito</span>';
     if(s.includes('sem cobertura')) return '<span class="status-badge inactive">Sem cobertura</span>';
-    if(s.includes('aguard')) return '<span class="status-badge pending">Aguardando</span>';
+    if(s.includes('aguard')||s.includes('pending')) return '<span class="status-badge pending">Aguardando</span>';
+    if(s.includes('dispon')) return '<span class="status-badge active">Disponível</span>';
     return '<span class="status-badge inactive">Inativo</span>';
   }
 
@@ -546,6 +561,14 @@
     tabPanels.forEach(p=>p.classList.toggle('active', p.id===id));
   }
   topTabs.forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+  const subTabs=document.querySelectorAll('.subtab-button');
+  const subPanels=document.querySelectorAll('.subtab-panel');
+  function setSubTab(id){
+    subTabs.forEach(b=>b.classList.toggle('active', b.dataset.subtab===id));
+    subPanels.forEach(p=>p.classList.toggle('active', p.id===id));
+  }
+  subTabs.forEach(b=>b.addEventListener('click',()=>setSubTab(b.dataset.subtab)));
 
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeOverlay(); });
   document.getElementById('btnCloseOverlay').addEventListener('click', closeOverlay);
@@ -665,7 +688,6 @@
       cell.innerHTML = `<div class="day-head">${d.day}</div>${d.shifts.map(s=>`<div class="shift-chip">${s}</div>`).join('')}<div style="margin-top:6px;"><span class="status-badge ${statusClass}">${d.status}</span></div>`;
       cal.appendChild(cell);
     });
-
     const queue=document.getElementById('planningQueue');
     queue.innerHTML = planningQueue.map(x=>`<div class="detail-box" style="margin-top:8px;">${x}</div>`).join('');
   }
@@ -678,13 +700,53 @@
     tbody.innerHTML=`<tr><td>${dia}/${mes}</td><td>Sem registros de status no dispositivo.</td><td>${badge('inactive')}</td></tr>`;
   }
 
-  function closeAllDetails(){
-    document.getElementById('postoDetailContainer').innerHTML='';
-    document.getElementById('equipeDetailContainer').innerHTML='';
-  }
+  document.getElementById('tbodyPostos').addEventListener('click',e=>{
+    const tr=e.target.closest('tr'); if(!tr?.dataset.postoNome) return;
+    openPosto(tr.dataset.postoNome);
+  });
+
+  document.getElementById('tbodyEquipes').addEventListener('click',e=>{
+    const tr=e.target.closest('tr'); if(!tr?.dataset.equipeNome) return;
+    openEquipe(tr.dataset.equipeNome);
+  });
+
+  document.getElementById('tbodyOperadores').addEventListener('click',e=>{
+    const tr=e.target.closest('tr'); if(!tr) return;
+    const mat=tr.children[1]?.textContent.trim();
+    const op=MOCK_OPERADORES.find(o=>o.matricula===mat);
+    if(op){ setTab('tab-postos'); openPosto(op.posto); setTimeout(()=>openOperadorSession(op.matricula),0); }
+  });
+
+  document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{
+    const tr=e.target.closest('tr'); if(!tr) return;
+    const nome=tr.dataset.nome;
+    const op=MOCK_OPERADORES.find(o=>o.nome===nome);
+    document.getElementById('dispSelected').textContent = nome;
+    document.getElementById('dispStatus').value = (MOCK_DISPONIBILIDADE.find(d=>d.nome===nome)?.disp) || 'Disponível';
+    document.getElementById('dispObs').value = `Disponibilidade atual de ${nome}.`;
+    if(op) openOperadorSession(op.matricula);
+  });
+
+  document.getElementById('filtroPostos').addEventListener('input',e=>{
+    const t=e.target.value.toLowerCase();
+    renderPostos(MOCK_POSTOS.filter(p=>(p.nome+p.cidade).toLowerCase().includes(t)));
+  });
+  document.getElementById('filtroEquipes').addEventListener('input',e=>{
+    const t=e.target.value.toLowerCase();
+    renderEquipes(MOCK_EQUIPES.filter(x=>(x.nome+x.posto+x.turno).toLowerCase().includes(t)));
+  });
+  document.getElementById('filtroOperadores').addEventListener('input',e=>{
+    const t=e.target.value.toLowerCase();
+    renderOperadores(MOCK_OPERADORES.filter(x=>(x.nome+x.matricula+x.posto).toLowerCase().includes(t)));
+  });
+  document.getElementById('filtroDisponibilidade').addEventListener('input',e=>{
+    const t=e.target.value.toLowerCase();
+    renderDisponibilidade(MOCK_DISPONIBILIDADE.filter(x=>(x.nome+x.posto+x.disp).toLowerCase().includes(t)));
+  });
+
+  document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card=>card.addEventListener('click',()=>setTab(card.dataset.gotoTab)));
 
   function openPosto(nome){
-    closeAllDetails();
     const posto=MOCK_POSTOS.find(p=>p.nome===nome); if(!posto) return;
     const equipes=MOCK_EQUIPES.filter(e=>e.posto===nome);
     const operadores=MOCK_OPERADORES.filter(o=>o.posto===nome);
@@ -761,7 +823,6 @@
   }
 
   function openEquipe(nome){
-    closeAllDetails();
     const eq=MOCK_EQUIPES.find(e=>e.nome===nome); if(!eq) return;
     const membros=MOCK_OPERADORES.filter(o=>o.posto===eq.posto);
     openOverlay(
@@ -817,44 +878,6 @@
     document.querySelectorAll('#overlayContent .list-row').forEach(row=>row.addEventListener('click',()=>openOperadorSession(row.dataset.mat)));
   }
 
-  document.getElementById('tbodyPostos').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.postoNome) openPosto(tr.dataset.postoNome); });
-  document.getElementById('tbodyEquipes').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.equipeNome) openEquipe(tr.dataset.equipeNome); });
-
-  document.getElementById('tbodyOperadores').addEventListener('click',e=>{
-    const tr=e.target.closest('tr'); if(!tr) return;
-    const op=MOCK_OPERADORES.find(o=>o.matricula===tr.children[1]?.textContent.trim());
-    if(op){ setTab('tab-postos'); openPosto(op.posto); setTimeout(()=>openOperadorSession(op.matricula),0); }
-  });
-
-  document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{
-    const tr=e.target.closest('tr'); if(!tr) return;
-    const nome=tr.dataset.nome;
-    const op=MOCK_OPERADORES.find(o=>o.nome===nome);
-    document.getElementById('dispSelected').textContent = nome;
-    document.getElementById('dispStatus').value = (MOCK_DISPONIBILIDADE.find(d=>d.nome===nome)?.disp) || 'Disponível';
-    document.getElementById('dispObs').value = `Disponibilidade atual de ${nome}.`;
-    if(op) openOperadorSession(op.matricula);
-  });
-
-  document.getElementById('filtroPostos').addEventListener('input',e=>{
-    const t=e.target.value.toLowerCase();
-    renderPostos(MOCK_POSTOS.filter(p=>(p.nome+p.cidade).toLowerCase().includes(t)));
-  });
-  document.getElementById('filtroEquipes').addEventListener('input',e=>{
-    const t=e.target.value.toLowerCase();
-    renderEquipes(MOCK_EQUIPES.filter(x=>(x.nome+x.posto+x.turno).toLowerCase().includes(t)));
-  });
-  document.getElementById('filtroOperadores').addEventListener('input',e=>{
-    const t=e.target.value.toLowerCase();
-    renderOperadores(MOCK_OPERADORES.filter(x=>(x.nome+x.matricula+x.posto).toLowerCase().includes(t)));
-  });
-  document.getElementById('filtroDisponibilidade').addEventListener('input',e=>{
-    const t=e.target.value.toLowerCase();
-    renderDisponibilidade(MOCK_DISPONIBILIDADE.filter(x=>(x.nome+x.posto+x.disp).toLowerCase().includes(t)));
-  });
-
-  document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card=>card.addEventListener('click',()=>setTab(card.dataset.gotoTab)));
-
   function loadUser(){
     try{
       const raw=localStorage.getItem('sgo_usuario');
@@ -864,7 +887,7 @@
     }catch(e){}
   }
 
-  function initPlanning(){
+  function init(){
     renderPlanning();
     renderPostos();
     renderEquipes();
@@ -878,7 +901,7 @@
     loadUser();
   }
 
-  initPlanning();
+  init();
 </script>
 </body>
 </html>
