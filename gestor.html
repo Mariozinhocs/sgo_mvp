@@ -4,276 +4,481 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#020826" />
-  <title>SGO – Gestor</title>
-
+  <title>SGO – Painel do Gestor</title>
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-512.png" />
-
   <style>
-    :root {
-      --bg-body: #0f172a;
-      --bg-card: #020617;
-      --text-main: #e5e7eb;
-      --text-secondary: #9ca3af;
-      --primary: #22c55e;
-      --border-subtle: #1f2937;
+    :root{
+      --bg:#020617; --bg2:#0f172a; --card:#020617; --text:#e5e7eb; --muted:#9ca3af;
+      --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --border:#1f2937;
+      --lightInput:#e5e7eb; --lightBorder:#d1d5db; --btnLight:#e5e7eb; --btnDark:#111827;
+      --kpi:#0e2e20; --kpiCritical:#861211; --goodText:#8fedc2;
     }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;background:radial-gradient(circle at top,#1d283a,#020617 58%);color:var(--text)}
+    body.theme-light{background:#f3f4f6;color:#020617}
+    body.theme-light .card{background:#fff;border-color:#d1d5db;box-shadow:0 10px 25px rgba(15,23,42,.12)}
+    body.theme-light .table-box, body.theme-light .info-box, body.theme-light .detail-box, body.theme-light .overlay-panel, body.theme-light .calendar-box, body.theme-light .panel-box{background:#f9fafb;border-color:#d1d5db}
+    body.theme-light input, body.theme-light select, body.theme-light textarea{background:var(--lightInput);color:#020617;border-color:var(--lightBorder)}
+    body.theme-light .theme-toggle{background:#e5e7eb;color:#020617;border-color:#9ca3af}
+    body.theme-light .status-badge{background:#e5e7eb;color:#374151;border-color:#9ca3af}
+    body.theme-light .status-badge.active{background:#dcfce7;color:#065f46;border-color:#16a34a}
+    body.theme-light .status-badge.inactive{background:#fee2e2;color:#7f1d1d;border-color:#dc2626}
+    body.theme-light .status-badge.pending{background:#fef3c7;color:#92400e;border-color:#d97706}
+    body.theme-light .list-row:nth-child(odd){background:#fff}
+    body.theme-light .list-row:nth-child(even){background:#f3f4f6}
+    body.theme-light .list-row:hover{background:#e5e7eb}
 
-    body.theme-light {
-      background: #f3f4f6;
-      color: #020617;
-    }
+    header{max-width:1200px;margin:0 auto;padding:14px 14px 6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .logo-box{display:flex;gap:10px;align-items:center}
+    .logo-img{width:54px;height:54px;border-radius:12px;object-fit:contain;background:#020617;border:1px solid rgba(148,163,184,.5);padding:6px}
+    .logo-title{font-size:16px;font-weight:700}
+    .logo-subtitle,.subtitle-header{font-size:11px;color:var(--muted)}
+    .header-left{display:flex;flex-direction:column;gap:4px}
+    .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .theme-toggle,.btn-exit,.secondary,.primary,button{font:inherit;border:none;border-radius:999px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+    .theme-toggle{background:rgba(15,23,42,.9);color:#e5e7eb;border:1px solid rgba(148,163,184,.6)}
+    .btn-exit{background:rgba(127,29,29,.95);color:#fee2e2;border:1px solid rgba(248,113,113,.6)}
+    .secondary{background:var(--btnDark);color:var(--text);border:1px solid rgba(148,163,184,.4)}
+    body.theme-light .secondary{background:var(--btnLight);color:#111827;border-color:#cbd5f5}
+    .primary{background:var(--green);color:#022c22;font-weight:700}
 
-    body.theme-light .card {
-      background:#ffffff;
-      border-color:#d1d5db;
-      box-shadow:0 10px 25px rgba(15,23,42,0.12);
-    }
+    .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap}
+    .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
+    .tab-button,.subtab-button{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--muted);cursor:pointer}
+    .tab-button{flex:1;text-align:center;padding:8px 10px;border-radius:999px;font-size:12px}
+    .subtab-button{padding:5px 10px;border-radius:999px;font-size:11px}
+    .tab-button.active,.subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
+    .tab-panel,.subtab-panel{display:none}
+    .tab-panel.active,.subtab-panel.active{display:block}
 
-    body.theme-light .logo-img {
-      background:#f9fafb;
-      border-color:#d1d5db;
-    }
+    main{max-width:1200px;margin:0 auto;padding:8px 14px 24px}
+    .card{background:linear-gradient(145deg,#020617,#020617);border-radius:18px;padding:14px 14px 16px;border:1px solid var(--border);box-shadow:0 18px 40px rgba(15,23,42,.85);margin-bottom:14px}
+    h2{margin:0 0 6px;font-size:17px}
+    .small{font-size:12px;color:var(--muted)}
+    .row,.row-between{display:flex;gap:8px;flex-wrap:wrap}
+    .row-between{justify-content:space-between;align-items:center}
 
-    * { box-sizing: border-box; }
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
+    .kpi-card{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--kpi);cursor:pointer}
+    .kpi-card.critical{background:var(--kpiCritical);border-color:#b91c1c}
+    .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    .kpi-value{margin-top:4px;font-size:26px;font-weight:800;color:var(--goodText)}
+    .kpi-card.critical .kpi-value{color:#fecaca}
+    .kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin:0;
-      background: radial-gradient(circle at top, #1d283a, #020617 58%);
-      color:var(--text-main);
-      min-height:100vh;
-    }
+    .table-box,.info-box,.detail-box,.panel-box,.calendar-box,.shift-panel{margin-top:8px;padding:10px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(15,23,42,.8)}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:4px 3px;border-bottom:1px solid rgba(31,41,55,.9);text-align:left;white-space:nowrap}
+    th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    tr.clickable-row{cursor:pointer}
+    tr.clickable-row:hover{background:rgba(31,41,55,.7)}
 
-    header {
-      padding:14px 14px 6px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      max-width:960px;
-      margin:0 auto;
-    }
+    .status-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;border:1px solid rgba(148,163,184,.5);color:var(--muted);gap:4px}
+    .status-badge.active{border-color:rgba(34,197,94,.8);color:#bbf7d0;background:rgba(34,197,94,.12)}
+    .status-badge.inactive{border-color:rgba(248,113,113,.8);color:#fecaca;background:rgba(248,113,113,.12)}
+    .status-badge.pending{border-color:rgba(245,158,11,.8);color:#fde68a;background:rgba(245,158,11,.12)}
 
-    .header-left {
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
+    .filter-input, input[type="text"], textarea, select{padding:7px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.45);background:#020617;color:var(--text);font-size:12px}
+    textarea{border-radius:10px;width:100%;min-height:90px}
+    body.theme-light .filter-input{background:#f9fafb;color:#020617;border-color:#d1d5db}
 
-    .logo-box {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+    .list-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:12px;cursor:pointer}
+    .list-row:nth-child(odd){background:rgba(15,23,42,.8)}
+    .list-row:nth-child(even){background:rgba(15,23,42,.6)}
+    .list-row:hover{background:rgba(31,41,55,.9)}
 
-    .logo-img {
-      width:54px;
-      height:54px;
-      border-radius:12px;
-      object-fit:contain;
-      background:#020617;
-      border:1px solid rgba(148,163,184,0.5);
-      padding:6px;
-    }
+    .overlay-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;z-index:9999;padding:18px}
+    .overlay-backdrop.open{display:flex}
+    .overlay-panel{width:min(1080px,100%);max-height:min(90vh,980px);overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.5);background:rgba(15,23,42,.98);border:1px solid var(--border);border-radius:14px;padding:12px}
+    .overlay-title{font-size:15px;font-weight:800}
+    .overlay-sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .overlay-header{display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .overlay-section{margin-top:10px;padding-top:10px;border-top:1px solid rgba(148,163,184,.16)}
+    .overlay-list{margin:6px 0 0;padding-left:16px;font-size:12px}
+    .overlay-list li{margin-bottom:6px}
 
-    .logo-text {
-      display:flex;
-      flex-direction:column;
-    }
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));gap:6px}
+    .day-cell{min-height:96px;border-radius:10px;border:1px solid rgba(148,163,184,.25);background:rgba(2,6,23,.45);padding:6px;font-size:11px}
+    .day-head{font-weight:700;margin-bottom:6px;color:var(--muted)}
+    .shift-chip{display:block;margin-bottom:4px;padding:4px 6px;border-radius:8px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);font-size:11px}
 
-    .logo-title {
-      font-size:16px;
-      font-weight:600;
-    }
+    .legend{display:flex;gap:8px;flex-wrap:wrap}
+    .legend-item{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.green{background:#22c55e}.dot.yellow{background:#f59e0b}.dot.red{background:#ef4444}.dot.gray{background:#64748b}
+    .section-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:12px}
+    @media (max-width: 900px){ .section-grid{grid-template-columns:1fr} .calendar-grid{grid-template-columns:repeat(2,minmax(90px,1fr))} }
 
-    .logo-subtitle {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .subtitle-header {
-      font-size:11px;
-      color:var(--text-secondary);
-    }
-
-    .header-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .theme-toggle {
-      font-size: 13px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-    }
-
-    .theme-toggle span.icon {
-      font-size:15px;
-    }
-
-    body.theme-light .theme-toggle {
-      background:#e5e7eb;
-      color:#020617;
-      border-color:#9ca3af;
-    }
-
-    .btn-exit {
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(248,113,113,0.6);
-      padding: 6px 10px;
-      background: rgba(127,29,29,0.9);
-      color: #fee2e2;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    .btn-exit span {
-      font-size:15px;
-    }
-
-    main {
-      padding: 8px 14px 24px;
-      max-width:960px;
-      margin:0 auto;
-    }
-
-    .card {
-      background: linear-gradient(145deg, #020617, #020617);
-      border-radius: 18px;
-      padding: 14px 14px 16px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
-      margin-bottom: 14px;
-    }
-
-    h2 {
-      margin: 0 0 6px;
-      font-size: 17px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+    .form-grid .full{grid-column:1 / -1}
+    .field{display:flex;flex-direction:column;gap:4px}
+    .field label{font-size:11px;color:var(--muted)}
+    .validation{font-size:11px;color:#fecaca;margin-top:4px;display:none}
+    .validation.show{display:block}
+    .history-item{padding:8px 0;border-bottom:1px solid rgba(148,163,184,.14);font-size:12px}
+    .history-item:last-child{border-bottom:none}
+    .tabs-inline{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .tabs-inline button{padding:6px 10px;font-size:11px}
   </style>
 </head>
 <body>
+<div id="overlayBackdrop" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayDesc">
+    <div class="overlay-header">
+      <div>
+        <div class="overlay-title" id="overlayTitle">Detalhe</div>
+        <div class="overlay-sub" id="overlayDesc">Sessão aberta.</div>
+      </div>
+      <button type="button" class="secondary" id="btnCloseOverlay">Fechar</button>
+    </div>
+    <div id="overlayContent"></div>
+  </div>
+</div>
+
 <header>
   <div class="header-left">
     <div class="logo-box">
       <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
       <div class="logo-text">
-        <span class="logo-title">SGO</span>
-        <span class="logo-subtitle">Painel do Gestor</span>
+        <div class="logo-title">SGO – Gestor</div>
+        <div class="logo-subtitle">Painel de Gestão de Operações</div>
       </div>
     </div>
-    <div class="subtitle-header" id="subtitleGestor">
-      Gestor logado
-    </div>
+    <div class="subtitle-header" id="subtitleGestor">Gestor logado</div>
   </div>
   <div class="header-right">
-    <button id="btnTheme" class="theme-toggle" type="button">
-      <span class="icon" id="themeIcon">☀️</span>
-      <span id="themeLabel">Light</span>
-    </button>
-    <button class="btn-exit" type="button" id="btnVoltarOperador">
-      <span>←</span>
-      Voltar ao operador
-    </button>
+    <button id="btnTheme" class="theme-toggle" type="button"><span id="themeIcon">☀️</span><span id="themeLabel">Light</span></button>
+    <button class="secondary" type="button" id="btnVoltarOperador">Painel do operador</button>
+    <button class="btn-exit" type="button" id="btnSair"><span>⏏</span>Sair</button>
   </div>
 </header>
 
+<nav class="top-tabs">
+  <button class="tab-button active" data-tab="tab-dashboard">Dashboard</button>
+  <button class="tab-button" data-tab="tab-postos">Postos</button>
+  <button class="tab-button" data-tab="tab-equipes">Equipes</button>
+  <button class="tab-button" data-tab="tab-escalas">Escalas</button>
+  <button class="tab-button" data-tab="tab-operadores">Operadores</button>
+  <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
+</nav>
+
 <main>
-  <section class="card">
-    <h2>Painel do Gestor</h2>
-    <p class="small">
-      Aqui o gestor irá configurar escalas, visualizar indicadores e acompanhar o time (MVP em construção).
-    </p>
+  <section id="tab-dashboard" class="tab-panel active">
+    <section class="card">
+      <h2>Dashboard</h2>
+      <p class="small">Visão geral mock de postos, operadores, equipes e sinais de escala.</p>
+      <div class="kpi-grid">
+        <div class="kpi-card" data-goto-tab="tab-postos"><div class="kpi-label">Postos ativos</div><div class="kpi-value" id="kpiPostosAtivos">0</div><div class="kpi-sub">Total: <span id="kpiPostosTotal">0</span></div></div>
+        <div class="kpi-card" data-goto-tab="tab-operadores"><div class="kpi-label">Operadores ativos</div><div class="kpi-value" id="kpiOperadoresAtivos">0</div><div class="kpi-sub">Total: <span id="kpiOperadoresTotal">0</span></div></div>
+        <div class="kpi-card" data-goto-tab="tab-equipes"><div class="kpi-label">Equipes ativas</div><div class="kpi-value" id="kpiEquipesAtivas">0</div><div class="kpi-sub">Total: <span id="kpiEquipesTotal">0</span></div></div>
+        <div class="kpi-card critical" data-goto-tab="tab-escalas"><div class="kpi-label">Pendências</div><div class="kpi-value" id="kpiPendencias">0</div><div class="kpi-sub">Trocas, folgas e aprovações</div></div>
+      </div>
+      <div class="table-box" style="margin-top:10px;">
+        <table>
+          <thead><tr><th>Dia</th><th>Logs de status</th><th>Último status</th></tr></thead>
+          <tbody id="tbodyEscalaHojeGestor"></tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-postos" class="tab-panel">
+    <section class="card">
+      <h2>Postos</h2>
+      <div class="row-between">
+        <div class="small">Clique em um posto para abrir a sessão do posto e a equipe empenhada.</div>
+        <input id="filtroPostos" class="filter-input" placeholder="Filtrar por nome/cidade">
+      </div>
+      <div class="table-box">
+        <table><thead><tr><th>Posto</th><th>Cidade</th><th>Status</th><th>Operadores</th></tr></thead><tbody id="tbodyPostos"></tbody></table>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-equipes" class="tab-panel">
+    <section class="card">
+      <h2>Equipes</h2>
+      <div class="row-between">
+        <div class="small">Clique em uma equipe para abrir a sessão da equipe e os membros vinculados.</div>
+        <input id="filtroEquipes" class="filter-input" placeholder="Filtrar por equipe/posto/turno">
+      </div>
+      <div class="table-box">
+        <table><thead><tr><th>Equipe</th><th>Posto</th><th>Turno</th><th>Operadores</th></tr></thead><tbody id="tbodyEquipes"></tbody></table>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-escalas" class="tab-panel">
+    <section class="card">
+      <h2>Escalas</h2>
+      <p class="small">Controle de escala por posto, com planejamento, disponibilidade, trocas e histórico em sub-abas.</p>
+      <div class="subtabs" role="tablist" aria-label="Sub-abas de escala">
+        <button class="subtab-button active" data-subtab="sub-planejamento" role="tab" aria-selected="true">Planejamento</button>
+        <button class="subtab-button" data-subtab="sub-disponibilidade" role="tab" aria-selected="false">Disponibilidade</button>
+        <button class="subtab-button" data-subtab="sub-trocas" role="tab" aria-selected="false">Trocas</button>
+        <button class="subtab-button" data-subtab="sub-historico" role="tab" aria-selected="false">Histórico</button>
+      </div>
+
+      <div id="sub-planejamento" class="subtab-panel active" role="tabpanel">
+        <div class="row-between" style="margin-top:10px;">
+          <div class="legend">
+            <span class="legend-item"><span class="dot green"></span>Confirmado</span>
+            <span class="legend-item"><span class="dot yellow"></span>Rascunho</span>
+            <span class="legend-item"><span class="dot red"></span>Conflito</span>
+          </div>
+          <div class="row">
+            <button class="primary" type="button">Gerar escala</button>
+            <button class="secondary" type="button">Salvar rascunho</button>
+            <button class="secondary" type="button">Publicar</button>
+          </div>
+        </div>
+        <div class="section-grid">
+          <div class="calendar-box">
+            <div class="row-between">
+              <div><strong>Semana atual</strong></div>
+              <select><option>Junho / 2026</option><option>Julho / 2026</option></select>
+            </div>
+            <div class="calendar-grid" id="planningCalendar"></div>
+          </div>
+          <div class="panel-box">
+            <div class="row-between">
+              <div><strong>Fila de planejamento</strong><div class="small">Turnos sugeridos e itens sem cobertura.</div></div>
+              <button class="secondary" type="button">+ Novo turno</button>
+            </div>
+            <div id="planningQueue" style="margin-top:8px;"></div>
+          </div>
+        </div>
+        <div class="table-box" style="margin-top:12px;">
+          <table><thead><tr><th>Posto</th><th>Mês/Ano</th><th>Operadores</th><th>Status</th><th>Assinatura</th></tr></thead><tbody id="tbodyEscalas"></tbody></table>
+        </div>
+
+        <div class="overlay-section" style="border-top:0;padding-top:0;margin-top:14px">
+          <h2 style="margin-top:10px;">Edição de Posto</h2>
+          <p class="small">Ajuste jornada, turnos, intervalos, regras e características do posto.</p>
+          <div class="row-between">
+            <select id="selectEditPosto" style="min-width:240px;border-radius:10px;"></select>
+            <div class="row">
+              <button class="secondary" type="button" id="btnLoadPosto">Carregar</button>
+              <button class="secondary" type="button" id="btnNovoPosto">Novo</button>
+            </div>
+          </div>
+          <div class="form-grid" id="formPosto">
+            <div class="field"><label>Nome do posto</label><input id="postoNome" type="text" /></div>
+            <div class="field"><label>Jornada diária</label><input id="postoJornada" type="text" /></div>
+            <div class="field"><label>Turno preferencial</label><select id="postoTurno"><option>Diurno</option><option>Noturno</option><option>Misto</option></select></div>
+            <div class="field"><label>Intervalo intrajornada</label><input id="postoIntrajornada" type="text" /></div>
+            <div class="field"><label>Intervalo interjornada</label><input id="postoInterjornada" type="text" /></div>
+            <div class="field"><label>Horas extras permitidas</label><input id="postoExtras" type="text" /></div>
+            <div class="field"><label>Banco de horas</label><select id="postoBanco"><option>Sim</option><option>Não</option></select></div>
+            <div class="field"><label>DSR obrigatório</label><select id="postoDsr"><option>Sim</option><option>Não</option></select></div>
+            <div class="field"><label>Jornada especial</label><input id="postoEspecial" type="text" /></div>
+            <div class="field full"><label>Descrição do posto</label><textarea id="postoDescricao"></textarea></div>
+            <div class="field full"><label>Funcionalidades requeridas</label><textarea id="postoFuncionalidades"></textarea></div>
+          </div>
+          <div class="validation" id="postoValidation"></div>
+          <div class="row" style="margin-top:8px;">
+            <button class="primary" type="button" id="btnSalvarPosto">Salvar posto</button>
+            <button class="secondary" type="button" id="btnHistoricoPosto">Histórico</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sub-disponibilidade" class="subtab-panel" role="tabpanel">
+        <div class="section-grid" style="margin-top:10px;">
+          <div class="panel-box">
+            <div class="row-between">
+              <strong>Operadores</strong>
+              <input id="filtroDisponibilidade" class="filter-input" placeholder="Filtrar operador">
+            </div>
+            <div class="table-box" style="max-height:380px;overflow:auto;">
+              <table><thead><tr><th>Nome</th><th>Posto</th><th>Disponibilidade</th></tr></thead><tbody id="tbodyDisponibilidade"></tbody></table>
+            </div>
+          </div>
+          <div class="panel-box">
+            <strong>Registro de disponibilidade</strong>
+            <div class="info-box" style="margin-top:8px;"><div class="small">Operador selecionado</div><div id="dispSelected" style="font-weight:700;margin-top:2px;">—</div></div>
+            <label class="small" style="margin-top:8px;">Status</label>
+            <select id="dispStatus" style="width:100%;margin:6px 0 8px;border-radius:10px;"><option>Disponível</option><option>Folga</option><option>Férias</option><option>Restrição de horário</option><option>Indisponível</option></select>
+            <label class="small">Observação</label>
+            <textarea id="dispObs" placeholder="Observações da disponibilidade"></textarea>
+            <div class="row" style="margin-top:8px;"><button class="primary" type="button">Salvar disponibilidade</button><button class="secondary" type="button">Limpar</button></div>
+
+            <h2 style="margin-top:14px;">Edição de Operador</h2>
+            <div class="row-between">
+              <select id="selectEditOperador" style="min-width:240px;border-radius:10px;"></select>
+              <div class="row">
+                <button class="secondary" type="button" id="btnLoadOperador">Carregar</button>
+                <button class="secondary" type="button" id="btnNovoOperador">Novo</button>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-top:8px;">
+              <div class="field"><label>Nome completo</label><input id="opNome" type="text" /></div>
+              <div class="field"><label>CPF</label><input id="opCpf" type="text" /></div>
+              <div class="field"><label>Cargo</label><input id="opCargo" type="text" /></div>
+              <div class="field"><label>Hierarquia</label><input id="opHierarquia" type="text" /></div>
+              <div class="field"><label>Jornada contratual</label><input id="opJornada" type="text" /></div>
+              <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
+              <div class="field"><label>Preferência de turno</label><input id="opPreferencia" type="text" /></div>
+              <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em férias</option></select></div>
+              <div class="field full"><label>Disponibilidade</label><textarea id="opDisponibilidade"></textarea></div>
+              <div class="field full"><label>Restrições médicas</label><textarea id="opRestricoes"></textarea></div>
+              <div class="field full"><label>Qualificações</label><textarea id="opQualificacoes"></textarea></div>
+              <div class="field full"><label>Férias programadas</label><input id="opFerias" type="text" /></div>
+              <div class="field full"><label>Afastamentos</label><input id="opAfastamentos" type="text" /></div>
+            </div>
+            <div class="validation" id="opValidation"></div>
+            <div class="row" style="margin-top:8px;">
+              <button class="primary" type="button" id="btnSalvarOperador">Salvar operador</button>
+              <button class="secondary" type="button" id="btnHistoricoOperador">Histórico</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sub-trocas" class="subtab-panel" role="tabpanel">
+        <div class="table-box" style="margin-top:10px;">
+          <table><thead><tr><th>Solicitação</th><th>Operador</th><th>Turno</th><th>Status</th><th>Ação</th></tr></thead><tbody id="tbodyTrocas"></tbody></table>
+        </div>
+      </div>
+
+      <div id="sub-historico" class="subtab-panel" role="tabpanel">
+        <div class="table-box" style="margin-top:10px;">
+          <table><thead><tr><th>Data/hora</th><th>Evento</th><th>Responsável</th><th>Detalhe</th></tr></thead><tbody id="tbodyHistorico"></tbody></table>
+        </div>
+        <div class="overlay-section">
+          <h2 style="margin-top:10px;">Configurações globais</h2>
+          <div class="form-grid">
+            <div class="field"><label>Tipo de jornada</label><input type="text" value="Tradicional 8h/44h" /></div>
+            <div class="field"><label>Tipo de turno</label><input type="text" value="Fixo / Alternado / Revezamento" /></div>
+            <div class="field"><label>Regime</label><input type="text" value="12x36 / 5x2 / 6x1" /></div>
+            <div class="field"><label>Adicionais</label><input type="text" value="Noturno / Insalubridade / Periculosidade" /></div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button class="primary" type="button">Salvar configurações</button>
+            <button class="secondary" type="button">Desativar item</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-operadores" class="tab-panel">
+    <section class="card">
+      <h2>Operadores</h2>
+      <div class="row-between">
+        <div class="small">Operadores cadastrados (mock).</div>
+        <input id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula">
+      </div>
+      <div class="table-box" style="max-height:320px;overflow:auto;">
+        <table><thead><tr><th>Nome</th><th>Matrícula</th><th>Usuário</th><th>Posto principal</th><th>Status</th></tr></thead><tbody id="tbodyOperadores"></tbody></table>
+      </div>
+    </section>
+  </section>
+
+  <section id="tab-mensagens" class="tab-panel">
+    <section class="card"><h2>Mensagens</h2><p class="small">Área mock para comunicação futura.</p></section>
   </section>
 </main>
 
 <script>
-  const THEME_KEY = 'sgo_theme_login';
+  const THEME_KEY='sgo_theme_login';
+  const btnTheme=document.getElementById('btnTheme');
+  const themeIcon=document.getElementById('themeIcon');
+  const themeLabel=document.getElementById('themeLabel');
+  const overlayBackdrop=document.getElementById('overlayBackdrop');
+  const overlayContent=document.getElementById('overlayContent');
+  const overlayTitle=document.getElementById('overlayTitle');
+  const overlayDesc=document.getElementById('overlayDesc');
 
-  const btnTheme  = document.getElementById('btnTheme');
-  const themeIcon = document.getElementById('themeIcon');
-  const themeLabel= document.getElementById('themeLabel');
+  const MOCK_POSTOS=[{nome:'Posto Central',cidade:'São Paulo/SP',status:'ATIVO',operadores:18},{nome:'Base Leste',cidade:'São Paulo/SP',status:'ATIVO',operadores:14},{nome:'Posto Norte',cidade:'Guarulhos/SP',status:'ATIVO',operadores:9},{nome:'Base Sul',cidade:'Santo André/SP',status:'INATIVO',operadores:4}];
+  const MOCK_EQUIPES=[{nome:'Equipe Alfa',posto:'Posto Central',turno:'Dia',operadores:9,lider:'Ana Silva'},{nome:'Equipe Bravo',posto:'Posto Central',turno:'Noite',operadores:9,lider:'Bruno Costa'},{nome:'Equipe Leste 01',posto:'Base Leste',turno:'Comercial',operadores:8,lider:'João Pedro'},{nome:'Equipe Leste 02',posto:'Base Leste',turno:'Noite',operadores:6,lider:'Marina Costa'},{nome:'Equipe Norte 01',posto:'Posto Norte',turno:'12x36',operadores:9,lider:'Ursula Mendes'}];
+  const MOCK_OPERADORES=[{nome:'Ana Silva',matricula:'1001',usuario:'ana.silva',posto:'Posto Central',status:'ATIVO'},{nome:'Bruno Costa',matricula:'1002',usuario:'bruno.costa',posto:'Posto Central',status:'ATIVO'},{nome:'Carlos Souza',matricula:'1003',usuario:'carlos.souza',posto:'Posto Central',status:'ATIVO'},{nome:'Diego Martins',matricula:'1004',usuario:'diego.martins',posto:'Posto Central',status:'ATIVO'},{nome:'Eduardo Lima',matricula:'1005',usuario:'edu.lima',posto:'Posto Central',status:'ATIVO'},{nome:'Fernanda Alves',matricula:'1006',usuario:'fernanda.alves',posto:'Posto Central',status:'ATIVO'},{nome:'Gabriel Rocha',matricula:'1007',usuario:'gabriel.rocha',posto:'Posto Central',status:'ATIVO'},{nome:'Helena Prado',matricula:'1008',usuario:'helena.prado',posto:'Posto Central',status:'ATIVO'},{nome:'Igor Moreira',matricula:'1009',usuario:'igor.moreira',posto:'Posto Central',status:'INATIVO'},{nome:'João Pedro',matricula:'1010',usuario:'joao.pedro',posto:'Base Leste',status:'ATIVO'},{nome:'Kelly Santos',matricula:'1011',usuario:'kelly.santos',posto:'Base Leste',status:'ATIVO'},{nome:'Lucas Ferreira',matricula:'1012',usuario:'lucas.ferreira',posto:'Base Leste',status:'ATIVO'},{nome:'Marina Costa',matricula:'1013',usuario:'marina.costa',posto:'Base Leste',status:'ATIVO'},{nome:'Nicolas Moraes',matricula:'1014',usuario:'nicolas.m',posto:'Base Leste',status:'ATIVO'},{nome:'Olivia Andrade',matricula:'1015',usuario:'olivia.a',posto:'Base Leste',status:'ATIVO'},{nome:'Paulo Henrique',matricula:'1016',usuario:'paulo.h',posto:'Base Leste',status:'INATIVO'},{nome:'Rafaela Dias',matricula:'1017',usuario:'rafa.dias',posto:'Base Leste',status:'ATIVO'},{nome:'Samuel Teixeira',matricula:'1018',usuario:'sam.teixeira',posto:'Base Leste',status:'ATIVO'},{nome:'Tatiane Souza',matricula:'1019',usuario:'tati.souza',posto:'Base Leste',status:'INATIVO'},{nome:'Ursula Mendes',matricula:'1020',usuario:'ursula.m',posto:'Posto Norte',status:'ATIVO'},{nome:'Victor Hugo',matricula:'1021',usuario:'victor.h',posto:'Posto Norte',status:'ATIVO'},{nome:'William Santos',matricula:'1022',usuario:'will.santos',posto:'Posto Norte',status:'ATIVO'},{nome:'Xavier Oliveira',matricula:'1023',usuario:'xavier.oli',posto:'Posto Norte',status:'ATIVO'},{nome:'Yasmin Farias',matricula:'1024',usuario:'yasmin.f',posto:'Posto Norte',status:'ATIVO'},{nome:'Zeca Carvalho',matricula:'1025',usuario:'zeca.carv',posto:'Posto Norte',status:'INATIVO'},{nome:'Alberto Nunes',matricula:'1026',usuario:'alberto.n',posto:'Base Sul',status:'INATIVO'},{nome:'Bianca Ribeiro',matricula:'1027',usuario:'bianca.r',posto:'Base Sul',status:'INATIVO'},{nome:'Caio Barbosa',matricula:'1028',usuario:'caio.b',posto:'Base Sul',status:'ATIVO'},{nome:'Daniela Lima',matricula:'1029',usuario:'dani.lima',posto:'Base Sul',status:'INATIVO'}];
+  const MOCK_ESCALAS=[{posto:'Posto Central',mesAno:'06/2026',operadores:18,status:'Publicada',assinatura:'Pendente'},{posto:'Base Leste',mesAno:'06/2026',operadores:14,status:'Rascunho',assinatura:'Pendente'},{posto:'Posto Norte',mesAno:'06/2026',operadores:9,status:'Conflito',assinatura:'—'},{posto:'Base Sul',mesAno:'06/2026',operadores:4,status:'Sem cobertura',assinatura:'Pendente'}];
+  const MOCK_TROCAS=[{sol:'Troca de turno',operador:'Ana Silva',turno:'Dia',status:'Aguardando aprovação'},{sol:'Cobertura de falta',operador:'João Pedro',turno:'Noite',status:'Aguardando aprovação'},{sol:'Oferta de shift',operador:'Victor Hugo',turno:'12x36',status:'Pendente'}];
+  const MOCK_HISTORICO=[{dt:'15/06/2026 08:10',evento:'Escala publicada',resp:'Gestor',det:'Escala do Posto Central publicada com 18 operadores'},{dt:'15/06/2026 09:42',evento:'Troca aprovada',resp:'Gestor',det:'Ana Silva trocou turno com Bruno Costa'},{dt:'15/06/2026 10:05',evento:'Disponibilidade atualizada',resp:'Sistema',det:'João Pedro marcou folga para 18/06'}];
+  const MOCK_DISPONIBILIDADE=[{nome:'Ana Silva',posto:'Posto Central',disp:'Disponível'},{nome:'Bruno Costa',posto:'Posto Central',disp:'Restrição de horário'},{nome:'Carlos Souza',posto:'Posto Central',disp:'Disponível'},{nome:'João Pedro',posto:'Base Leste',disp:'Folga'},{nome:'Marina Costa',posto:'Base Leste',disp:'Disponível'},{nome:'Victor Hugo',posto:'Posto Norte',disp:'Disponível'},{nome:'Zeca Carvalho',posto:'Posto Norte',disp:'Indisponível'}];
+  const planningData=[{day:'Seg',shifts:['07:00 Ana Silva','13:00 Bruno Costa'],status:'confirmed'},{day:'Ter',shifts:['07:00 Carlos Souza','13:00 Diego Martins'],status:'draft'},{day:'Qua',shifts:['07:00 João Pedro','13:00 Kelly Santos'],status:'conflict'},{day:'Qui',shifts:['07:00 Victor Hugo'],status:'confirmed'},{day:'Sex',shifts:['07:00 Yasmin Farias','13:00 Caio Barbosa'],status:'draft'},{day:'Sáb',shifts:['Cobertura aberta'],status:'conflict'},{day:'Dom',shifts:['Folga geral'],status:'pending'}];
+  const planningQueue=['Posto Central: reforçar turno das 13:00','Base Leste: 1 cobertura pendente no noturno','Posto Norte: validar conflito de dupla alocação'];
 
-  function aplicarTemaInicial() {
-    let saved = null;
-    try { saved = localStorage.getItem(THEME_KEY); } catch(e) {}
+  let currentPostoId=0, currentOperadorId=0;
+  const postoModel={nome:'',jornada:'8h',turno:'Diurno',intrajornada:'1h',interjornada:'11h',extras:'2h/dia',banco:'Sim',dsr:'Sim',especial:'',descricao:'',funcionalidades:''};
+  const opModel={nome:'',cpf:'',cargo:'',hierarquia:'',jornada:'Tradicional 8h/44h',turno:'Fixo',preferencia:'Diurno',status:'Ativo',disponibilidade:'',restricoes:'',qualificacoes:'',ferias:'',afastamentos:''};
 
-    if (saved === 'light') {
-      document.body.classList.add('theme-light');
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-    } else {
-      document.body.classList.remove('theme-light');
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    }
+  function badge(status){ const s=(status||'').toLowerCase(); if(s.includes('publicada')||s.includes('confirm')||s==='ativo'||s.includes('dispon')) return '<span class="status-badge active">Ativo</span>'; if(s.includes('rascunho')||s.includes('draft')||s.includes('aguard')||s==='pending') return '<span class="status-badge pending">Pendente</span>'; return '<span class="status-badge inactive">Inativo</span>'; }
+  function applyTheme(){ let saved=null; try{saved=localStorage.getItem(THEME_KEY)}catch(e){}; const light=saved==='light'; document.body.classList.toggle('theme-light', light); themeIcon.textContent=light?'🌙':'☀️'; themeLabel.textContent=light?'Dark':'Light'; document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f3f4f6' : '#020826'); }
+  applyTheme();
+  btnTheme.addEventListener('click',()=>{ const light=document.body.classList.toggle('theme-light'); try{localStorage.setItem(THEME_KEY, light?'light':'dark')}catch(e){} applyTheme(); });
+  document.getElementById('btnSair').addEventListener('click',()=>{ if(confirm('Deseja realmente sair?')) window.location.href='index.html'; });
+  document.getElementById('btnVoltarOperador').addEventListener('click',()=>window.location.href='operador.html');
+
+  const topTabs=document.querySelectorAll('.tab-button'); const tabPanels=document.querySelectorAll('.tab-panel');
+  function setTab(id){ topTabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===id)); tabPanels.forEach(p=>p.classList.toggle('active', p.id===id)); }
+  topTabs.forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+  const subTabs=document.querySelectorAll('.subtab-button'); const subPanels=document.querySelectorAll('.subtab-panel');
+  function setSubTab(id){ subTabs.forEach(b=>b.classList.toggle('active', b.dataset.subtab===id)); subPanels.forEach(p=>p.classList.toggle('active', p.id===id)); }
+  subTabs.forEach(b=>b.addEventListener('click',()=>setSubTab(b.dataset.subtab)));
+
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeOverlay(); });
+  document.getElementById('btnCloseOverlay').addEventListener('click', closeOverlay);
+  overlayBackdrop.addEventListener('click', e=>{ if(e.target===overlayBackdrop) closeOverlay(); });
+  function openOverlay(title, desc, html){ overlayTitle.textContent=title; overlayDesc.textContent=desc; overlayContent.innerHTML=html; overlayBackdrop.classList.add('open'); overlayBackdrop.setAttribute('aria-hidden','false'); }
+  function closeOverlay(){ overlayBackdrop.classList.remove('open'); overlayBackdrop.setAttribute('aria-hidden','true'); overlayContent.innerHTML=''; }
+
+  function atualizarKpis(){ document.getElementById('kpiPostosAtivos').textContent=MOCK_POSTOS.filter(p=>p.status==='ATIVO').length; document.getElementById('kpiPostosTotal').textContent=MOCK_POSTOS.length; document.getElementById('kpiOperadoresAtivos').textContent=MOCK_OPERADORES.filter(o=>o.status==='ATIVO').length; document.getElementById('kpiOperadoresTotal').textContent=MOCK_OPERADORES.length; document.getElementById('kpiEquipesAtivas').textContent=MOCK_EQUIPES.length; document.getElementById('kpiEquipesTotal').textContent=MOCK_EQUIPES.length; document.getElementById('kpiPendencias').textContent=MOCK_TROCAS.length+3; }
+  function renderPostos(list=MOCK_POSTOS){ const tbody=document.getElementById('tbodyPostos'); tbody.innerHTML=''; list.forEach(p=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.postoNome=p.nome; tr.innerHTML=`<td>${p.nome}</td><td>${p.cidade}</td><td>${badge(p.status)}</td><td>${p.operadores}</td>`; tbody.appendChild(tr); }); }
+  function renderEquipes(list=MOCK_EQUIPES){ const tbody=document.getElementById('tbodyEquipes'); tbody.innerHTML=''; list.forEach(e=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.equipeNome=e.nome; tr.innerHTML=`<td>${e.nome}</td><td>${e.posto}</td><td>${e.turno}</td><td>${e.operadores}</td>`; tbody.appendChild(tr); }); }
+  function renderOperadores(list=MOCK_OPERADORES){ const tbody=document.getElementById('tbodyOperadores'); tbody.innerHTML=''; list.forEach(o=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.innerHTML=`<td>${o.nome}</td><td>${o.matricula}</td><td>${o.usuario}</td><td>${o.posto}</td><td>${badge(o.status)}</td>`; tbody.appendChild(tr); }); }
+  function renderEscalas(){ const tbody=document.getElementById('tbodyEscalas'); tbody.innerHTML=''; MOCK_ESCALAS.forEach(e=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.innerHTML=`<td>${e.posto}</td><td>${e.mesAno}</td><td>${e.operadores}</td><td>${badge(e.status)}</td><td>${e.assinatura}</td>`; tbody.appendChild(tr); }); }
+  function renderTrocas(){ const tbody=document.getElementById('tbodyTrocas'); tbody.innerHTML=''; MOCK_TROCAS.forEach(t=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.innerHTML=`<td>${t.sol}</td><td>${t.operador}</td><td>${t.turno}</td><td>${badge('pending')}</td><td><button class="primary" type="button">Aprovar</button> <button class="secondary" type="button">Recusar</button></td>`; tbody.appendChild(tr); }); }
+  function renderHistorico(){ const tbody=document.getElementById('tbodyHistorico'); tbody.innerHTML=''; MOCK_HISTORICO.forEach(h=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${h.dt}</td><td>${h.evento}</td><td>${h.resp}</td><td>${h.det}</td>`; tbody.appendChild(tr); }); }
+  function renderDisponibilidade(list=MOCK_DISPONIBILIDADE){ const tbody=document.getElementById('tbodyDisponibilidade'); tbody.innerHTML=''; list.forEach(d=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.nome=d.nome; tr.innerHTML=`<td>${d.nome}</td><td>${d.posto}</td><td>${badge(d.disp)}</td>`; tbody.appendChild(tr); }); }
+  function renderPlanning(){ const cal=document.getElementById('planningCalendar'); cal.innerHTML=''; planningData.forEach(d=>{ const statusClass=d.status==='confirmed'?'active':d.status==='draft'?'pending':'inactive'; const cell=document.createElement('div'); cell.className='day-cell'; cell.innerHTML=`<div class="day-head">${d.day}</div>${d.shifts.map(s=>`<div class="shift-chip">${s}</div>`).join('')}<div style="margin-top:6px;"><span class="status-badge ${statusClass}">${d.status}</span></div>`; cal.appendChild(cell); }); document.getElementById('planningQueue').innerHTML=planningQueue.map(x=>`<div class="detail-box" style="margin-top:8px;">${x}</div>`).join(''); }
+  function renderEscalaHoje(){ const tbody=document.getElementById('tbodyEscalaHojeGestor'); const hoje=new Date(); const dia=String(hoje.getDate()).padStart(2,'0'); const mes=String(hoje.getMonth()+1).padStart(2,'0'); tbody.innerHTML=`<tr><td>${dia}/${mes}</td><td>Sem registros de status no dispositivo.</td><td>${badge('inactive')}</td></tr>`; }
+
+  function fillSelects(){ const sp=document.getElementById('selectEditPosto'); sp.innerHTML=MOCK_POSTOS.map((p,i)=>`<option value="${i}">${p.nome}</option>`).join(''); const so=document.getElementById('selectEditOperador'); so.innerHTML=MOCK_OPERADORES.map((o,i)=>`<option value="${i}">${o.nome}</option>`).join(''); }
+  function loadPosto(i=0){ currentPostoId=i; const p=MOCK_POSTOS[i]; postoModel.nome=p.nome; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=`Descrição do ${p.nome}`; postoModel.funcionalidades='Controle de acesso, ronda, apontamento de ocorrências'; syncPostoForm(); }
+  function syncPostoForm(){ postoNome.value=postoModel.nome; postoJornada.value=postoModel.jornada; postoTurno.value=postoModel.turno; postoIntrajornada.value=postoModel.intrajornada; postoInterjornada.value=postoModel.interjornada; postoExtras.value=postoModel.extras; postoBanco.value=postoModel.banco; postoDsr.value=postoModel.dsr; postoEspecial.value=postoModel.especial; postoDescricao.value=postoModel.descricao; postoFuncionalidades.value=postoModel.funcionalidades; }
+  function loadOperador(i=0){ currentOperadorId=i; const o=MOCK_OPERADORES[i]; opModel.nome=o.nome; opModel.cpf='123.456.789-00'; opModel.cargo='Operador de Turno'; opModel.hierarquia='Nível 2'; opModel.jornada='Tradicional 8h/44h'; opModel.turno='Fixo'; opModel.preferencia='Diurno'; opModel.status=o.status==='ATIVO'?'Ativo':'Inativo'; opModel.disponibilidade='Seg a Sex 06:00-22:00'; opModel.restricoes='Sem restrição'; opModel.qualificacoes='Controle de acesso, Rádio, Ronda'; opModel.ferias=''; opModel.afastamentos=''; syncOperadorForm(); }
+  function syncOperadorForm(){ opNome.value=opModel.nome; opCpf.value=opModel.cpf; opCargo.value=opModel.cargo; opHierarquia.value=opModel.hierarquia; opJornada.value=opModel.jornada; opTurno.value=opModel.turno; opPreferencia.value=opModel.preferencia; opStatus.value=opModel.status; opDisponibilidade.value=opModel.disponibilidade; opRestricoes.value=opModel.restricoes; opQualificacoes.value=opModel.qualificacoes; opFerias.value=opModel.ferias; opAfastamentos.value=opModel.afastamentos; }
+
+  function validatePosto(){ const errs=[]; const j=parseFloat((postoJornada.value||'').replace(',','.')); if(!isNaN(j) && j>8 && postoEspecial.value.trim()!=='12x36') errs.push('Jornada diária deve ser ≤ 8h, exceto 12×36.'); if((postoInterjornada.value||'').trim() && parseFloat(postoInterjornada.value)<11) errs.push('Intervalo interjornada mínimo de 11h.'); if((postoExtras.value||'').includes('2')===false) {} return errs; }
+  function validateOperador(){ const errs=[]; if(!opNome.value.trim()) errs.push('Nome é obrigatório.'); if(!opCpf.value.trim()) errs.push('CPF é obrigatório.'); return errs; }
+  function showValidation(id, errs){ const el=document.getElementById(id); el.textContent=errs.join(' '); el.classList.toggle('show', !!errs.length); }
+
+  document.getElementById('btnSalvarPosto').addEventListener('click',()=>{ const errs=validatePosto(); showValidation('postoValidation', errs); if(errs.length) return; MOCK_POSTOS[currentPostoId]={...MOCK_POSTOS[currentPostoId], nome:postoNome.value, status:MOCK_POSTOS[currentPostoId].status}; addHistory('Atualização de posto', 'Gestor', `Posto ${postoNome.value} editado.`); alert('Posto salvo no mock.'); });
+  document.getElementById('btnSalvarOperador').addEventListener('click',()=>{ const errs=validateOperador(); showValidation('opValidation', errs); if(errs.length) return; MOCK_OPERADORES[currentOperadorId]={...MOCK_OPERADORES[currentOperadorId], nome:opNome.value, status:opStatus.value==='Ativo'?'ATIVO':'INATIVO'}; addHistory('Atualização de operador', 'Gestor', `Operador ${opNome.value} editado.`); alert('Operador salvo no mock.'); });
+
+  function addHistory(evento, resp, det){ MOCK_HISTORICO.unshift({dt:new Date().toLocaleString('pt-BR'),evento,resp,det}); renderHistorico(); renderEscalaHoje(); }
+  document.getElementById('btnHistoricoPosto').addEventListener('click',()=>setSubTab('sub-historico'));
+  document.getElementById('btnHistoricoOperador').addEventListener('click',()=>setSubTab('sub-historico'));
+  document.getElementById('btnLoadPosto').addEventListener('click',()=>loadPosto(parseInt(selectEditPosto.value||'0',10)));
+  document.getElementById('btnLoadOperador').addEventListener('click',()=>loadOperador(parseInt(selectEditOperador.value||'0',10)));
+  document.getElementById('btnNovoPosto').addEventListener('click',()=>{ currentPostoId=0; loadPosto(0); });
+  document.getElementById('btnNovoOperador').addEventListener('click',()=>{ currentOperadorId=0; loadOperador(0); });
+
+  document.getElementById('tbodyPostos').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.postoNome) openPosto(tr.dataset.postoNome); });
+  document.getElementById('tbodyEquipes').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.equipeNome) openEquipe(tr.dataset.equipeNome); });
+  document.getElementById('tbodyOperadores').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; const mat=tr.children[1]?.textContent.trim(); const op=MOCK_OPERADORES.find(o=>o.matricula===mat); if(op){ setTab('tab-escalas'); setSubTab('sub-disponibilidade'); openPosto(op.posto); setTimeout(()=>openOperadorSession(op.matricula),0); }});
+  document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; const op=MOCK_OPERADORES.find(o=>o.nome===tr.dataset.nome); document.getElementById('dispSelected').textContent=tr.dataset.nome; document.getElementById('dispStatus').value=MOCK_DISPONIBILIDADE.find(d=>d.nome===tr.dataset.nome)?.disp||'Disponível'; document.getElementById('dispObs').value=`Disponibilidade atual de ${tr.dataset.nome}.`; if(op) openOperadorSession(op.matricula); });
+
+  document.getElementById('filtroPostos').addEventListener('input',e=>renderPostos(MOCK_POSTOS.filter(p=>(p.nome+p.cidade).toLowerCase().includes(e.target.value.toLowerCase()))));
+  document.getElementById('filtroEquipes').addEventListener('input',e=>renderEquipes(MOCK_EQUIPES.filter(x=>(x.nome+x.posto+x.turno).toLowerCase().includes(e.target.value.toLowerCase()))));
+  document.getElementById('filtroOperadores').addEventListener('input',e=>renderOperadores(MOCK_OPERADORES.filter(x=>(x.nome+x.matricula+x.posto).toLowerCase().includes(e.target.value.toLowerCase()))));
+  document.getElementById('filtroDisponibilidade').addEventListener('input',e=>renderDisponibilidade(MOCK_DISPONIBILIDADE.filter(x=>(x.nome+x.posto+x.disp).toLowerCase().includes(e.target.value.toLowerCase()))));
+  document.querySelectorAll('.kpi-card[data-goto-tab]').forEach(card=>card.addEventListener('click',()=>setTab(card.dataset.gotoTab)));
+
+  function openPosto(nome){ const posto=MOCK_POSTOS.find(p=>p.nome===nome); if(!posto) return; const equipes=MOCK_EQUIPES.filter(e=>e.posto===nome); const operadores=MOCK_OPERADORES.filter(o=>o.posto===nome); openOverlay(posto.nome, `${posto.cidade} • sessão do posto`, `<div class="detail-box"><div><strong>Status:</strong> ${badge(posto.status)}</div><div><strong>Operadores:</strong> ${posto.operadores}</div></div><div class="overlay-section"><div class="row-between"><strong>Equipes empenhadas</strong></div><div class="table-box">${equipes.length ? equipes.map(e=>`<div style="padding:4px 0;"><strong>${e.nome}</strong> • ${e.turno} • ${e.operadores} operadores</div>`).join('') : '<div class="small">Sem equipes vinculadas.</div>'}</div></div><div class="overlay-section"><div class="row-between"><strong>Operadores do posto</strong><span class="small">Clique para travar a sessão do operador</span></div><div class="table-box"><div class="list-row" style="font-size:11px;color:var(--muted)"><div>Nome</div><div>Status</div></div><div id="postoOps" class="operadores-list" style="max-height:260px"></div></div></div>`); const postoOps=document.getElementById('postoOps'); postoOps.innerHTML=operadores.map(op=>`<div class="list-row" data-mat="${op.matricula}"><div><div><strong>${op.nome}</strong></div><div class="small">Matrícula ${op.matricula} • ${op.usuario}</div></div><div>${badge(op.status)}</div></div>`).join(''); postoOps.querySelectorAll('.list-row').forEach(row=>row.addEventListener('click',()=>openOperadorSession(row.dataset.mat))); }
+  function openOperadorSession(matricula){ const op=MOCK_OPERADORES.find(o=>o.matricula===matricula); if(!op) return; openOverlay(op.nome, `${op.posto} • sessão do operador`, `<div class="detail-box"><div><strong>Matrícula:</strong> ${op.matricula}</div><div><strong>Usuário:</strong> ${op.usuario}</div><div><strong>Posto principal:</strong> ${op.posto}</div><div><strong>Status:</strong> ${badge(op.status)}</div></div><div class="overlay-section"><div class="row-between"><strong>Rotina do mês</strong><button class="secondary" id="btnMoreOp">+ Info</button></div><div id="opMore" style="display:none"><div class="detail-box"><div><strong>Rotinas:</strong></div><ul class="overlay-list"><li>08:00 – conferência inicial da rotina.</li><li>12:00 – apoio operacional no posto.</li><li>18:00 – fechamento e observações do mês.</li></ul><div style="margin-top:8px;"><strong>Observações:</strong></div><ul class="overlay-list"><li>Mantém boa comunicação.</li><li>Alta aderência ao posto.</li><li>Revisar passagens de turno.</li></ul></div></div></div>`); document.getElementById('btnMoreOp').addEventListener('click',()=>{ const box=document.getElementById('opMore'); box.style.display=box.style.display==='none'?'block':'none'; }); }
+  function openEquipe(nome){ const eq=MOCK_EQUIPES.find(e=>e.nome===nome); if(!eq) return; const membros=MOCK_OPERADORES.filter(o=>o.posto===eq.posto); openOverlay(eq.nome, `${eq.posto} • sessão da equipe`, `<div class="detail-box"><div><strong>Líder:</strong> ${eq.lider}</div><div><strong>Posto:</strong> ${eq.posto}</div><div><strong>Turno:</strong> ${eq.turno}</div><div><strong>Operadores previstos:</strong> ${eq.operadores}</div></div><div class="overlay-section"><div class="row-between"><strong>Membros da equipe</strong><button class="secondary" id="btnMoreTeam">+ Info</button></div><div class="table-box" style="max-height:260px;overflow:auto;">${membros.map(m=>`<div class="list-row" data-mat="${m.matricula}"><div><div><strong>${m.nome}</strong></div><div class="small">Matrícula ${m.matricula} • ${m.usuario}</div></div><div>${badge(m.status)}</div></div>`).join('')}</div><div id="teamMore" style="display:none"></div></div>`); document.getElementById('btnMoreTeam').addEventListener('click',()=>{ const box=document.getElementById('teamMore'); if(box.style.display==='none' || !box.style.display){ box.style.display='block'; box.innerHTML=`<div class="detail-box"><div><strong>Rotinas da equipe:</strong></div><ul class="overlay-list"><li>Ronda e verificação de ponto.</li><li>Passagem de turno com checagem de pendências.</li><li>Observação de fluxo e apoio em cobertura.</li></ul><div style="margin-top:8px;"><strong>Observações do mês:</strong></div><ul class="overlay-list"><li>Bom entrosamento operacional.</li><li>Validar escalas de folga antes de publicar.</li><li>Sem ocorrências críticas no período.</li></ul></div>`; } else { box.style.display='none'; box.innerHTML=''; }}); document.querySelectorAll('#overlayContent .list-row').forEach(row=>row.addEventListener('click',()=>openOperadorSession(row.dataset.mat))); }
+
+  function loadUser(){ try{ const raw=localStorage.getItem('sgo_usuario'); if(!raw) return; const u=JSON.parse(raw); document.getElementById('subtitleGestor').textContent=`Gestor logado – ${u.nome || u.username || 'Gestor'}`; }catch(e){} }
+
+  function init(){
+    renderPlanning(); renderPostos(); renderEquipes(); renderOperadores(); renderEscalas(); renderTrocas(); renderHistorico(); renderDisponibilidade(); renderEscalaHoje(); atualizarKpis(); fillSelects(); loadPosto(0); loadOperador(0); loadUser();
   }
-
-  aplicarTemaInicial();
-
-  btnTheme.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('theme-light');
-    try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch(e) {}
-    if (isLight) {
-      themeIcon.textContent = '🌙';
-      themeLabel.textContent = 'Dark';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f3f4f6');
-    } else {
-      themeIcon.textContent = '☀️';
-      themeLabel.textContent = 'Light';
-      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#020826');
-    }
-  });
-
-  // proteção de acesso: só gestor/admin
-  function carregarUsuario() {
-    try {
-      const raw = localStorage.getItem('sgo_usuario');
-      if (!raw) return null;
-      return JSON.parse(raw);
-    } catch(e) { return null; }
-  }
-
-  const usuario = carregarUsuario();
-  if (!usuario) {
-    window.location.href = 'index.html';
-  } else {
-    const roles = usuario.roles || [];
-    const temGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
-
-    if (!temGestor) {
-      // não é gestor/admin: volta para painel principal de operador
-      window.location.href = 'operador.html';
-    } else {
-      const nome = usuario.nome || usuario.username || 'Gestor';
-      document.getElementById('subtitleGestor').textContent =
-        `Gestor logado – ${nome}`;
-    }
-  }
-
-  document.getElementById('btnVoltarOperador').addEventListener('click', () => {
-    window.location.href = 'operador.html';
-  });
+  init();
 </script>
 </body>
 </html>
