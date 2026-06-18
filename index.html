@@ -317,16 +317,6 @@
   const btnEntrar    = document.getElementById('btnEntrar');
   const feedback     = document.getElementById('feedbackLogin');
 
-  const mockUsuarios = [
-    { username: 'user.user',   senha: '123', nome: 'User User',   matricula: '00001', roles: ['OPERADOR'],        postoPrincipal: 'Centro de Cooperação da Cidade' },
-    { username: 'gestor.gestor', senha: '123', nome: 'Gestor Gestor', matricula: '90001', roles: ['GESTOR'],      postoPrincipal: 'Centro de Cooperação da Cidade' },
-    { username: 'admin.admin', senha: '123', nome: 'Admin Admin', matricula: '99999', roles: ['ADMIN','GESTOR'], postoPrincipal: 'Centro de Cooperação da Cidade' }
-  ];
-
-  function autenticarMock(user, senha) {
-    return mockUsuarios.find(u => u.username === user && u.senha === senha) || null;
-  }
-
   btnEntrar.addEventListener('click', () => {
     feedback.textContent = '';
 
@@ -338,48 +328,57 @@
       return;
     }
 
-    const encontrado = autenticarMock(user, senha);
+    btnEntrar.disabled = true;
+    feedback.textContent = 'Autenticando...';
 
-    if (!encontrado) {
-      feedback.textContent = 'Usuário ou senha inválidos (mock).';
-      return;
-    }
+    fetch('api/login.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ usuario: user, senha: senha })
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => { throw new Error(err.erro || 'Erro na autenticação.'); });
+      }
+      return response.json();
+    })
+    .then(data => {
+      try {
+        localStorage.setItem('sgo_auth_token', data.token);
+        localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
+      } catch (e) {}
 
-    try {
-      localStorage.setItem('sgo_auth_token', 'mock-token-' + Date.now());
-      localStorage.setItem('sgo_usuario', JSON.stringify({
-        nome: encontrado.nome,
-        username: encontrado.username,
-        matricula: encontrado.matricula,
-        roles: encontrado.roles,
-        postoPrincipal: encontrado.postoPrincipal
-      }));
-    } catch (e) {}
+      if (navigator.geolocation) {
+        feedback.textContent = 'Capturando localização...';
 
-    if (navigator.geolocation) {
-      feedback.textContent = 'Capturando localização...';
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          try {
-            localStorage.setItem('sgo_geo_pos', JSON.stringify({
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-              ts: Date.now()
-            }));
-          } catch (e) {}
-          feedback.textContent = '';
-          window.location.href = 'operador.html';
-        },
-        () => {
-          feedback.textContent = '';
-          window.location.href = 'operador.html';
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    } else {
-      window.location.href = 'operador.html';
-    }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            try {
+              localStorage.setItem('sgo_geo_pos', JSON.stringify({
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+                ts: Date.now()
+              }));
+            } catch (e) {}
+            feedback.textContent = '';
+            window.location.href = 'operador.html';
+          },
+          () => {
+            feedback.textContent = '';
+            window.location.href = 'operador.html';
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        window.location.href = 'operador.html';
+      }
+    })
+    .catch(err => {
+      btnEntrar.disabled = false;
+      feedback.textContent = err.message;
+    });
   });
 
   inputSenha.addEventListener('keyup', (e) => {

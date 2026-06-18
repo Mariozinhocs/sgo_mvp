@@ -12,7 +12,7 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 ## 2. Tecnologias & Arquitetura
 - **Core**: HTML5 sem frameworks pesados, garantindo carregamento rápido e controle total.
 - **Estilização**: Vanilla CSS puro, estruturado com variáveis customizadas para temas (Light/Dark).
-- **Lógica e Persistência**: JavaScript Vanilla ES6. Armazenamento e estados mockados via `localStorage` (Ex: `sgo_auth_token`, `sgo_usuario`, `sgo_theme_login`, `sgo_geo_pos`).
+- **Lógica e Persistência**: JavaScript Vanilla ES6 no Frontend. Backend intermediário em PHP estruturado em APIs REST JSON, com persistência real em banco de dados **MySQL** via conexão segura PDO.
 - **Capacidades Offline (PWA)**:
   - [manifest.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/manifest.json) configurando o aplicativo para instalação em telas iniciais de celulares/desktops.
   - [service-worker.js](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/service-worker.js) cacheando arquivos essenciais para acesso sem conexão com a internet.
@@ -33,12 +33,26 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
   - **Mensagens**: Interface mockada de comunicações recebidas dos operadores.
 - [users.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/users.json): Configuração inicial de usuários de teste administrativa.
 - [service-worker.js](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/service-worker.js): Registro de service worker e estratégias de cache para modo offline.
+- [database.sql](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/database.sql): Script de modelagem relacional de tabelas e inserção de dados mock iniciais de postos/usuários para o MySQL.
+- [db.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db.php): Inicializador de conexão segura do PHP com o MySQL usando PDO.
+- [db_config.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db_config.php): Credenciais confidenciais do banco de dados (ignorado via Git).
+- [api/login.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/login.php): Endpoint de autenticação dinâmica integrado à tabela `usuarios` do banco de dados.
+- [ftp_config.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/ftp_config.json): Configuração oculta com credenciais do servidor FTP de homologação (ignorado via Git).
+- [deploy-staging.ps1](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/deploy-staging.ps1): Script automatizado no PowerShell para envio em lote de arquivos e pastas recursivas para o servidor via FTP.
 
 ---
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
 ### [2026-06-18]
+- **Automação de Deploy Manual**:
+  - Criado o script [deploy-staging.ps1](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/deploy-staging.ps1) e o arquivo de configuração [ftp_config.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/ftp_config.json) para gerenciar o upload em lote de arquivos para a hospedagem via PowerShell de maneira rápida e segura.
+- **Transição para Banco de Dados Relacional**:
+  - Modelado e estruturado o banco de dados do SGO em [database.sql](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/database.sql).
+  - Implementada a conexão PDO em [db.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db.php) com leitura de credenciais externas e ocultas em [db_config.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db_config.php).
+  - Criado o endpoint de autenticação segura [api/login.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/login.php).
+  - Migrado o login do frontend em [index.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/index.html) para validar as credenciais consultando a API PHP em vez do array mockado local.
+  - Criado o arquivo [.gitignore](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/.gitignore) para proteger as credenciais do banco.
 - **Melhoria Estética (index.html)**:
   - Alterada a cor de destaque do título principal `<h1>Login</h1>` em [index.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/index.html) para o tom de vermelho vibrante `#ef4444`, tornando a identidade visual mais marcante no tema escuro e claro.
 - **Configuração de Ambiente local**:
@@ -60,6 +74,6 @@ Diretrizes fundamentais para este projeto:
 1. Trabalhamos exclusivamente com Vanilla HTML, Vanilla JavaScript e Vanilla CSS para manter a leveza do MVP.
 2. Não utilize frameworks adicionais nem pacotes npm adicionais no frontend sem autorização explícita do usuário.
 3. Respeite as variáveis CSS definidas no :root de cada arquivo HTML para suportar a alternância dinâmica entre tema Light/Dark.
-4. Qualquer dado de novos cadastros de postos, operadores, pontos batidos, ou mensagens deve ser persistido mockado em localStorage ou na memória local de arrays (MOCK_POSTOS, MOCK_OPERADORES, etc.) já presentes nas páginas, simulando o backend.
+4. Conecte novas features dinâmicas a endpoints PHP na pasta `api/` consumindo dados reais do banco MySQL via `db.php`.
 5. Sempre atualize a seção "Histórico de Alterações" do `/project_memory.md` após terminar de alterar códigos.
 ```

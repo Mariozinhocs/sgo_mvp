@@ -1,0 +1,5 @@
+# Credenciais e configurações locais seguras
+db_config.php
+ftp_config.json
+*.log
+.gemini/
