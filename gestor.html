@@ -321,6 +321,11 @@
               <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
               <div class="field"><label>Preferência de turno</label><input id="opPreferencia" type="text" /></div>
               <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em férias</option></select></div>
+              <div class="field"><label>Matrícula</label><input id="opMatricula" type="text" /></div>
+              <div class="field"><label>Usuário (login)</label><input id="opUsuario" type="text" /></div>
+              <div class="field"><label>Senha (inicial ou nova)</label><input id="opSenha" type="password" placeholder="Em branco para não alterar" /></div>
+              <div class="field"><label>Nível de Acesso (Papel)</label><select id="opRoles"><option value="OPERADOR">Operador</option><option value="GESTOR">Gestor</option><option value="ADMIN,GESTOR">Admin + Gestor</option></select></div>
+              <div class="field full"><label>Posto Principal</label><input id="opPostoPrincipal" type="text" value="Centro de Cooperação da Cidade" /></div>
               <div class="field full"><label>Disponibilidade</label><textarea id="opDisponibilidade"></textarea></div>
               <div class="field full"><label>Restrições médicas</label><textarea id="opRestricoes"></textarea></div>
               <div class="field full"><label>Qualificações</label><textarea id="opQualificacoes"></textarea></div>
@@ -440,15 +445,161 @@
   function fillSelects(){ const sp=document.getElementById('selectEditPosto'); sp.innerHTML=MOCK_POSTOS.map((p,i)=>`<option value="${i}">${p.nome}</option>`).join(''); const so=document.getElementById('selectEditOperador'); so.innerHTML=MOCK_OPERADORES.map((o,i)=>`<option value="${i}">${o.nome}</option>`).join(''); }
   function loadPosto(i=0){ currentPostoId=i; const p=MOCK_POSTOS[i]; postoModel.nome=p.nome; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=`Descrição do ${p.nome}`; postoModel.funcionalidades='Controle de acesso, ronda, apontamento de ocorrências'; syncPostoForm(); }
   function syncPostoForm(){ postoNome.value=postoModel.nome; postoJornada.value=postoModel.jornada; postoTurno.value=postoModel.turno; postoIntrajornada.value=postoModel.intrajornada; postoInterjornada.value=postoModel.interjornada; postoExtras.value=postoModel.extras; postoBanco.value=postoModel.banco; postoDsr.value=postoModel.dsr; postoEspecial.value=postoModel.especial; postoDescricao.value=postoModel.descricao; postoFuncionalidades.value=postoModel.funcionalidades; }
-  function loadOperador(i=0){ currentOperadorId=i; const o=MOCK_OPERADORES[i]; opModel.nome=o.nome; opModel.cpf='123.456.789-00'; opModel.cargo='Operador de Turno'; opModel.hierarquia='Nível 2'; opModel.jornada='Tradicional 8h/44h'; opModel.turno='Fixo'; opModel.preferencia='Diurno'; opModel.status=o.status==='ATIVO'?'Ativo':'Inativo'; opModel.disponibilidade='Seg a Sex 06:00-22:00'; opModel.restricoes='Sem restrição'; opModel.qualificacoes='Controle de acesso, Rádio, Ronda'; opModel.ferias=''; opModel.afastamentos=''; syncOperadorForm(); }
-  function syncOperadorForm(){ opNome.value=opModel.nome; opCpf.value=opModel.cpf; opCargo.value=opModel.cargo; opHierarquia.value=opModel.hierarquia; opJornada.value=opModel.jornada; opTurno.value=opModel.turno; opPreferencia.value=opModel.preferencia; opStatus.value=opModel.status; opDisponibilidade.value=opModel.disponibilidade; opRestricoes.value=opModel.restricoes; opQualificacoes.value=opModel.qualificacoes; opFerias.value=opModel.ferias; opAfastamentos.value=opModel.afastamentos; }
+  function buscarOperadoresDoServidor() {
+    fetch('api/obter_operadores.php')
+      .then(r => {
+        if (!r.ok) throw new Error('Falha ao buscar dados.');
+        return r.json();
+      })
+      .then(data => {
+        if (data.sucesso) {
+          MOCK_OPERADORES = data.usuarios.map(u => ({
+            id: u.id,
+            nome: u.nome,
+            matricula: u.matricula,
+            usuario: u.usuario,
+            posto: u.posto_principal || 'Centro de Cooperação da Cidade',
+            status: u.status,
+            roles: u.roles
+          }));
+          
+          MOCK_DISPONIBILIDADE = MOCK_OPERADORES.map(o => ({
+            nome: o.nome,
+            posto: o.posto,
+            disp: o.status === 'ATIVO' ? 'Disponível' : 'Indisponível'
+          }));
+
+          renderOperadores();
+          renderDisponibilidade();
+          fillSelects();
+          atualizarKpis();
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao sincronizar operadores:', err);
+      });
+  }
+
+  function loadOperador(i=0){
+    currentOperadorId=i;
+    const o=MOCK_OPERADORES[i];
+    if(!o) {
+      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
+    } else {
+      opModel.id=o.id;
+      opModel.nome=o.nome;
+      opModel.cpf='123.456.789-00';
+      opModel.cargo='Operador de Turno';
+      opModel.hierarquia='Nível 2';
+      opModel.jornada='Tradicional 8h/44h';
+      opModel.turno='Fixo';
+      opModel.preferencia='Diurno';
+      opModel.status=o.status==='ATIVO'?'Ativo':'Inativo';
+      opModel.disponibilidade='Seg a Sex 06:00-22:00';
+      opModel.restricoes='Sem restrição';
+      opModel.qualificacoes='Controle de acesso, Rádio, Ronda';
+      opModel.ferias='';
+      opModel.afastamentos='';
+      opModel.matricula=o.matricula;
+      opModel.usuario=o.usuario;
+      opModel.senha='';
+      opModel.roles=o.roles || 'OPERADOR';
+      opModel.postoPrincipal=o.posto;
+    }
+    syncOperadorForm();
+  }
+
+  function syncOperadorForm(){
+    opNome.value=opModel.nome;
+    opCpf.value=opModel.cpf;
+    opCargo.value=opModel.cargo;
+    opHierarquia.value=opModel.hierarquia;
+    opJornada.value=opModel.jornada;
+    opTurno.value=opModel.turno;
+    opPreferencia.value=opModel.preferencia;
+    opStatus.value=opModel.status;
+    opDisponibilidade.value=opModel.disponibilidade;
+    opRestricoes.value=opModel.restricoes;
+    opQualificacoes.value=opModel.qualificacoes;
+    opFerias.value=opModel.ferias;
+    opAfastamentos.value=opModel.afastamentos;
+    
+    // Novos campos de segurança/autenticação
+    opMatricula.value=opModel.matricula || '';
+    opUsuario.value=opModel.usuario || '';
+    opSenha.value='';
+    opRoles.value=opModel.roles || 'OPERADOR';
+    opPostoPrincipal.value=opModel.postoPrincipal || 'Centro de Cooperação da Cidade';
+  }
 
   function validatePosto(){ const errs=[]; const j=parseFloat((postoJornada.value||'').replace(',','.')); if(!isNaN(j) && j>8 && postoEspecial.value.trim()!=='12x36') errs.push('Jornada diária deve ser ≤ 8h, exceto 12×36.'); if((postoInterjornada.value||'').trim() && parseFloat(postoInterjornada.value)<11) errs.push('Intervalo interjornada mínimo de 11h.'); if((postoExtras.value||'').includes('2')===false) {} return errs; }
-  function validateOperador(){ const errs=[]; if(!opNome.value.trim()) errs.push('Nome é obrigatório.'); if(!opCpf.value.trim()) errs.push('CPF é obrigatório.'); return errs; }
+  
+  function validateOperador(){
+    const errs=[];
+    if(!opNome.value.trim()) errs.push('Nome é obrigatório.');
+    if(!opCpf.value.trim()) errs.push('CPF é obrigatório.');
+    if(!opMatricula.value.trim()) errs.push('Matrícula é obrigatória.');
+    if(!opUsuario.value.trim()) errs.push('Nome de usuário é obrigatório.');
+    if(!opModel.id && !opSenha.value.trim()) {
+      errs.push('Senha é obrigatória para criar novo usuário.');
+    }
+    return errs;
+  }
+  
   function showValidation(id, errs){ const el=document.getElementById(id); el.textContent=errs.join(' '); el.classList.toggle('show', !!errs.length); }
 
   document.getElementById('btnSalvarPosto').addEventListener('click',()=>{ const errs=validatePosto(); showValidation('postoValidation', errs); if(errs.length) return; MOCK_POSTOS[currentPostoId]={...MOCK_POSTOS[currentPostoId], nome:postoNome.value, status:MOCK_POSTOS[currentPostoId].status}; addHistory('Atualização de posto', 'Gestor', `Posto ${postoNome.value} editado.`); alert('Posto salvo no mock.'); });
-  document.getElementById('btnSalvarOperador').addEventListener('click',()=>{ const errs=validateOperador(); showValidation('opValidation', errs); if(errs.length) return; MOCK_OPERADORES[currentOperadorId]={...MOCK_OPERADORES[currentOperadorId], nome:opNome.value, status:opStatus.value==='Ativo'?'ATIVO':'INATIVO'}; addHistory('Atualização de operador', 'Gestor', `Operador ${opNome.value} editado.`); alert('Operador salvo no mock.'); });
+  
+  document.getElementById('btnSalvarOperador').addEventListener('click',()=>{
+    const errs=validateOperador();
+    showValidation('opValidation', errs);
+    if(errs.length) return;
+
+    const btn = document.getElementById('btnSalvarOperador');
+    btn.disabled = true;
+
+    const payload = {
+      id: opModel.id || null,
+      nome: opNome.value.trim(),
+      cpf: opCpf.value.trim(),
+      cargo: opCargo.value.trim(),
+      hierarquia: opHierarquia.value.trim(),
+      jornada: opJornada.value.trim(),
+      turno: opTurno.value,
+      preferencia: opPreferencia.value.trim(),
+      status: opStatus.value === 'Ativo' ? 'ATIVO' : 'INATIVO',
+      matricula: opMatricula.value.trim(),
+      usuario: opUsuario.value.trim(),
+      senha: opSenha.value.trim(),
+      roles: opRoles.value,
+      postoPrincipal: opPostoPrincipal.value.trim()
+    };
+
+    fetch('api/salvar_operador.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(r => {
+      if (!r.ok) {
+        return r.json().then(err => { throw new Error(err.erro || 'Erro ao salvar.'); });
+      }
+      return r.json();
+    })
+    .then(data => {
+      btn.disabled = false;
+      alert(data.mensagem);
+      addHistory(payload.id ? 'Atualização de operador' : 'Cadastro de operador', 'Gestor', `Operador ${payload.nome} salvo.`);
+      opSenha.value = '';
+      buscarOperadoresDoServidor();
+    })
+    .catch(err => {
+      btn.disabled = false;
+      alert('Erro: ' + err.message);
+    });
+  });
 
   function addHistory(evento, resp, det){ MOCK_HISTORICO.unshift({dt:new Date().toLocaleString('pt-BR'),evento,resp,det}); renderHistorico(); renderEscalaHoje(); }
   document.getElementById('btnHistoricoPosto').addEventListener('click',()=>setSubTab('sub-historico'));
@@ -456,7 +607,10 @@
   document.getElementById('btnLoadPosto').addEventListener('click',()=>loadPosto(parseInt(selectEditPosto.value||'0',10)));
   document.getElementById('btnLoadOperador').addEventListener('click',()=>loadOperador(parseInt(selectEditOperador.value||'0',10)));
   document.getElementById('btnNovoPosto').addEventListener('click',()=>{ currentPostoId=0; loadPosto(0); });
-  document.getElementById('btnNovoOperador').addEventListener('click',()=>{ currentOperadorId=0; loadOperador(0); });
+  document.getElementById('btnNovoOperador').addEventListener('click',()=>{
+    opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
+    syncOperadorForm();
+  });
 
   document.getElementById('tbodyPostos').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.postoNome) openPosto(tr.dataset.postoNome); });
   document.getElementById('tbodyEquipes').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.equipeNome) openEquipe(tr.dataset.equipeNome); });
@@ -477,6 +631,7 @@
 
   function init(){
     renderPlanning(); renderPostos(); renderEquipes(); renderOperadores(); renderEscalas(); renderTrocas(); renderHistorico(); renderDisponibilidade(); renderEscalaHoje(); atualizarKpis(); fillSelects(); loadPosto(0); loadOperador(0); loadUser();
+    buscarOperadoresDoServidor();
   }
   init();
 </script>

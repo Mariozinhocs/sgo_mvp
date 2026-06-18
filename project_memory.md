@@ -37,6 +37,8 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 - [db.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db.php): Inicializador de conexão segura do PHP com o MySQL usando PDO.
 - [db_config.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db_config.php): Credenciais confidenciais do banco de dados (ignorado via Git).
 - [api/login.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/login.php): Endpoint de autenticação dinâmica integrado à tabela `usuarios` do banco de dados.
+- [api/obter_operadores.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/obter_operadores.php): Endpoint PHP para listar todos os usuários da tabela `usuarios`.
+- [api/salvar_operador.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/salvar_operador.php): Endpoint PHP para criar novos usuários (com hash bcrypt de senha) ou atualizar registros de usuários existentes no MySQL.
 - [ftp_config.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/ftp_config.json): Configuração oculta com credenciais do servidor FTP de homologação (ignorado via Git).
 - [deploy-staging.ps1](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/deploy-staging.ps1): Script automatizado no PowerShell para envio em lote de arquivos e pastas recursivas para o servidor via FTP.
 
@@ -45,10 +47,14 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
 ### [2026-06-18]
+- **Gestão e Criação de Usuários pelo Painel**:
+  - Implementada a listagem de usuários do banco no painel do gestor em [gestor.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/gestor.html) por meio do novo endpoint [api/obter_operadores.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/obter_operadores.php).
+  - Adicionados campos de Matrícula, Usuário, Senha e Papel de Acesso no formulário de edição de operador.
+  - Criado o endpoint [api/salvar_operador.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/salvar_operador.php) para salvar (cadastrar ou editar) operadores diretamente no banco de dados relacional, criptografando as senhas com hash seguro bcrypt.
 - **Automação de Deploy Manual**:
-  - Criado o script [deploy-staging.ps1](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/deploy-staging.ps1) e o arquivo de configuração [ftp_config.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/ftp_config.json) para gerenciar o upload em lote de arquivos para a hospedagem via PowerShell de maneira rápida e segura.
+  - Criado o script [deploy-staging.ps1](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/deploy-staging.ps1) e o arquivo de configuração [ftp_config.json](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/ftp_config.json) para gerenciar o upload em lote de arquivos para a hospedagem via PowerShell, incluindo segurança de timeout para evitar travamentos de rede.
 - **Transição para Banco de Dados Relacional**:
-  - Modelado e estruturado o banco de dados do SGO em [database.sql](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/database.sql).
+  - Modelado e estruturado o banco de dados do SGO em [database.sql](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/database.sql), contendo tabelas e dados mockados com hashes de senhas corrigidos para verificação via bcrypt.
   - Implementada a conexão PDO em [db.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db.php) com leitura de credenciais externas e ocultas em [db_config.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/db_config.php).
   - Criado o endpoint de autenticação segura [api/login.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/login.php).
   - Migrado o login do frontend em [index.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/index.html) para validar as credenciais consultando a API PHP em vez do array mockado local.

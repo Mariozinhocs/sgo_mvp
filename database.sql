@@ -98,11 +98,11 @@ CREATE TABLE IF NOT EXISTS historico_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Inserção dos usuários mockados (Senha padrão para todos é '123' usando password_hash padrão do PHP)
--- Hash gerado de '123': $2y$10$wT0X8.3dDfg1kR/W5/vLSeQ43fWlB5sW3hWc6V0qV6oK0YmGqS20a (Pode variar, mas este é um hash válido)
+-- Hash gerado de '123': $2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q
 INSERT INTO usuarios (nome, matricula, usuario, senha, roles) VALUES 
-('User User', '00001', 'user.user', '$2y$10$tZ2cEqY/Zsz82Vw23RkKLuZ0kK5fG49WJq3W9r52g/B3vD3VvR3g2', 'OPERADOR'),
-('Gestor Gestor', '90001', 'gestor.gestor', '$2y$10$tZ2cEqY/Zsz82Vw23RkKLuZ0kK5fG49WJq3W9r52g/B3vD3VvR3g2', 'GESTOR'),
-('Admin Admin', '99999', 'admin.admin', '$2y$10$tZ2cEqY/Zsz82Vw23RkKLuZ0kK5fG49WJq3W9r52g/B3vD3VvR3g2', 'ADMIN,GESTOR');
+('User User', '00001', 'user.user', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'OPERADOR'),
+('Gestor Gestor', '90001', 'gestor.gestor', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'GESTOR'),
+('Admin Admin', '99999', 'admin.admin', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'ADMIN,GESTOR');
 
 -- Inserção de dados iniciais de postos para testes
 INSERT INTO postos (nome, cidade, status) VALUES

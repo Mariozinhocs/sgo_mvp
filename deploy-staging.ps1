@@ -58,6 +58,7 @@ function Create-RemoteDirectory {
     )
     try {
         $request = [System.Net.FtpWebRequest]::Create($uri)
+        $request.Timeout = 15000 # 15 segundos de timeout
         $request.Credentials = New-Object System.Net.NetworkCredential($user, $pass)
         $request.Method = [System.Net.WebRequestMethods+Ftp]::MakeDirectory
         $response = $request.GetResponse()
@@ -96,6 +97,7 @@ foreach ($file in $files) {
     Write-Host "Enviando: $relativePath -> $remoteUri" -ForegroundColor White
     try {
         $request = [System.Net.FtpWebRequest]::Create($remoteUri)
+        $request.Timeout = 30000 # 30 segundos de timeout
         $request.Credentials = New-Object System.Net.NetworkCredential($ftpUser, $ftpPass)
         $request.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
         $request.UseBinary = $true
