@@ -47,6 +47,9 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
 ### [2026-06-18]
+- **Correção de Segurança e Usabilidade no Logout**:
+  - Adicionada verificação de privilégios (`roles`) na função `loadUser` em [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html). Operadores comuns tentando acessar o painel de gestão diretamente via URL são bloqueados e redirecionados para a tela de login.
+  - Removido o diálogo `confirm()` nativo no evento de logout (`btnSair`) em [operador.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/operador.html) e [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html). O logout agora limpa as credenciais do `localStorage` (`sgo_auth_token` e `sgo_usuario`) e redireciona de forma instantânea e robusta, evitando bloqueios de pop-up do navegador.
 - **Gestão e Criação de Usuários pelo Painel**:
   - Implementada a listagem de usuários do banco no painel do gestor em [gestor.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/gestor.html) por meio do novo endpoint [api/obter_operadores.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/obter_operadores.php).
   - Adicionados campos de Matrícula, Usuário, Senha e Papel de Acesso no formulário de edição de operador.

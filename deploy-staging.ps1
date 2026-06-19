@@ -112,7 +112,7 @@ foreach ($file in $files) {
         $response = $request.GetResponse()
         $response.Close()
     } catch {
-        Write-Error "Falha ao enviar arquivo $relativePath: $_"
+        Write-Error "Falha ao enviar arquivo $($relativePath) - $_"
     }
 }
 

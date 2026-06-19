@@ -858,11 +858,9 @@
   }
 
   document.getElementById('btnSair').addEventListener('click', () => {
-    if (confirm('Deseja realmente sair?')) {
-      localStorage.removeItem('sgo_auth_token');
-      localStorage.removeItem('sgo_usuario');
-      window.location.href = 'index.html';
-    }
+    localStorage.removeItem('sgo_auth_token');
+    localStorage.removeItem('sgo_usuario');
+    window.location.href = 'index.html';
   });
 
   (function carregarGeoPosLogin() {
