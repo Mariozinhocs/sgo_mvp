@@ -56,6 +56,8 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 - **Melhorias no Script de Deploy (deploy-staging.ps1)**:
   - Adicionado o parâmetro `-OnlyChanged` que permite implantar apenas arquivos modificados/adicionados no repositório git (detectando alterações locais, arquivos não rastreados e commits não enviados/últimos commits).
   - Corrigido o bug na regex de `ignoredPatterns` que causava o envio incorreto de arquivos ignorados (como `project_memory.md` e `ftp_config.json`).
+- **Ajuste de Validação de CPF**:
+  - Desativada temporariamente a obrigatoriedade do campo CPF no formulário de operadores para agilizar o processo de homologação.
 
 ### [2026-06-19]
 - **Edição em Lote de Operadores (Batch Bulk Edits)**:
@@ -123,4 +125,5 @@ Diretrizes fundamentais para este projeto:
 3. Respeite as variáveis CSS definidas no :root de cada arquivo HTML para suportar a alternância dinâmica entre tema Light/Dark.
 4. Conecte novas features dinâmicas a endpoints PHP na pasta `api/` consumindo dados reais do banco MySQL via `db.php`.
 5. Sempre atualize a seção "Histórico de Alterações" do `/project_memory.md` após terminar de alterar códigos.
+6. Ao fazer deploy para hospedagem (staging), utilize sempre o script seletivo (`.\deploy-staging.ps1 -OnlyChanged`) para enviar apenas os arquivos alterados e economizar banda/recursos.
 ```
