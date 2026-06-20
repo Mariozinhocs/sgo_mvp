@@ -47,6 +47,12 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
 ### [2026-06-20]
+- **Visualização de Perfil e Histórico de Carreira**:
+  - Implementado o modal de visualização de perfil (`modalVisualizarPerfil`) com abas para dados gerais do operador e histórico de carreira.
+  - Desenvolvida a lógica de geração de linha do tempo de carreira (`gerarLinhaDoTempoCarreira`) de forma dinâmica e determinística com base nos dados do operador (data de admissão calculada a partir da matrícula, treinamentos, qualificações registradas e períodos de férias).
+  - Adicionado o botão "Visualizar" ao lado do botão "Editar" nos resultados da busca do modal de consulta de operadores.
+- **Correção de Camadas (Z-Index) da Barra de Ações em Lote**:
+  - Relocado o elemento HTML da barra de ações em lote (`batchEditBar`) para o final da tag `<body>` e configurado seu `z-index` para `30000` para garantir que fique sobreposto ao modal de lista completa e seja interativo.
 - **Reestruturação da Tela de Operadores no Painel do Gestor**:
   - Removido a exibição direta da tabela de operadores no painel do gestor e implementado um menu ("cardápio") contendo três botões quadrados principais: **Cadastrar Operador**, **Consultar Operador** e **Lista Completa**.
   - Criado três novos modais de sobreposição (`modalCadastroEdicao`, `modalConsultar` e `modalListaCompleta`) integrados ao sistema de sobreposição e com suporte ao tema claro/escuro.

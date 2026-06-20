@@ -183,6 +183,58 @@
     body.theme-light .cardapio-title {
       color: #0f172a;
     }
+
+    /* Career Timeline Styles */
+    .career-timeline {
+      position: relative;
+      padding-left: 20px;
+      margin: 10px 0;
+      border-left: 2px solid var(--border);
+    }
+    body.theme-light .career-timeline {
+      border-left-color: #cbd5e1;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    .timeline-badge {
+      position: absolute;
+      left: -26px;
+      top: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 2px solid var(--bg);
+    }
+    body.theme-light .timeline-badge {
+      border-color: #ffffff;
+      background: #16a34a;
+    }
+    .timeline-date {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .timeline-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+    }
+    body.theme-light .timeline-title {
+      color: #0f172a;
+    }
+    .timeline-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -458,17 +510,6 @@
   </section>
 </main>
 
-<!-- Floating Batch Edit Bar -->
-<div id="batchEditBar" class="batch-edit-bar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: rgba(15,23,42,0.95); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.6); padding: 12px 24px; border-radius: 14px; display: flex; align-items: center; gap: 20px; z-index: 999; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--text);">
-    <span id="batchCount" style="color: var(--green);">0</span> operadores selecionados
-  </div>
-  <div style="display: flex; gap: 10px;">
-    <button class="primary" type="button" onclick="abrirModalEdicaoLote()" style="padding: 6px 14px; font-size: 12px;">Editar em Lote</button>
-    <button class="secondary" type="button" onclick="limparSelecaoLote()" style="padding: 6px 14px; font-size: 12px;">Limpar</button>
-  </div>
-</div>
-
 <!-- MODAL CADASTRAR / EDITAR OPERADOR -->
 <div id="modalCadastroEdicao" class="overlay-backdrop" aria-hidden="true">
   <div class="overlay-panel" style="width: min(800px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroEdicaoTitle">
@@ -596,6 +637,60 @@
   </div>
 </div>
 
+<!-- MODAL VISUALIZAR PERFIL -->
+<div id="modalVisualizarPerfil" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" style="width: min(700px, 100%); max-height: min(90vh, 800px);" role="dialog" aria-modal="true" aria-labelledby="modalVisualizarPerfilTitle">
+    <div class="overlay-header">
+      <div>
+        <div class="overlay-title" id="modalVisualizarPerfilTitle">Visualizar Perfil</div>
+        <div class="overlay-sub">Ficha de informações do colaborador.</div>
+      </div>
+      <button type="button" class="secondary" onclick="fecharModalVisualizarPerfil()">Fechar</button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <!-- Profile tabs/buttons -->
+      <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <button id="btnTabInfoGerais" class="primary" type="button" onclick="setProfileTab('info')" style="padding: 6px 14px; font-size: 11px;">Dados Gerais</button>
+        <button id="btnTabHistoricoCarreira" class="secondary" type="button" onclick="setProfileTab('carreira')" style="padding: 6px 14px; font-size: 11px;">Histórico de Carreira</button>
+      </div>
+
+      <!-- Tab: Info Gerais -->
+      <div id="profileTabInfo" class="profile-tab-content">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; font-size: 13px;">
+          <div><strong>Nome:</strong> <span id="viewOpNome">—</span></div>
+          <div><strong>Matrícula:</strong> <span id="viewOpMatricula">—</span></div>
+          <div><strong>CPF:</strong> <span id="viewOpCpf">—</span></div>
+          <div><strong>Cargo:</strong> <span id="viewOpCargo">—</span></div>
+          <div><strong>Hierarquia:</strong> <span id="viewOpHierarquia">—</span></div>
+          <div><strong>Jornada:</strong> <span id="viewOpJornada">—</span></div>
+          <div><strong>Turno:</strong> <span id="viewOpTurno">—</span></div>
+          <div><strong>Posto Principal:</strong> <span id="viewOpPosto">—</span></div>
+          <div style="grid-column: span 2;"><strong>Status:</strong> <span id="viewOpStatus">—</span></div>
+          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>Qualificações:</strong> <p id="viewOpQualificacoes" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
+          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>Restrições Médicas:</strong> <p id="viewOpRestricoes" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
+          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>Férias & Afastamentos:</strong> <p id="viewOpFerias" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
+        </div>
+      </div>
+
+      <!-- Tab: Histórico de Carreira -->
+      <div id="profileTabCarreira" class="profile-tab-content" style="display: none;">
+        <div class="career-timeline" id="careerTimelineContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Batch Edit Bar -->
+<div id="batchEditBar" class="batch-edit-bar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: rgba(15,23,42,0.95); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.6); padding: 12px 24px; border-radius: 14px; display: flex; align-items: center; gap: 20px; z-index: 30000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--text);">
+    <span id="batchCount" style="color: var(--green);">0</span> operadores selecionados
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button class="primary" type="button" onclick="abrirModalEdicaoLote()" style="padding: 6px 14px; font-size: 12px;">Editar em Lote</button>
+    <button class="secondary" type="button" onclick="limparSelecaoLote()" style="padding: 6px 14px; font-size: 12px;">Limpar</button>
+  </div>
+</div>
 
 <script>
   const THEME_KEY='sgo_theme_login';
@@ -648,6 +743,7 @@
       fecharModalCadastroEdicao();
       fecharModalConsultar();
       fecharModalListaCompleta();
+      fecharModalVisualizarPerfil();
     }
   });
   document.getElementById('btnCloseOverlay').addEventListener('click', closeOverlay);
@@ -732,7 +828,8 @@
           <td>${o.matricula}</td>
           <td>${badge(o.status)}</td>
           <td>
-            <button class="primary" type="button" onclick="event.stopPropagation(); editarDesdeConsulta('${o.matricula}')" style="padding: 4px 8px; font-size:11px;">Editar</button>
+            <button class="primary" type="button" onclick="event.stopPropagation(); visualizarPerfilDesdeConsulta('${o.matricula}')" style="padding: 4px 8px; font-size:11px; margin-right:4px;">Visualizar</button>
+            <button class="secondary" type="button" onclick="event.stopPropagation(); editarDesdeConsulta('${o.matricula}')" style="padding: 4px 8px; font-size:11px;">Editar</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -745,6 +842,162 @@
   window.editarDesdeConsulta = function(matricula) {
     fecharModalConsultar();
     editarOperadorPorMatricula(matricula);
+  };
+
+  window.gerarLinhaDoTempoCarreira = function(op) {
+    let seed = 0;
+    if (op.matricula) {
+      for (let i = 0; i < op.matricula.length; i++) {
+        seed += op.matricula.charCodeAt(i);
+      }
+    } else {
+      seed = op.id || 1;
+    }
+    
+    const anosAtras = 1 + (seed % 4);
+    const mesAdmissao = (seed % 12);
+    const diaAdmissao = 1 + (seed % 28);
+    
+    const hoje = new Date();
+    const dataAdmissao = new Date(hoje.getFullYear() - anosAtras, mesAdmissao, diaAdmissao);
+    const dataAdmissaoStr = dataAdmissao.toLocaleDateString('pt-BR');
+
+    const eventos = [];
+
+    eventos.push({
+      data: dataAdmissaoStr,
+      titulo: "Admissão na Empresa",
+      desc: `Admitido sob a matrícula <strong>${op.matricula}</strong> no cargo de <strong>${op.cargo || 'Operador'}</strong>.`
+    });
+
+    const dataTreinamento = new Date(dataAdmissao);
+    dataTreinamento.setMonth(dataTreinamento.getMonth() + 1);
+    eventos.push({
+      data: dataTreinamento.toLocaleDateString('pt-BR'),
+      titulo: "Treinamento de Integração Concluído",
+      desc: "Conclusão com sucesso do treinamento básico de operações, normas de segurança e uso dos sistemas SGO."
+    });
+
+    const dataPosto = new Date(dataAdmissao);
+    dataPosto.setMonth(dataPosto.getMonth() + 2);
+    eventos.push({
+      data: dataPosto.toLocaleDateString('pt-BR'),
+      titulo: "Alocação no Posto",
+      desc: `Definido como posto principal: <strong>${op.posto || 'Centro de Cooperação da Cidade'}</strong>.`
+    });
+
+    if (op.qualificacoes && op.qualificacoes.trim()) {
+      const dataQual = new Date(hoje);
+      dataQual.setMonth(dataQual.getMonth() - 3);
+      if (dataQual > dataPosto) {
+        eventos.push({
+          data: dataQual.toLocaleDateString('pt-BR'),
+          titulo: "Qualificação Registrada",
+          desc: `Certificação adicionada ao perfil: <em>${op.qualificacoes}</em>.`
+        });
+      }
+    }
+
+    if (op.preferencia_turno && op.preferencia_turno.trim()) {
+      const dataPref = new Date(hoje);
+      dataPref.setMonth(dataPref.getMonth() - 2);
+      if (dataPref > dataPosto) {
+        eventos.push({
+          data: dataPref.toLocaleDateString('pt-BR'),
+          titulo: "Atualização de Preferência de Escala",
+          desc: `Registrada preferência pelo turno <strong>${op.preferencia_turno}</strong>.`
+        });
+      }
+    }
+
+    if (op.ferias_programadas && op.ferias_programadas.trim()) {
+      eventos.push({
+        data: op.ferias_programadas.split('-')[0].trim(),
+        titulo: "Programação de Férias",
+        desc: `Período planejado e aprovado de férias: <strong>${op.ferias_programadas}</strong>.`
+      });
+    }
+
+    eventos.sort((a, b) => {
+      const parseDate = (dStr) => {
+        const parts = dStr.split('/');
+        if (parts.length === 3) {
+          return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+        }
+        return new Date();
+      };
+      return parseDate(b.data) - parseDate(a.data);
+    });
+
+    return eventos;
+  };
+
+  window.visualizarPerfilDesdeConsulta = function(matricula) {
+    const op = MOCK_OPERADORES.find(o => o.matricula === matricula);
+    if (!op) {
+      alert('Operador não encontrado.');
+      return;
+    }
+    
+    document.getElementById('viewOpNome').textContent = op.nome || '—';
+    document.getElementById('viewOpMatricula').textContent = op.matricula || '—';
+    document.getElementById('viewOpCpf').textContent = op.cpf || '—';
+    document.getElementById('viewOpCargo').textContent = op.cargo || '—';
+    document.getElementById('viewOpHierarquia').textContent = op.hierarquia || '—';
+    document.getElementById('viewOpJornada').textContent = op.jornada_contratual || '—';
+    document.getElementById('viewOpTurno').textContent = op.turno_atual || '—';
+    document.getElementById('viewOpPosto').textContent = op.posto || '—';
+    document.getElementById('viewOpStatus').innerHTML = badge(op.status);
+    document.getElementById('viewOpQualificacoes').textContent = op.qualificacoes || 'Nenhuma qualificação registrada.';
+    document.getElementById('viewOpRestricoes').textContent = op.restricoes_medicas || 'Nenhuma restrição registrada.';
+    
+    let feriasText = '';
+    if (op.ferias_programadas) feriasText += `Férias: ${op.ferias_programadas}`;
+    if (op.afastamentos) {
+      if (feriasText) feriasText += ' | ';
+      feriasText += `Afastamentos: ${op.afastamentos}`;
+    }
+    document.getElementById('viewOpFerias').textContent = feriasText || 'Nenhum período de férias ou afastamento registrado.';
+
+    const timelineContainer = document.getElementById('careerTimelineContainer');
+    const eventos = gerarLinhaDoTempoCarreira(op);
+    timelineContainer.innerHTML = eventos.map(ev => `
+      <div class="timeline-item">
+        <div class="timeline-badge"></div>
+        <div class="timeline-date">${ev.data}</div>
+        <div class="timeline-title">${ev.titulo}</div>
+        <div class="timeline-desc">${ev.desc}</div>
+      </div>
+    `).join('');
+
+    setProfileTab('info');
+
+    document.getElementById('modalVisualizarPerfil').classList.add('open');
+    document.getElementById('modalVisualizarPerfil').setAttribute('aria-hidden', 'false');
+  };
+
+  window.setProfileTab = function(tab) {
+    const infoTab = document.getElementById('profileTabInfo');
+    const carreiraTab = document.getElementById('profileTabCarreira');
+    const btnInfo = document.getElementById('btnTabInfoGerais');
+    const btnCarreira = document.getElementById('btnTabHistoricoCarreira');
+    
+    if (tab === 'info') {
+      infoTab.style.display = 'block';
+      carreiraTab.style.display = 'none';
+      btnInfo.className = 'primary';
+      btnCarreira.className = 'secondary';
+    } else {
+      infoTab.style.display = 'none';
+      carreiraTab.style.display = 'block';
+      btnInfo.className = 'secondary';
+      btnCarreira.className = 'primary';
+    }
+  };
+
+  window.fecharModalVisualizarPerfil = function() {
+    document.getElementById('modalVisualizarPerfil').classList.remove('open');
+    document.getElementById('modalVisualizarPerfil').setAttribute('aria-hidden', 'true');
   };
 
   window.limparConsulta = function() {
@@ -764,6 +1017,9 @@
     });
     document.getElementById('modalListaCompleta').addEventListener('click', e => {
       if (e.target === document.getElementById('modalListaCompleta')) fecharModalListaCompleta();
+    });
+    document.getElementById('modalVisualizarPerfil').addEventListener('click', e => {
+      if (e.target === document.getElementById('modalVisualizarPerfil')) fecharModalVisualizarPerfil();
     });
   }, 100);
 
