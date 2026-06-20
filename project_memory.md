@@ -51,6 +51,7 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
   - Implementado o modal de visualização de perfil (`modalVisualizarPerfil`) com abas para dados gerais do operador e histórico de carreira.
   - Desenvolvida a lógica de geração de linha do tempo de carreira (`gerarLinhaDoTempoCarreira`) de forma dinâmica e determinística com base nos dados do operador (data de admissão calculada a partir da matrícula, treinamentos, qualificações registradas e períodos de férias).
   - Adicionado o botão "Visualizar" ao lado do botão "Editar" nos resultados da busca do modal de consulta de operadores.
+  - Alterado o evento de clique na linha da tabela de operadores (`tbodyOperadores`) na lista completa para abrir diretamente o perfil em modo somente visualização (`visualizarPerfilDesdeConsulta`), enquanto o botão "Editar" de cada linha permanece de forma exclusiva abrindo a edição do cadastro.
 - **Correção de Camadas (Z-Index) da Barra de Ações em Lote**:
   - Relocado o elemento HTML da barra de ações em lote (`batchEditBar`) para o final da tag `<body>` e configurado seu `z-index` para `30000` para garantir que fique sobreposto ao modal de lista completa e seja interativo.
 - **Reestruturação da Tela de Operadores no Painel do Gestor**:

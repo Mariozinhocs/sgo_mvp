@@ -1859,12 +1859,8 @@
     const tr=e.target.closest('tr');
     if(!tr) return;
     const mat=tr.children[2]?.textContent.trim();
-    const op=MOCK_OPERADORES.find(o=>o.matricula===mat);
-    if(op){
-      setTab('tab-escalas');
-      setSubTab('sub-disponibilidade');
-      openPosto(op.posto);
-      setTimeout(()=>openOperadorSession(op.matricula),0);
+    if(mat){
+      visualizarPerfilDesdeConsulta(mat);
     }
   });
   document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; const op=MOCK_OPERADORES.find(o=>o.nome===tr.dataset.nome); document.getElementById('dispSelected').textContent=tr.dataset.nome; document.getElementById('dispStatus').value=MOCK_DISPONIBILIDADE.find(d=>d.nome===tr.dataset.nome)?.disp||'Disponível'; document.getElementById('dispObs').value=`Disponibilidade atual de ${tr.dataset.nome}.`; if(op) openOperadorSession(op.matricula); });
