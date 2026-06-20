@@ -120,6 +120,69 @@
     .history-item:last-child{border-bottom:none}
     .tabs-inline{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
     .tabs-inline button{padding:6px 10px;font-size:11px}
+
+    /* Cardápio de Operadores Styles */
+    .cardapio-operadores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+    }
+    .cardapio-card {
+      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.85));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 35px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+    .cardapio-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--green);
+      box-shadow: 0 12px 28px rgba(34, 197, 94, 0.15);
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
+    }
+    .cardapio-icon {
+      font-size: 42px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 2px 8px rgba(34, 197, 94, 0.25));
+      transition: transform 0.3s ease;
+    }
+    .cardapio-card:hover .cardapio-icon {
+      transform: scale(1.12);
+    }
+    .cardapio-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .cardapio-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Light Theme Support for Cardapio */
+    body.theme-light .cardapio-card {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+    }
+    body.theme-light .cardapio-card:hover {
+      border-color: #16a34a;
+      box-shadow: 0 10px 20px rgba(22, 163, 74, 0.1);
+      background: #f8fafc;
+    }
+    body.theme-light .cardapio-title {
+      color: #0f172a;
+    }
   </style>
 </head>
 <body>
@@ -328,39 +391,11 @@
             <textarea id="dispObs" placeholder="Observações da disponibilidade"></textarea>
             <div class="row" style="margin-top:8px;"><button class="primary" type="button">Salvar disponibilidade</button><button class="secondary" type="button">Limpar</button></div>
 
-            <h2 style="margin-top:14px;">Edição de Operador</h2>
-            <div class="row-between">
-              <input type="text" id="inputEditOperador" list="datalistOperadores" placeholder="Pesquise o operador..." style="min-width:240px;border-radius:10px;" />
-              <datalist id="datalistOperadores"></datalist>
-              <div class="row">
-                <button class="secondary" type="button" id="btnLoadOperador">Carregar</button>
-                <button class="secondary" type="button" id="btnNovoOperador">Novo</button>
-              </div>
-            </div>
-            <div class="form-grid" style="margin-top:8px;">
-              <div class="field"><label>Nome completo</label><input id="opNome" type="text" /></div>
-              <div class="field"><label>CPF</label><input id="opCpf" type="text" /></div>
-              <div class="field"><label>Cargo</label><input id="opCargo" type="text" /></div>
-              <div class="field"><label>Hierarquia</label><input id="opHierarquia" type="text" /></div>
-              <div class="field"><label>Jornada contratual</label><input id="opJornada" type="text" /></div>
-              <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
-              <div class="field"><label>Preferência de turno</label><input id="opPreferencia" type="text" /></div>
-              <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em férias</option></select></div>
-              <div class="field"><label>Matrícula</label><input id="opMatricula" type="text" /></div>
-              <div class="field"><label>Usuário (login)</label><input id="opUsuario" type="text" /></div>
-              <div class="field"><label>Senha (inicial ou nova)</label><input id="opSenha" type="password" placeholder="Em branco para não alterar" /></div>
-              <div class="field"><label>Nível de Acesso (Papel)</label><select id="opRoles"><option value="OPERADOR">Operador</option><option value="GESTOR">Gestor</option><option value="ADMIN,GESTOR">Admin + Gestor</option></select></div>
-              <div class="field full"><label>Posto Principal</label><input id="opPostoPrincipal" type="text" value="Centro de Cooperação da Cidade" /></div>
-              <div class="field full"><label>Disponibilidade</label><textarea id="opDisponibilidade"></textarea></div>
-              <div class="field full"><label>Restrições médicas</label><textarea id="opRestricoes"></textarea></div>
-              <div class="field full"><label>Qualificações</label><textarea id="opQualificacoes"></textarea></div>
-              <div class="field full"><label>Férias programadas</label><input id="opFerias" type="text" /></div>
-              <div class="field full"><label>Afastamentos</label><input id="opAfastamentos" type="text" /></div>
-            </div>
-            <div class="validation" id="opValidation"></div>
-            <div class="row" style="margin-top:8px;">
-              <button class="primary" type="button" id="btnSalvarOperador">Salvar operador</button>
-              <button class="secondary" type="button" id="btnHistoricoOperador">Histórico</button>
+            <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px; text-align:center;">
+              <p class="small" style="margin-bottom:8px;">Para gerenciar o cadastro e detalhes dos operadores:</p>
+              <button class="secondary" type="button" onclick="setTab('tab-operadores')" style="width:100%; justify-content:center; gap:6px;">
+                👤 Gerenciar Operadores
+              </button>
             </div>
           </div>
         </div>
@@ -395,13 +430,25 @@
 
   <section id="tab-operadores" class="tab-panel">
     <section class="card">
-      <h2>Operadores</h2>
-      <div class="row-between">
-        <div class="small">Operadores cadastrados (mock).</div>
-        <input id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula">
-      </div>
-      <div class="table-box" style="max-height:320px;overflow:auto;">
-        <table><thead><tr><th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllOps" onclick="event.stopPropagation();" /></th><th>Nome</th><th>Matrícula</th><th>Usuário</th><th>Posto principal</th><th>Status</th></tr></thead><tbody id="tbodyOperadores"></tbody></table>
+      <h2>Gestão de Operadores</h2>
+      <p class="small">Selecione uma das opções abaixo para gerenciar o cadastro e status dos operadores.</p>
+      
+      <div class="cardapio-operadores">
+        <div class="cardapio-card" id="btnMenuCadastrar" onclick="abrirModalCadastro()">
+          <div class="cardapio-icon">👤➕</div>
+          <div class="cardapio-title">Cadastrar Operador</div>
+          <div class="cardapio-desc">Adicionar um novo operador com cargo, acesso, escala CLT e posto.</div>
+        </div>
+        <div class="cardapio-card" id="btnMenuConsultar" onclick="abrirModalConsultar()">
+          <div class="cardapio-icon">🔍</div>
+          <div class="cardapio-title">Consultar Operador</div>
+          <div class="cardapio-desc">Buscar por nome ou matrícula para consultar ou editar detalhes.</div>
+        </div>
+        <div class="cardapio-card" id="btnMenuLista" onclick="abrirModalListaCompleta()">
+          <div class="cardapio-icon">📋</div>
+          <div class="cardapio-title">Lista Completa</div>
+          <div class="cardapio-desc">Visualizar todos os operadores, editar dados ou fazer alterações em lote.</div>
+        </div>
       </div>
     </section>
   </section>
@@ -421,6 +468,134 @@
     <button class="secondary" type="button" onclick="limparSelecaoLote()" style="padding: 6px 14px; font-size: 12px;">Limpar</button>
   </div>
 </div>
+
+<!-- MODAL CADASTRAR / EDITAR OPERADOR -->
+<div id="modalCadastroEdicao" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" style="width: min(800px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroEdicaoTitle">
+    <div class="overlay-header">
+      <div>
+        <div class="overlay-title" id="modalCadastroEdicaoTitle">Cadastrar Operador</div>
+        <div class="overlay-sub">Insira ou edite as informações do operador.</div>
+      </div>
+      <button type="button" class="secondary" onclick="fecharModalCadastroEdicao()">Fechar</button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <div class="form-grid">
+        <div class="field"><label>Nome completo</label><input id="opNome" type="text" /></div>
+        <div class="field"><label>CPF</label><input id="opCpf" type="text" /></div>
+        <div class="field"><label>Cargo</label><input id="opCargo" type="text" /></div>
+        <div class="field"><label>Hierarquia</label><input id="opHierarquia" type="text" /></div>
+        <div class="field"><label>Jornada contratual</label><input id="opJornada" type="text" /></div>
+        <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
+        <div class="field"><label>Preferência de turno</label><input id="opPreferencia" type="text" /></div>
+        <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em férias</option></select></div>
+        <div class="field"><label>Matrícula</label><input id="opMatricula" type="text" /></div>
+        <div class="field"><label>Usuário (login)</label><input id="opUsuario" type="text" /></div>
+        <div class="field"><label>Senha (inicial ou nova)</label><input id="opSenha" type="password" placeholder="Em branco para não alterar" /></div>
+        <div class="field"><label>Nível de Acesso (Papel)</label><select id="opRoles"><option value="OPERADOR">Operador</option><option value="GESTOR">Gestor</option><option value="ADMIN,GESTOR">Admin + Gestor</option></select></div>
+        <div class="field full"><label>Posto Principal</label><input id="opPostoPrincipal" type="text" value="Centro de Cooperação da Cidade" /></div>
+        <div class="field full"><label>Disponibilidade</label><textarea id="opDisponibilidade"></textarea></div>
+        <div class="field full"><label>Restrições médicas</label><textarea id="opRestricoes"></textarea></div>
+        <div class="field full"><label>Qualificações</label><textarea id="opQualificacoes"></textarea></div>
+        <div class="field full"><label>Férias programadas</label><input id="opFerias" type="text" /></div>
+        <div class="field full"><label>Afastamentos</label><input id="opAfastamentos" type="text" /></div>
+      </div>
+      <div class="validation" id="opValidation"></div>
+      <div class="row" style="margin-top:14px; justify-content: flex-end; gap:8px;">
+        <button class="secondary" type="button" id="btnHistoricoOperador">Histórico</button>
+        <button class="primary" type="button" id="btnSalvarOperador">Salvar operador</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONSULTAR OPERADOR -->
+<div id="modalConsultar" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" style="width: min(600px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalConsultarTitle">
+    <div class="overlay-header">
+      <div>
+        <div class="overlay-title" id="modalConsultarTitle">Consultar Operador</div>
+        <div class="overlay-sub">Filtre os operadores por nome ou número de matrícula.</div>
+      </div>
+      <button type="button" class="secondary" onclick="fecharModalConsultar()">Fechar</button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <div class="field">
+          <label>Nome do Operador</label>
+          <input type="text" id="consultarNome" placeholder="Digite o nome..." />
+        </div>
+        <div class="field">
+          <label>Matrícula</label>
+          <input type="text" id="consultarMatricula" placeholder="Digite a matrícula..." />
+        </div>
+      </div>
+      
+      <div class="row" style="margin-top: 12px; justify-content: flex-end; gap: 8px;">
+        <button class="secondary" type="button" onclick="limparConsulta()">Limpar</button>
+        <button class="primary" type="button" onclick="realizarConsulta()">Buscar</button>
+      </div>
+      
+      <div class="overlay-section" id="resultadosConsultaSec" style="margin-top: 15px; display: none;">
+        <strong>Resultados da Busca</strong>
+        <div class="table-box" style="max-height: 250px; overflow: auto; margin-top: 8px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Matrícula</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyResultadosConsulta"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LISTA COMPLETA -->
+<div id="modalListaCompleta" class="overlay-backdrop" aria-hidden="true">
+  <div class="overlay-panel" style="width: min(1000px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalListaTitle">
+    <div class="overlay-header">
+      <div>
+        <div class="overlay-title" id="modalListaTitle">Lista Completa de Operadores</div>
+        <div class="overlay-sub">Gerencie todos os operadores cadastrados no sistema.</div>
+      </div>
+      <button type="button" class="secondary" onclick="fecharModalListaCompleta()">Fechar</button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <div class="row-between" style="margin-bottom: 10px;">
+        <div class="small">Selecione para edição em lote ou use o botão para editar individualmente.</div>
+        <input id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matrícula" style="width: 250px;">
+      </div>
+      <div class="table-box" style="max-height: 450px; overflow: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">
+                <input type="checkbox" id="selectAllOps" onclick="event.stopPropagation();" />
+              </th>
+              <th>Nome</th>
+              <th>Matrícula</th>
+              <th>Usuário</th>
+              <th>Posto principal</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyOperadores"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
   const THEME_KEY='sgo_theme_login';
@@ -465,9 +640,128 @@
   function setSubTab(id){ subTabs.forEach(b=>b.classList.toggle('active', b.dataset.subtab===id)); subPanels.forEach(p=>p.classList.toggle('active', p.id===id)); }
   subTabs.forEach(b=>b.addEventListener('click',()=>setSubTab(b.dataset.subtab)));
 
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') { closeOverlay(); modalFoto.style.display='none'; modalFoto.style.pointerEvents='none'; } });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape') {
+      closeOverlay();
+      modalFoto.style.display='none';
+      modalFoto.style.pointerEvents='none';
+      fecharModalCadastroEdicao();
+      fecharModalConsultar();
+      fecharModalListaCompleta();
+    }
+  });
   document.getElementById('btnCloseOverlay').addEventListener('click', closeOverlay);
   overlayBackdrop.addEventListener('click', e=>{ if(e.target===overlayBackdrop) closeOverlay(); });
+  
+  /* New Modals Management */
+  window.abrirModalCadastro = function() {
+    opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
+    syncOperadorForm();
+    document.getElementById('modalCadastroEdicaoTitle').textContent = 'Cadastrar Operador';
+    document.getElementById('modalCadastroEdicao').classList.add('open');
+    document.getElementById('modalCadastroEdicao').setAttribute('aria-hidden', 'false');
+  };
+
+  window.fecharModalCadastroEdicao = function() {
+    document.getElementById('modalCadastroEdicao').classList.remove('open');
+    document.getElementById('modalCadastroEdicao').setAttribute('aria-hidden', 'true');
+  };
+
+  window.abrirModalConsultar = function() {
+    limparConsulta();
+    document.getElementById('modalConsultar').classList.add('open');
+    document.getElementById('modalConsultar').setAttribute('aria-hidden', 'false');
+  };
+
+  window.fecharModalConsultar = function() {
+    document.getElementById('modalConsultar').classList.remove('open');
+    document.getElementById('modalConsultar').setAttribute('aria-hidden', 'true');
+  };
+
+  window.abrirModalListaCompleta = function() {
+    renderOperadores();
+    document.getElementById('modalListaCompleta').classList.add('open');
+    document.getElementById('modalListaCompleta').setAttribute('aria-hidden', 'false');
+  };
+
+  window.fecharModalListaCompleta = function() {
+    document.getElementById('modalListaCompleta').classList.remove('open');
+    document.getElementById('modalListaCompleta').setAttribute('aria-hidden', 'true');
+  };
+
+  window.editarOperadorPorMatricula = function(matricula) {
+    const idx = MOCK_OPERADORES.findIndex(o => o.matricula === matricula);
+    if (idx !== -1) {
+      loadOperador(idx);
+      document.getElementById('modalCadastroEdicaoTitle').textContent = 'Editar Operador';
+      document.getElementById('modalCadastroEdicao').classList.add('open');
+      document.getElementById('modalCadastroEdicao').setAttribute('aria-hidden', 'false');
+    }
+  };
+
+  window.realizarConsulta = function() {
+    const nomeVal = document.getElementById('consultarNome').value.trim().toLowerCase();
+    const matriculaVal = document.getElementById('consultarMatricula').value.trim().toLowerCase();
+    
+    if (!nomeVal && !matriculaVal) {
+      alert('Por favor, informe o nome ou a matrícula para consultar.');
+      return;
+    }
+    
+    const filtrados = MOCK_OPERADORES.filter(op => {
+      const matchNome = nomeVal ? op.nome.toLowerCase().includes(nomeVal) : true;
+      const matchMatricula = matriculaVal ? op.matricula.toLowerCase().includes(matriculaVal) : true;
+      return matchNome && matchMatricula;
+    });
+    
+    const tbody = document.getElementById('tbodyResultadosConsulta');
+    tbody.innerHTML = '';
+    
+    if (filtrados.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:10px;">Nenhum operador encontrado.</td></tr>';
+    } else {
+      filtrados.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${o.nome}</strong></td>
+          <td>${o.matricula}</td>
+          <td>${badge(o.status)}</td>
+          <td>
+            <button class="primary" type="button" onclick="event.stopPropagation(); editarDesdeConsulta('${o.matricula}')" style="padding: 4px 8px; font-size:11px;">Editar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    document.getElementById('resultadosConsultaSec').style.display = 'block';
+  };
+
+  window.editarDesdeConsulta = function(matricula) {
+    fecharModalConsultar();
+    editarOperadorPorMatricula(matricula);
+  };
+
+  window.limparConsulta = function() {
+    document.getElementById('consultarNome').value = '';
+    document.getElementById('consultarMatricula').value = '';
+    document.getElementById('tbodyResultadosConsulta').innerHTML = '';
+    document.getElementById('resultadosConsultaSec').style.display = 'none';
+  };
+
+  // Add click backdrop listeners
+  setTimeout(() => {
+    document.getElementById('modalCadastroEdicao').addEventListener('click', e => {
+      if (e.target === document.getElementById('modalCadastroEdicao')) fecharModalCadastroEdicao();
+    });
+    document.getElementById('modalConsultar').addEventListener('click', e => {
+      if (e.target === document.getElementById('modalConsultar')) fecharModalConsultar();
+    });
+    document.getElementById('modalListaCompleta').addEventListener('click', e => {
+      if (e.target === document.getElementById('modalListaCompleta')) fecharModalListaCompleta();
+    });
+  }, 100);
+
   function openOverlay(title, desc, html){ overlayTitle.textContent=title; overlayDesc.textContent=desc; overlayContent.innerHTML=html; overlayBackdrop.classList.add('open'); overlayBackdrop.setAttribute('aria-hidden','false'); }
   function closeOverlay(){ overlayBackdrop.classList.remove('open'); overlayBackdrop.setAttribute('aria-hidden','true'); overlayContent.innerHTML=''; }
 
@@ -737,6 +1031,7 @@
         <td>${o.usuario}</td>
         <td>${o.posto}</td>
         <td>${badge(o.status)}</td>
+        <td><button class="secondary" type="button" onclick="event.stopPropagation(); editarOperadorPorMatricula('${o.matricula}')" style="padding: 3px 8px; font-size: 11px;">Editar</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -1092,6 +1387,7 @@
       alert(data.mensagem);
       opSenha.value = '';
       buscarOperadoresDoServidor();
+      fecharModalCadastroEdicao();
     })
     .catch(err => {
       btn.disabled = false;

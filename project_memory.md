@@ -46,6 +46,14 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-06-20]
+- **Reestruturação da Tela de Operadores no Painel do Gestor**:
+  - Removido a exibição direta da tabela de operadores no painel do gestor e implementado um menu ("cardápio") contendo três botões quadrados principais: **Cadastrar Operador**, **Consultar Operador** e **Lista Completa**.
+  - Criado três novos modais de sobreposição (`modalCadastroEdicao`, `modalConsultar` e `modalListaCompleta`) integrados ao sistema de sobreposição e com suporte ao tema claro/escuro.
+  - Movido o formulário de cadastro/edição de operador do painel `sub-disponibilidade` para o modal centralizado `modalCadastroEdicao`, adicionando um redirecionamento inteligente no painel original.
+  - Implementado formulário e lógica de consulta/busca no modal `modalConsultar` com inputs específicos de Nome e Matrícula.
+  - Atualizada a listagem completa de operadores para incluir um botão explícito de "Editar", facilitando o carregamento dos dados no formulário modal.
+
 ### [2026-06-19]
 - **Edição em Lote de Operadores (Batch Bulk Edits)**:
   - Adicionados checkboxes de seleção na tabela de operadores e controle de seleção geral no cabeçalho em [gestor.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/gestor.html).
