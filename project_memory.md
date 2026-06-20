@@ -53,6 +53,9 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
   - Movido o formulário de cadastro/edição de operador do painel `sub-disponibilidade` para o modal centralizado `modalCadastroEdicao`, adicionando um redirecionamento inteligente no painel original.
   - Implementado formulário e lógica de consulta/busca no modal `modalConsultar` com inputs específicos de Nome e Matrícula.
   - Atualizada a listagem completa de operadores para incluir um botão explícito de "Editar", facilitando o carregamento dos dados no formulário modal.
+- **Melhorias no Script de Deploy (deploy-staging.ps1)**:
+  - Adicionado o parâmetro `-OnlyChanged` que permite implantar apenas arquivos modificados/adicionados no repositório git (detectando alterações locais, arquivos não rastreados e commits não enviados/últimos commits).
+  - Corrigido o bug na regex de `ignoredPatterns` que causava o envio incorreto de arquivos ignorados (como `project_memory.md` e `ftp_config.json`).
 
 ### [2026-06-19]
 - **Edição em Lote de Operadores (Batch Bulk Edits)**:
