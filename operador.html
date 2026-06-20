@@ -751,6 +751,36 @@
   </div>
 </div>
 
+<!-- INPUT DE CAPTURA DO PONTO -->
+<input type="file" id="pontoFotoInput" accept="image/*" capture="user" style="display:none;" />
+
+<!-- MODAL VISUALIZAÇÃO DE FOTO DO PONTO -->
+<div id="modalFoto" class="modal-backdrop">
+  <div class="modal-card" style="max-width:360px;">
+    <h3 style="margin:0 0 6px;font-size:15px;" id="modalFotoTitulo">Foto do Ponto</h3>
+    <div style="text-align:center;margin:10px 0;">
+      <img id="imgModalFoto" src="" style="max-width:100%;max-height:280px;border-radius:10px;border:1px solid var(--border-subtle);" />
+    </div>
+    <div class="row" style="margin-top:8px;justify-content:center;">
+      <button id="btnFecharModalFoto" class="primary" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEST MODE FLOATING PANEL -->
+<div id="testHelperPanel" style="display:none; position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: rgba(0, 0, 0, 0.9); color: #fff; padding: 12px; border-radius: 8px; border: 1px dashed #00ff00; font-family: monospace; font-size: 11px; max-width: 250px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+  <div style="font-weight: bold; margin-bottom: 8px; color: #00ff00; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 4px;">
+    <span>SGO TEST PANEL</span>
+    <button onclick="localStorage.removeItem('sgo_test_mode'); location.reload();" style="font-size: 9px; cursor: pointer; background: #c00; color: #fff; border: none; border-radius: 3px; padding: 1px 4px;">Exit</button>
+  </div>
+  <div style="margin-bottom: 4px;">
+    <button id="btnTestGeo" style="width:100%; margin-bottom:4px; font-size:10px; padding:4px; cursor:pointer; background:#222; color:#fff; border:1px solid #444; border-radius:3px;">Mock Geo Pos</button>
+    <button id="btnTestCheckin" style="width:100%; margin-bottom:4px; font-size:10px; padding:4px; cursor:pointer; background:#222; color:#fff; border:1px solid #444; border-radius:3px;">Mock Checkin Photo</button>
+    <button id="btnTestCheckout" style="width:100%; margin-bottom:4px; font-size:10px; padding:4px; cursor:pointer; background:#222; color:#fff; border:1px solid #444; border-radius:3px;">Mock Checkout Photo</button>
+    <button id="btnTestInactivity" style="width:100%; font-size:10px; padding:4px; cursor:pointer; background:#222; color:#fff; border:1px solid #444; border-radius:3px;">Simulate 6m Inactivity</button>
+  </div>
+</div>
+
 <script>
   const THEME_KEY = 'sgo_theme_login';
 
@@ -950,44 +980,81 @@
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
-  function registrarStatusNaEscala(statusLabel) {
-    const agora = new Date();
-    const mes = agora.getMonth();
-    const ano = agora.getFullYear();
-    const dia = agora.getDate();
+  function registrarStatusNaEscala(statusLabel, fotoBase64 = null, dateObj = null) {
+    const username = usuario.username || '';
+    
+    function prosseguirComHorario(data, isOffline) {
+      let dataStr, horaStr, mes, ano, dia;
+      if (data && data.sucesso) {
+        const parts = data.data.split('-');
+        ano = parseInt(parts[0], 10);
+        mes = parseInt(parts[1], 10) - 1; // 0-indexed in JS
+        dia = parseInt(parts[2], 10);
+        dataStr = data.data;
+        horaStr = data.hora;
+      } else {
+        const dObj = dateObj || new Date();
+        mes = dObj.getMonth();
+        ano = dObj.getFullYear();
+        dia = dObj.getDate();
+        dataStr = dObj.toISOString().split('T')[0];
+        horaStr = dObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }
 
-    const marcados = carregarMarcacoes(mes, ano);
-    const diaKey = String(dia);
+      const marcados = carregarMarcacoes(mes, ano);
+      const diaKey = String(dia);
 
-    if (!marcados[diaKey]) {
-      marcados[diaKey] = {
-        trabalhado: false,
-        logs: []
+      if (!marcados[diaKey]) {
+        marcados[diaKey] = { trabalhado: false, logs: [] };
+      }
+
+      const offlineFlag = isOffline ? ' [Offline]' : '';
+      const horaStrCompleta = `${horaStr}${offlineFlag}`;
+      
+      if (fotoBase64) {
+        marcados[diaKey].logs.push({ hora: horaStrCompleta, status: statusLabel, foto: fotoBase64 });
+      } else {
+        marcados[diaKey].logs.push(`${horaStrCompleta} – ${statusLabel}`);
+      }
+
+      if (statusLabel === 'Ativo') {
+        marcados[diaKey].trabalhado = true;
+      }
+
+      salvarMarcacoes(mes, ano, marcados);
+
+      const mesSelecionado = parseInt(escalaMes.value, 10);
+      const anoSelecionado = parseInt(escalaAno.value, 10);
+      if (mesSelecionado === mes && anoSelecionado === ano) {
+        gerarEscalaMes(mes, ano);
+      }
+    }
+
+    if (dateObj) {
+      const isOffline = dateObj.isOfflineFallback || false;
+      const dataPayload = {
+        sucesso: !isOffline,
+        data: `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`,
+        hora: dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       };
-    }
-
-    const hora = formatarHoraAtual();
-    marcados[diaKey].logs.push(`${hora} – ${statusLabel}`);
-
-    // mantém compatibilidade com checkbox "Trabalhado"
-    if (statusLabel === 'Ativo') {
-      marcados[diaKey].trabalhado = true;
-    }
-
-    salvarMarcacoes(mes, ano, marcados);
-
-    // se o operador estiver visualizando o mês/ano atuais, atualiza a tabela
-    const mesSelecionado = parseInt(escalaMes.value, 10);
-    const anoSelecionado = parseInt(escalaAno.value, 10);
-    if (mesSelecionado === mes && anoSelecionado === ano) {
-      gerarEscalaMes(mes, ano);
+      prosseguirComHorario(dataPayload, isOffline);
+    } else {
+      fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+        .then(r => r.json())
+        .then(data => {
+          prosseguirComHorario(data, !data.sucesso);
+        })
+        .catch(err => {
+          console.warn('Erro ao obter horário do servidor para status:', err);
+          prosseguirComHorario(null, true);
+        });
     }
   }
 
   /* Botões de ponto */
 
-  function marcarDiaEscalaComoTrabalhadoHoje() {
-    const hoje = new Date();
+  function marcarDiaEscalaComoTrabalhadoHoje(dateObj = null) {
+    const hoje = dateObj || new Date();
     const mes = hoje.getMonth();
     const ano = hoje.getFullYear();
     const dia = hoje.getDate();
@@ -1005,21 +1072,12 @@
     salvarMarcacoes(mes, ano, marcados);
   }
 
+  let acaoPontoPendente = '';
+  const pontoFotoInput = document.getElementById('pontoFotoInput');
+
   btnCheckin.addEventListener('click', () => {
-    emExpediente = true;
-    emIntervalo  = false;
-
-    btnCheckin.disabled   = true;
-    btnIntervalo.disabled = false;
-    btnCheckout.disabled  = false;
-
-    statusPonto.classList.remove('off');
-    statusPonto.classList.add('ativo');
-    statusPonto.textContent = 'Status: Ativo';
-
-    marcarDiaEscalaComoTrabalhadoHoje();
-    registrarStatusNaEscala('Ativo');
-    atualizarEscalaAtual();
+    acaoPontoPendente = 'checkin';
+    pontoFotoInput.click();
   });
 
   btnIntervalo.addEventListener('click', () => {
@@ -1041,6 +1099,28 @@
   });
 
   btnCheckout.addEventListener('click', () => {
+    acaoPontoPendente = 'checkout';
+    pontoFotoInput.click();
+  });
+
+  function executarCheckin(fotoBase64, dateObj) {
+    emExpediente = true;
+    emIntervalo  = false;
+
+    btnCheckin.disabled   = true;
+    btnIntervalo.disabled = false;
+    btnCheckout.disabled  = false;
+
+    statusPonto.classList.remove('off');
+    statusPonto.classList.add('ativo');
+    statusPonto.textContent = 'Status: Ativo';
+
+    marcarDiaEscalaComoTrabalhadoHoje(dateObj);
+    registrarStatusNaEscala('Ativo', fotoBase64, dateObj);
+    atualizarEscalaAtual();
+  }
+
+  function executarCheckout(fotoBase64, dateObj) {
     emExpediente = false;
     emIntervalo  = false;
 
@@ -1052,8 +1132,116 @@
     statusPonto.classList.add('off');
     statusPonto.textContent = 'Status: Inativo';
 
-    registrarStatusNaEscala('Inativo');
+    registrarStatusNaEscala('Inativo', fotoBase64, dateObj);
+  }
+
+  pontoFotoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const username = usuario.username || '';
+    
+    fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+      .then(r => r.json())
+      .then(data => {
+        let serverTimeStr;
+        let serverDateObj;
+        
+        if (data && data.sucesso) {
+          const dateParts = data.data.split('-');
+          const timeParts = data.hora.split(':');
+          serverDateObj = new Date(
+            parseInt(dateParts[0], 10),
+            parseInt(dateParts[1], 10) - 1,
+            parseInt(dateParts[2], 10),
+            parseInt(timeParts[0], 10),
+            parseInt(timeParts[1], 10),
+            parseInt(timeParts[2], 10)
+          );
+          serverTimeStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${data.hora}`;
+        } else {
+          serverDateObj = new Date();
+          serverDateObj.isOfflineFallback = true;
+          serverTimeStr = serverDateObj.toLocaleString('pt-BR') + ' [Offline]';
+        }
+        
+        processFileAndWatermark(file, serverDateObj, serverTimeStr);
+      })
+      .catch(err => {
+        console.warn('Erro ao obter horário do servidor para foto, usando local:', err);
+        const localDate = new Date();
+        localDate.isOfflineFallback = true;
+        const serverTimeStr = localDate.toLocaleString('pt-BR') + ' [Offline]';
+        processFileAndWatermark(file, localDate, serverTimeStr);
+      });
   });
+
+  function processFileAndWatermark(file, dateObj, dtStr) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const max_width = 320;
+        const max_height = 240;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > max_width) {
+            height *= max_width / width;
+            width = max_width;
+          }
+        } else {
+          if (height > max_height) {
+            width *= max_height / height;
+            height = max_height;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const userObj = carregarUsuario() || { nome: 'Operador' };
+        const userStr = `User: ${userObj.nome || userObj.username}`;
+
+        let geoStr = 'Lat/Lng: Não disponível';
+        try {
+          const rawGeo = localStorage.getItem('sgo_geo_pos');
+          if (rawGeo) {
+            const geo = JSON.parse(rawGeo);
+            if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
+              geoStr = `Lat: ${geo.lat.toFixed(6)} | Lng: ${geo.lng.toFixed(6)}`;
+            }
+          }
+        } catch(err) {}
+
+        const rectHeight = 44;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fillRect(0, height - rectHeight, width, rectHeight);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px system-ui, sans-serif';
+        ctx.textBaseline = 'middle';
+
+        ctx.fillText(`${userStr} | ${dtStr}`, 8, height - 30);
+        ctx.fillText(geoStr, 8, height - 14);
+
+        const fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+        if (acaoPontoPendente === 'checkin') {
+          executarCheckin(fotoBase64, dateObj);
+        } else if (acaoPontoPendente === 'checkout') {
+          executarCheckout(fotoBase64, dateObj);
+        }
+        pontoFotoInput.value = '';
+      };
+      img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
 
   /* Modal senha */
 
@@ -1099,6 +1287,22 @@
     modalSenha.style.pointerEvents = 'none';
   });
 
+  /* Modal foto */
+  const modalFoto = document.getElementById('modalFoto');
+  const imgModalFoto = document.getElementById('imgModalFoto');
+  const btnFecharModalFoto = document.getElementById('btnFecharModalFoto');
+
+  window.visualizarFoto = function(fotoBase64) {
+    imgModalFoto.src = fotoBase64;
+    modalFoto.style.display = 'flex';
+    modalFoto.style.pointerEvents = 'auto';
+  };
+
+  btnFecharModalFoto.addEventListener('click', () => {
+    modalFoto.style.display = 'none';
+    modalFoto.style.pointerEvents = 'none';
+  });
+
   /* Escala: selects, geração de tabela e logs */
 
   (function initMesAno() {
@@ -1125,69 +1329,101 @@
   })();
 
   function gerarEscalaMes(mes, ano) {
-    const dias = obterEscalaDoGestorMock(mes, ano);
-    const marcados = carregarMarcacoes(mes, ano);
-
-    const table = document.createElement('table');
-    table.className = 'escala';
-
-    const thead = document.createElement('thead');
-    thead.innerHTML = `
-      <tr>
-        <th>Dia</th>
-        <th>Horário</th>
-        <th>Posto</th>
-        <th>Trabalhado</th>
-        <th>Log de status</th>
-      </tr>
-    `;
-    table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-
-    dias.forEach(item => {
-      const tr = document.createElement('tr');
-      const mesLabel = String(mes + 1).padStart(2, '0');
-      const diaLabel = String(item.dia).padStart(2, '0');
-      const labelDia = `${diaLabel}/${mesLabel}`;
-      const diaKey = String(item.dia);
-      const infoDia = marcados[diaKey] || {};
-      const trabalhado = !!infoDia.trabalhado;
-      const logs = infoDia.logs || [];
-
-      const logsHtml = logs.length
-        ? logs.map(l => `<div>${l}</div>`).join('')
-        : '<span class="small">Sem registros</span>';
-
-      tr.innerHTML = `
-        <td>${labelDia}</td>
-        <td>${item.horario}</td>
-        <td>${item.posto}</td>
-        <td><input type="checkbox" data-dia="${item.dia}" ${trabalhado ? 'checked' : ''}></td>
-        <td class="escala-status-log">${logsHtml}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    table.appendChild(tbody);
-    escalaBox.innerHTML = '';
-    escalaBox.appendChild(table);
-
-    const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(chk => {
-      const dia = chk.dataset.dia;
-      chk.addEventListener('change', () => {
-        const m = carregarMarcacoes(mes, ano);
-        const diaKey = String(dia);
-        if (!m[diaKey]) {
-          m[diaKey] = { trabalhado: chk.checked, logs: [] };
-        } else {
-          m[diaKey].trabalhado = chk.checked;
-          m[diaKey].logs = m[diaKey].logs || [];
+    const totalDias = diasNoMes(mes, ano);
+    const username = usuario.username || '';
+    
+    escalaBox.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Carregando escala do servidor...</div>';
+    
+    fetch(`api/obter_escala_operador.php?usuario=${encodeURIComponent(username)}&mes=${mes + 1}&ano=${ano}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.sucesso) {
+          throw new Error(data.erro || 'Erro ao carregar escala.');
         }
-        salvarMarcacoes(mes, ano, m);
+        
+        const scaleMap = {};
+        if (data.dias && Array.isArray(data.dias)) {
+          data.dias.forEach(item => {
+            scaleMap[String(item.dia)] = item;
+          });
+        }
+        
+        const marcados = carregarMarcacoes(mes, ano);
+        const table = document.createElement('table');
+        table.className = 'escala';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th>Dia</th>
+            <th>Horário</th>
+            <th>Posto</th>
+            <th>Trabalhado</th>
+            <th>Log de status</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        for (let d = 1; d <= totalDias; d++) {
+          const item = scaleMap[String(d)] || { dia: d, horario: 'Folga', posto: '—' };
+          
+          const tr = document.createElement('tr');
+          const mesLabel = String(mes + 1).padStart(2, '0');
+          const diaLabel = String(d).padStart(2, '0');
+          const labelDia = `${diaLabel}/${mesLabel}`;
+          const diaKey = String(d);
+          const infoDia = marcados[diaKey] || {};
+          const trabalhado = !!infoDia.trabalhado;
+          const logs = infoDia.logs || [];
+
+          const logsHtml = logs.length
+            ? logs.map(l => {
+                if (typeof l === 'string') {
+                  return `<div>${l}</div>`;
+                }
+                const fotoButton = l.foto
+                  ? `<button class="btn-ver-foto" onclick="visualizarFoto('${l.foto}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto">📷</button>`
+                  : '';
+                return `<div>${l.hora} – ${l.status}${fotoButton}</div>`;
+              }).join('')
+            : '<span class="small">Sem registros</span>';
+
+          tr.innerHTML = `
+            <td>${labelDia}</td>
+            <td>${item.horario}</td>
+            <td>${item.posto}</td>
+            <td><input type="checkbox" data-dia="${d}" ${trabalhado ? 'checked' : ''}></td>
+            <td class="escala-status-log">${logsHtml}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        table.appendChild(tbody);
+        escalaBox.innerHTML = '';
+        escalaBox.appendChild(table);
+
+        const checkboxes = escalaBox.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(chk => {
+          const dia = chk.dataset.dia;
+          chk.addEventListener('change', () => {
+            const m = carregarMarcacoes(mes, ano);
+            const diaKey = String(dia);
+            if (!m[diaKey]) {
+              m[diaKey] = { trabalhado: chk.checked, logs: [] };
+            } else {
+              m[diaKey].trabalhado = chk.checked;
+              m[diaKey].logs = m[diaKey].logs || [];
+            }
+            salvarMarcacoes(mes, ano, m);
+          });
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        escalaBox.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">Falha ao obter escalas: ${err.message}</div>`;
       });
-    });
   }
 
   function atualizarEscalaAtual() {
@@ -1204,6 +1440,122 @@
     if (!selectEscalasAnteriores.value) return;
     alert('Consulta de PDF de escala anterior será implementada em próxima fase.');
   });
+
+  (function initInactivityTimeout() {
+    const INACTIVITY_KEY = 'sgo_last_activity';
+    
+    let userObj = null;
+    try {
+      const raw = localStorage.getItem('sgo_usuario');
+      if (raw) userObj = JSON.parse(raw);
+    } catch(e) {}
+    
+    if (!userObj) return;
+
+    const roles = userObj.roles || [];
+    const isGestor = roles.includes('GESTOR') || roles.includes('ADMIN');
+    const timeoutLimit = isGestor 
+      ? 5 * 60 * 60 * 1000 // 5 hours in ms
+      : 5 * 60 * 1000;     // 5 minutes in ms
+
+    function updateActivity() {
+      try {
+        localStorage.setItem(INACTIVITY_KEY, Date.now().toString());
+      } catch(e) {}
+    }
+
+    const events = ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'];
+    events.forEach(evt => document.addEventListener(evt, updateActivity, { passive: true }));
+
+    if (!localStorage.getItem(INACTIVITY_KEY)) {
+      updateActivity();
+    }
+
+    function checkTimeout() {
+      const lastActivity = parseInt(localStorage.getItem(INACTIVITY_KEY) || Date.now(), 10);
+      if (Date.now() - lastActivity > timeoutLimit) {
+        localStorage.removeItem('sgo_auth_token');
+        localStorage.removeItem('sgo_usuario');
+        localStorage.removeItem(INACTIVITY_KEY);
+        window.location.href = 'index.html?reason=inactivity';
+      }
+    }
+
+    checkTimeout();
+    setInterval(checkTimeout, 10000);
+  })();
+
+  (function initTestPanel() {
+    try {
+      if (localStorage.getItem('sgo_test_mode') === 'true') {
+        const panel = document.getElementById('testHelperPanel');
+        if (panel) panel.style.display = 'block';
+
+        // Mock Geolocation on load if in test mode
+        navigator.geolocation.getCurrentPosition = function(success, error, options) {
+          success({
+            coords: {
+              latitude: -23.550520,
+              longitude: -46.633308,
+              accuracy: 10
+            },
+            timestamp: Date.now()
+          });
+        };
+
+        const btnTestGeo = document.getElementById('btnTestGeo');
+        const btnTestCheckin = document.getElementById('btnTestCheckin');
+        const btnTestCheckout = document.getElementById('btnTestCheckout');
+        const btnTestInactivity = document.getElementById('btnTestInactivity');
+
+        if (btnTestGeo) {
+          btnTestGeo.addEventListener('click', () => {
+            localStorage.setItem('sgo_geo_pos', JSON.stringify({ lat: -23.550520, lng: -46.633308, ts: Date.now() }));
+            location.reload();
+          });
+        }
+
+        function triggerPhotoMock(btnId) {
+          function base64ToFile(base64String, filename) {
+            const arr = base64String.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+            return new File([u8arr], filename, { type: mime });
+          }
+          // Tiny green square base64 PNG
+          const base64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQImWNkYPjPAMD/Gf6f4QAAHwQD9wGzH9QAAAAASUVORK5CYII=';
+          const file = base64ToFile(base64, 'selfie.png');
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          const input = document.getElementById('pontoFotoInput');
+          if (input) {
+            input.files = dt.files;
+            const targetBtn = document.getElementById(btnId);
+            if (targetBtn) targetBtn.click();
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+
+        if (btnTestCheckin) {
+          btnTestCheckin.addEventListener('click', () => triggerPhotoMock('btnCheckin'));
+        }
+
+        if (btnTestCheckout) {
+          btnTestCheckout.addEventListener('click', () => triggerPhotoMock('btnCheckout'));
+        }
+
+        if (btnTestInactivity) {
+          btnTestInactivity.addEventListener('click', () => {
+            localStorage.setItem('sgo_last_activity', (Date.now() - 6 * 60 * 1000).toString());
+            location.reload();
+          });
+        }
+      }
+    } catch(e) {}
+  })();
 </script>
 </body>
 </html>

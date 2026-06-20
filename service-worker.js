@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sgo-mvp-v1';
+const CACHE_NAME = 'sgo-mvp-v2';
 const URLS_TO_CACHE = [
   './',
   './index.html',

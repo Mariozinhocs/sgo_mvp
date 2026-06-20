@@ -29,6 +29,18 @@ $roles = $data['roles'] ?? 'OPERADOR';
 $postoPrincipal = trim($data['postoPrincipal'] ?? 'Centro de Cooperação da Cidade');
 $status = trim($data['status'] ?? 'ATIVO');
 
+$cpf = trim($data['cpf'] ?? '');
+$cargo = trim($data['cargo'] ?? '');
+$hierarquia = trim($data['hierarquia'] ?? '');
+$jornadaContratual = trim($data['jornadaContratual'] ?? '');
+$turnoAtual = trim($data['turnoAtual'] ?? 'Fixo');
+$preferenciaTurno = trim($data['preferenciaTurno'] ?? '');
+$disponibilidade = trim($data['disponibilidade'] ?? '');
+$restricoesMedicas = trim($data['restricoesMedicas'] ?? '');
+$qualificacoes = trim($data['qualificacoes'] ?? '');
+$feriasProgramadas = trim($data['feriasProgramadas'] ?? '');
+$afastamentos = trim($data['afastamentos'] ?? '');
+
 // Converte roles se for enviado como array (caso comum do frontend)
 if (is_array($roles)) {
     $roles = implode(',', $roles);
@@ -80,7 +92,7 @@ try {
         if (!empty($senha)) {
             // Se informou uma nova senha, gera o hash e atualiza tudo
             $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, senha = :senha, roles = :roles, posto_principal = :postoPrincipal, status = :status WHERE id = :id";
+            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, senha = :senha, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos WHERE id = :id";
             $params = [
                 'nome' => $nome,
                 'matricula' => $matricula,
@@ -89,11 +101,22 @@ try {
                 'roles' => $roles,
                 'postoPrincipal' => $postoPrincipal,
                 'status' => $status,
+                'cpf' => $cpf,
+                'cargo' => $cargo,
+                'hierarquia' => $hierarquia,
+                'jornada_contratual' => $jornadaContratual,
+                'turno_atual' => $turnoAtual,
+                'preferencia_turno' => $preferenciaTurno,
+                'disponibilidade' => $disponibilidade,
+                'restricoes_medicas' => $restricoesMedicas,
+                'qualificacoes' => $qualificacoes,
+                'ferias_programadas' => $feriasProgramadas,
+                'afastamentos' => $afastamentos,
                 'id' => $id
             ];
         } else {
             // Se não informou senha, não altera a senha atual
-            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, roles = :roles, posto_principal = :postoPrincipal, status = :status WHERE id = :id";
+            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos WHERE id = :id";
             $params = [
                 'nome' => $nome,
                 'matricula' => $matricula,
@@ -101,12 +124,31 @@ try {
                 'roles' => $roles,
                 'postoPrincipal' => $postoPrincipal,
                 'status' => $status,
+                'cpf' => $cpf,
+                'cargo' => $cargo,
+                'hierarquia' => $hierarquia,
+                'jornada_contratual' => $jornadaContratual,
+                'turno_atual' => $turnoAtual,
+                'preferencia_turno' => $preferenciaTurno,
+                'disponibilidade' => $disponibilidade,
+                'restricoes_medicas' => $restricoesMedicas,
+                'qualificacoes' => $qualificacoes,
+                'ferias_programadas' => $feriasProgramadas,
+                'afastamentos' => $afastamentos,
                 'id' => $id
             ];
         }
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
+
+        // Registro de auditoria
+        $stmtLog = $pdo->prepare("INSERT INTO historico_logs (evento, responsavel, detalhe) VALUES (:evento, :responsavel, :detalhe)");
+        $stmtLog->execute([
+            'evento' => 'Atualização de Operador',
+            'responsavel' => 'Gestor',
+            'detalhe' => "Operador {$nome} (Matrícula: {$matricula}) atualizado."
+        ]);
 
         echo json_encode([
             "sucesso" => true,
@@ -117,7 +159,7 @@ try {
         // --- MODO CRIAÇÃO (INSERT) ---
         $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
         
-        $sql = "INSERT INTO usuarios (nome, matricula, usuario, senha, roles, posto_principal, status) VALUES (:nome, :matricula, :usuario, :senha, :roles, :postoPrincipal, :status)";
+        $sql = "INSERT INTO usuarios (nome, matricula, usuario, senha, roles, posto_principal, status, cpf, cargo, hierarquia, jornada_contratual, turno_atual, preferencia_turno, disponibilidade, restricoes_medicas, qualificacoes, ferias_programadas, afastamentos) VALUES (:nome, :matricula, :usuario, :senha, :roles, :postoPrincipal, :status, :cpf, :cargo, :hierarquia, :jornada_contratual, :turno_atual, :preferencia_turno, :disponibilidade, :restricoes_medicas, :qualificacoes, :ferias_programadas, :afastamentos)";
         $params = [
             'nome' => $nome,
             'matricula' => $matricula,
@@ -125,12 +167,31 @@ try {
             'senha' => $senhaHash,
             'roles' => $roles,
             'postoPrincipal' => $postoPrincipal,
-            'status' => $status
+            'status' => $status,
+            'cpf' => $cpf,
+            'cargo' => $cargo,
+            'hierarquia' => $hierarquia,
+            'jornada_contratual' => $jornadaContratual,
+            'turno_atual' => $turnoAtual,
+            'preferencia_turno' => $preferenciaTurno,
+            'disponibilidade' => $disponibilidade,
+            'restricoes_medicas' => $restricoesMedicas,
+            'qualificacoes' => $qualificacoes,
+            'ferias_programadas' => $feriasProgramadas,
+            'afastamentos' => $afastamentos
         ];
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $novoId = $pdo->lastInsertId();
+
+        // Registro de auditoria
+        $stmtLog = $pdo->prepare("INSERT INTO historico_logs (evento, responsavel, detalhe) VALUES (:evento, :responsavel, :detalhe)");
+        $stmtLog->execute([
+            'evento' => 'Cadastro de Operador',
+            'responsavel' => 'Gestor',
+            'detalhe' => "Novo operador {$nome} (Matrícula: {$matricula}) criado."
+        ]);
 
         echo json_encode([
             "sucesso" => true,

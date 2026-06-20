@@ -265,6 +265,52 @@
 <script>
   const THEME_KEY = 'sgo_theme_login';
 
+  (function checkTestMode() {
+    const isUrlTestMode = new URLSearchParams(window.location.search).has('testMode');
+    if (isUrlTestMode) {
+      try {
+        localStorage.setItem('sgo_test_mode', 'true');
+        if (!sessionStorage.getItem('sgo_test_sw_cleared')) {
+          sessionStorage.setItem('sgo_test_sw_cleared', 'true');
+          if (navigator.serviceWorker) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+              for (let reg of regs) { reg.unregister(); }
+            }).then(() => {
+              if (window.caches) {
+                caches.keys().then(keys => {
+                  return Promise.all(keys.map(key => caches.delete(key)));
+                }).then(() => {
+                  localStorage.clear();
+                  localStorage.setItem('sgo_test_mode', 'true');
+                  location.reload();
+                });
+              } else {
+                localStorage.clear();
+                localStorage.setItem('sgo_test_mode', 'true');
+                location.reload();
+              }
+            });
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+    try {
+      if (localStorage.getItem('sgo_test_mode') === 'true') {
+        navigator.geolocation.getCurrentPosition = function(success, error, options) {
+          success({
+            coords: {
+              latitude: -23.550520,
+              longitude: -46.633308,
+              accuracy: 10
+            },
+            timestamp: Date.now()
+          });
+        };
+      }
+    } catch(e) {}
+  })();
+
   const btnTheme  = document.getElementById('btnTheme');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel= document.getElementById('themeLabel');
@@ -305,6 +351,15 @@
   // auto-login: sempre para operador.html
   (function redirectIfLogged() {
     try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('reason') === 'inactivity') {
+        const feedbackEl = document.getElementById('feedbackLogin');
+        if (feedbackEl) {
+          feedbackEl.textContent = 'Sessão expirada por inatividade. Faça login novamente.';
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
       const token = localStorage.getItem('sgo_auth_token');
       const usuarioRaw = localStorage.getItem('sgo_usuario');
       if (!token || !usuarioRaw) return;

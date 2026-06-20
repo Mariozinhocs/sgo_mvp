@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 try {
     // Retorna todos os usuários cadastrados (sem retornar o hash de senha por segurança)
-    $stmt = $pdo->query("SELECT id, nome, matricula, usuario, roles, posto_principal, status FROM usuarios ORDER BY nome ASC");
+    $stmt = $pdo->query("SELECT id, nome, matricula, usuario, roles, posto_principal, status, cpf, cargo, hierarquia, jornada_contratual, turno_atual, preferencia_turno, disponibilidade, restricoes_medicas, qualificacoes, ferias_programadas, afastamentos FROM usuarios ORDER BY nome ASC");
     $usuarios = $stmt->fetchAll();
 
     echo json_encode([

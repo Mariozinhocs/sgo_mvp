@@ -46,6 +46,33 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-06-19]
+- **Edição em Lote de Operadores (Batch Bulk Edits)**:
+  - Adicionados checkboxes de seleção na tabela de operadores e controle de seleção geral no cabeçalho em [gestor.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/gestor.html).
+  - Desenvolvida barra de ações em lote flutuante (Batch Action Bar) que surge na parte inferior do painel quando um ou mais operadores são selecionados.
+  - Criado modal overlay de Edição em Lote com controle seletivo de campos, garantindo que apenas os atributos explicitamente marcados sejam sobrescritos nos operadores selecionados.
+  - Desenvolvido o endpoint assíncrono [api/salvar_operadores_lote.php](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/api/salvar_operadores_lote.php) que cria dinamicamente o comando `UPDATE ... WHERE id IN (...)` com prepared statements seguros e insere um log de auditoria correspondente na tabela `historico_logs`.
+- **Gestão, Criação e Edição de Escalas (CLT & Persistência Relacional)**:
+  - Migração de banco de dados (`api/migrate_db.php`) adicionando novas colunas contratuais nos operadores, regras nos postos e armazenamento JSON estruturado (`escala_data`) na tabela `escalas`.
+  - Desenvolvimento de APIs PHP (`salvar_escala.php`, `obter_escalas.php`, `obter_escala_operador.php`, `salvar_posto.php`, `obter_postos.php`, `obter_historico.php`, `obter_horario_servidor.php`) com suporte completo para persistência relacional e geração de logs no histórico do sistema (`historico_logs`).
+  - Atualização do painel do gestor (`gestor.html`) para inicializar dados a partir do banco de dados (fetches assíncronos) e validar alocações em tempo real seguindo normas da CLT (interjornada de 11h, intrajornada, limite de 8h/12h diárias, restrições médicas, férias programadas).
+  - Atualização do painel do operador (`operador.html`) para recuperar escalas ativas do banco, usar o horário oficial do servidor (respeitando a cidade/fuso horário do seu posto cadastrado) para batidas de ponto, marcas d'água e registros de escalas, mitigando fraudes no relógio do dispositivo do usuário e indicando `[Offline]` como fallback seguro.
+- **Gestor de Tempo para Logout Automático por Inatividade**:
+  - Implementado monitoramento de inatividade do usuário com limite diferenciado: 5 minutos para operadores e 5 horas para gestores/admins.
+  - Redirecionamento amigável para a tela de login ([index.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/index.html)) exibindo a mensagem descritiva *"Sessão expirada por inatividade. Faça login novamente."* e limpando parâmetros do histórico do navegador.
+- **Check-in e Check-out com Selfie Watermarkada**:
+  - Implementado sistema de captura de foto (selfie) obrigatória ao bater ponto (Check-in e Checkout) em [operador.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/operador.html).
+  - A foto capturada é redimensionada via Canvas para 320x240px e recebe uma estampa/marca d'água semi-transparente contendo o nome/usuário do operador, data/hora da captura e as coordenadas de geolocalização do dispositivo (latitude e longitude capturadas no login).
+  - Adicionado ícone de câmera (📷) nos logs de escala do operador e no painel do gestor ([gestor.html](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/gestor.html)) para abrir um modal de visualização da foto correspondente.
+- **Painel de Testes Automatizados (SGO TEST PANEL)**:
+  - Adicionado painel de testes flutuante ativo via query string `?testMode=true` que permite simular de forma limpa e programática:
+    - Mock de localização GPS com coordenadas fixas de São Paulo.
+    - Simulação de Check-in e Checkout com foto mockada (PNG verde base64), contornando diálogos de arquivos do sistema operacional e facilitando testes automatizados/agente.
+    - Simulação rápida de inatividade de 6 minutos para testar o redirecionamento automático de sessão expirada.
+  - Implementado mecanismo de invalidação automática de cache na inicialização do `testMode` (unregistrando service workers antigos e limpando caches).
+- **Service Worker (Atualização)**:
+  - Incrementado o versionamento do cache em [service-worker.js](file:///c:/Users/mario.henrique/Desktop/Git_SGO/sgo_mvp/service-worker.js) to `'sgo-mvp-v2'` para forçar a atualização de arquivos em cache nos dispositivos dos operadores e gestores.
+
 ### [2026-06-18]
 - **Correção de Segurança e Usabilidade no Logout**:
   - Adicionada verificação de privilégios (`roles`) na função `loadUser` em [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html). Operadores comuns tentando acessar o painel de gestão diretamente via URL são bloqueados e redirecionados para a tela de login.
