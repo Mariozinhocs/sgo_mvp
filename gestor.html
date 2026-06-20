@@ -679,9 +679,14 @@
   };
 
   window.abrirModalListaCompleta = function() {
-    renderOperadores();
-    document.getElementById('modalListaCompleta').classList.add('open');
-    document.getElementById('modalListaCompleta').setAttribute('aria-hidden', 'false');
+    try {
+      renderOperadores();
+      document.getElementById('modalListaCompleta').classList.add('open');
+      document.getElementById('modalListaCompleta').setAttribute('aria-hidden', 'false');
+    } catch (e) {
+      alert("Erro ao renderizar ou abrir a lista completa: " + e.message);
+      console.error(e);
+    }
   };
 
   window.fecharModalListaCompleta = function() {
@@ -1119,7 +1124,7 @@
   function buscarOperadoresDoServidor() {
     fetch('api/obter_operadores.php')
       .then(r => {
-        if (!r.ok) throw new Error('Falha ao buscar dados.');
+        if (!r.ok) throw new Error('Falha HTTP ao buscar operadores (' + r.status + ').');
         return r.json();
       })
       .then(data => {
@@ -1158,10 +1163,13 @@
           if (MOCK_OPERADORES.length > 0) {
             loadOperador(0);
           }
+        } else {
+          alert('Erro do servidor ao carregar operadores: ' + (data.erro || 'Desconhecido'));
         }
       })
       .catch(err => {
         console.error('Erro ao sincronizar operadores:', err);
+        alert('Falha de comunicação com o banco de dados (Operadores): ' + err.message);
       });
   }
 
@@ -1568,20 +1576,26 @@
   document.getElementById('btnHistoricoPosto').addEventListener('click',()=>setSubTab('sub-historico'));
   document.getElementById('btnHistoricoOperador').addEventListener('click',()=>setSubTab('sub-historico'));
   document.getElementById('btnLoadPosto').addEventListener('click',()=>loadPosto(parseInt(selectEditPosto.value||'0',10)));
-  document.getElementById('btnLoadOperador').addEventListener('click',()=>{
-    const val = (document.getElementById('inputEditOperador').value || '').trim().toLowerCase();
-    const idx = MOCK_OPERADORES.findIndex(o => o.nome.toLowerCase() === val);
-    if (idx !== -1) {
-      loadOperador(idx);
-    } else {
-      alert('Operador não encontrado. Pesquise e escolha um nome da lista sugerida.');
-    }
-  });
+  const btnLoadOperador = document.getElementById('btnLoadOperador');
+  if (btnLoadOperador) {
+    btnLoadOperador.addEventListener('click',()=>{
+      const val = (document.getElementById('inputEditOperador').value || '').trim().toLowerCase();
+      const idx = MOCK_OPERADORES.findIndex(o => o.nome.toLowerCase() === val);
+      if (idx !== -1) {
+        loadOperador(idx);
+      } else {
+        alert('Operador não encontrado. Pesquise e escolha um nome da lista sugerida.');
+      }
+    });
+  }
   document.getElementById('btnNovoPosto').addEventListener('click',()=>{ currentPostoId=0; loadPosto(-1); });
-  document.getElementById('btnNovoOperador').addEventListener('click',()=>{
-    opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
-    syncOperadorForm();
-  });
+  const btnNovoOperador = document.getElementById('btnNovoOperador');
+  if (btnNovoOperador) {
+    btnNovoOperador.addEventListener('click',()=>{
+      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
+      syncOperadorForm();
+    });
+  }
 
   document.getElementById('tbodyPostos').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.postoNome) openPosto(tr.dataset.postoNome); });
   document.getElementById('tbodyEquipes').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(tr?.dataset.equipeNome) openEquipe(tr.dataset.equipeNome); });
