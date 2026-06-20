@@ -1,5 +1,7 @@
-# Script de Deploy via FTP no ambiente de Homologação (Staging)
-# Uso: .\deploy-staging.ps1
+[CmdletBinding()]
+param(
+    [switch]$OnlyChanged
+)
 
 $configFile = "ftp_config.json"
 if (-not (Test-Path $configFile)) {
@@ -27,14 +29,51 @@ Write-Host "Iniciando deploy para staging: $ftpHost$ftpPath" -ForegroundColor Cy
 $ignoredPatterns = @(
     '\\\.git',
     '\\\.gitignore',
-    'ftp_config\\\.json',
-    'deploy-staging\\\.ps1',
-    'deploy-production\\\.ps1',
-    'database\\\.sql',
-    'project_memory\\\.md',
-    'README\\\.md',
+    'ftp_config\.json$',
+    'deploy-staging\.ps1$',
+    'deploy-production\.ps1$',
+    'database\.sql$',
+    'project_memory\.md$',
+    'README\.md$',
     '\\\.gemini'
 )
+
+# Coleta lista de arquivos alterados via git se o modo OnlyChanged estiver ativo
+$changedFilesList = @()
+if ($OnlyChanged) {
+    Write-Host "Modo OnlyChanged ativo. Identificando arquivos alterados..." -ForegroundColor Yellow
+    if (Test-Path .git) {
+        # Alterações não commitadas (staged + unstaged)
+        $gitDiff = git diff --name-only 2>$null
+        $gitDiffStaged = git diff --cached --name-only 2>$null
+        $gitUntracked = git ls-files --others --exclude-standard 2>$null
+        
+        if ($gitDiff) { $changedFilesList += $gitDiff }
+        if ($gitDiffStaged) { $changedFilesList += $gitDiffStaged }
+        if ($gitUntracked) { $changedFilesList += $gitUntracked }
+        
+        # Alterações commitadas localmente que ainda não foram enviadas (comparado com origin/main)
+        git rev-parse --verify origin/main 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $gitUnpushed = git diff --name-only origin/main..HEAD 2>$null
+            if ($gitUnpushed) { $changedFilesList += $gitUnpushed }
+        }
+        
+        # Alterações do último commit (HEAD~1..HEAD)
+        $gitLastCommit = git diff --name-only HEAD~1..HEAD 2>$null
+        if ($gitLastCommit) { $changedFilesList += $gitLastCommit }
+        
+        # Normalização dos caminhos
+        $changedFilesList = $changedFilesList | Where-Object { $_ } | ForEach-Object { $_.Replace("\", "/").TrimStart('/') } | Select-Object -Unique
+        Write-Host "Arquivos alterados detectados via git: ($($changedFilesList.Count) arquivos)" -ForegroundColor Cyan
+        foreach ($f in $changedFilesList) {
+            Write-Host "  - $f" -ForegroundColor Gray
+        }
+    } else {
+        Write-Warning "Repositório git não detectado no diretório atual. Todos os arquivos serão enviados."
+        $OnlyChanged = $false
+    }
+}
 
 # Coleta todos os arquivos recursivamente, exceto os ignorados
 $files = Get-ChildItem -Path . -Recurse -File | Where-Object {
@@ -46,7 +85,16 @@ $files = Get-ChildItem -Path . -Recurse -File | Where-Object {
             break
         }
     }
-    -not $shouldIgnore
+    if ($shouldIgnore) {
+        return $false
+    }
+    
+    if ($OnlyChanged) {
+        $normRel = $relativePath.Replace("\", "/").TrimStart('/')
+        return $changedFilesList -contains $normRel
+    }
+    
+    return $true
 }
 
 # Função auxiliar para criar diretório remoto via FTP
