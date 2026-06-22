@@ -75,6 +75,30 @@ foreach ($alterMensagens as $sql) {
     runQuery($pdo, $sql, $logs, $success);
 }
 
+// 5. Criar tabelas equipes e equipe_operadores se não existirem
+$createTables = [
+    "CREATE TABLE IF NOT EXISTS equipes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        posto_id INT NULL,
+        turno VARCHAR(50) DEFAULT 'Comercial',
+        lider VARCHAR(100) NULL,
+        FOREIGN KEY (posto_id) REFERENCES postos(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+    
+    "CREATE TABLE IF NOT EXISTS equipe_operadores (
+        equipe_id INT NOT NULL,
+        usuario_id INT NOT NULL,
+        PRIMARY KEY (equipe_id, usuario_id),
+        FOREIGN KEY (equipe_id) REFERENCES equipes(id) ON DELETE CASCADE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+];
+
+foreach ($createTables as $sql) {
+    runQuery($pdo, $sql, $logs, $success);
+}
+
 echo json_encode([
     "sucesso" => $success,
     "logs" => $logs
