@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     roles VARCHAR(100) NOT NULL, -- Papéis separados por vírgula (ex: "OPERADOR", "GESTOR", "ADMIN,GESTOR")
     posto_principal VARCHAR(100) DEFAULT 'Centro de Cooperação da Cidade',
     status VARCHAR(20) DEFAULT 'ATIVO',
+    scope_type VARCHAR(50) DEFAULT 'GLOBAL',
+    scope_value VARCHAR(100) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -99,10 +101,11 @@ CREATE TABLE IF NOT EXISTS historico_logs (
 
 -- Inserção dos usuários mockados (Senha padrão para todos é '123' usando password_hash padrão do PHP)
 -- Hash gerado de '123': $2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q
-INSERT INTO usuarios (nome, matricula, usuario, senha, roles) VALUES 
-('User User', '00001', 'user.user', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'OPERADOR'),
-('Gestor Gestor', '90001', 'gestor.gestor', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'GESTOR'),
-('Admin Admin', '99999', 'admin.admin', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'ADMIN,GESTOR');
+INSERT INTO usuarios (nome, matricula, usuario, senha, roles, scope_type, scope_value) VALUES 
+('User User', '00001', 'user.user', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'OPERADOR', 'UNIDADE', 'Posto Central'),
+('Supervisor Teste', '80001', 'supervisor.teste', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'SUPERVISOR', 'UNIDADE', 'Posto Central'),
+('Gestor Gestor', '90001', 'gestor.gestor', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'GESTOR', 'UNIDADE', 'Posto Central'),
+('Admin Admin', '99999', 'admin.admin', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZgG236nCgD.x3Y11G450Cq9k99n2q', 'ADMIN', 'GLOBAL', NULL);
 
 -- Inserção de dados iniciais de postos para testes
 INSERT INTO postos (nome, cidade, status) VALUES

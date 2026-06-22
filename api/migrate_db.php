@@ -34,7 +34,10 @@ $alterUsuarios = [
     "ALTER TABLE usuarios ADD COLUMN restricoes_medicas TEXT NULL",
     "ALTER TABLE usuarios ADD COLUMN qualificacoes TEXT NULL",
     "ALTER TABLE usuarios ADD COLUMN ferias_programadas VARCHAR(100) NULL",
-    "ALTER TABLE usuarios ADD COLUMN afastamentos VARCHAR(100) NULL"
+    "ALTER TABLE usuarios ADD COLUMN afastamentos VARCHAR(100) NULL",
+    "ALTER TABLE usuarios ADD COLUMN foto_perfil LONGTEXT NULL",
+    "ALTER TABLE usuarios ADD COLUMN scope_type VARCHAR(50) DEFAULT 'GLOBAL'",
+    "ALTER TABLE usuarios ADD COLUMN scope_value VARCHAR(100) DEFAULT NULL"
 ];
 
 foreach ($alterUsuarios as $sql) {
@@ -60,7 +63,20 @@ foreach ($alterEscalas as $sql) {
     runQuery($pdo, $sql, $logs, $success);
 }
 
+// 4. Alterar tabela de mensagens para adicionar destinatários
+$alterMensagens = [
+    "ALTER TABLE mensagens ADD COLUMN destinatario_id INT NULL",
+    "ALTER TABLE mensagens ADD COLUMN posto_id INT NULL",
+    "ALTER TABLE mensagens ADD COLUMN equipe_id INT NULL",
+    "ALTER TABLE mensagens ADD COLUMN tipo_destinatario VARCHAR(20) DEFAULT 'INDIVIDUAL'"
+];
+
+foreach ($alterMensagens as $sql) {
+    runQuery($pdo, $sql, $logs, $success);
+}
+
 echo json_encode([
     "sucesso" => $success,
     "logs" => $logs
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+

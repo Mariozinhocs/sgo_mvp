@@ -50,7 +50,9 @@ try {
                     "matricula" => $userRow['matricula'],
                     // Transforma os papéis de string separada por vírgula em array
                     "roles" => array_map('trim', explode(',', $userRow['roles'])),
-                    "postoPrincipal" => $userRow['posto_principal']
+                    "postoPrincipal" => $userRow['posto_principal'],
+                    "scope_type" => $userRow['scope_type'] ?? 'GLOBAL',
+                    "scope_value" => $userRow['scope_value'] ?? NULL
                 ]
             ], JSON_UNESCAPED_UNICODE);
             exit;

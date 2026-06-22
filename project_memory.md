@@ -47,6 +47,13 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
 ### [2026-06-20]
+- **Unificação das Funcionalidades de Escala na Aba de Operadores**:
+  - Removido a aba principal "Escalas" da barra de navegação superior (`top-tabs`) do painel do gestor.
+  - Integrado a funcionalidade de escalas como um novo botão de cardápio ("Escalas") dentro do menu de **Gestão de Operadores** em [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html).
+  - Convertido a antiga seção de escala (`tab-escalas`) em um modal sobreposto de largura total (`modalEscalas`) para alinhar com o restante do fluxo de modais da gestão de operadores.
+  - Corrigido bug de aninhamento de tags HTML (div de fechamento ausente no container `#modalEscalas`) que causava a ocultação acidental de todas as abas subsequentes (como "Operadores" e "Mensagens").
+- **Correção Visual no Painel do Gestor**:
+  - Correção na folha de estilos de [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html), adicionando as classes CSS `.modal-backdrop` e `.modal-card` que estavam ausentes, o que causava a exibição indevida do modal "Foto do Ponto" e do botão "Fechar" diretamente na tela inicial do painel.
 - **Visualização de Perfil e Histórico de Carreira**:
   - Implementado o modal de visualização de perfil (`modalVisualizarPerfil`) com abas para dados gerais do operador e histórico de carreira.
   - Desenvolvida a lógica de geração de linha do tempo de carreira (`gerarLinhaDoTempoCarreira`) de forma dinâmica e determinística com base nos dados do operador (data de admissão calculada a partir da matrícula, treinamentos, qualificações registradas e períodos de férias).

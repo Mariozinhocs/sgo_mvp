@@ -28,6 +28,8 @@ $senha = trim($data['senha'] ?? '');
 $roles = $data['roles'] ?? 'OPERADOR';
 $postoPrincipal = trim($data['postoPrincipal'] ?? 'Centro de Cooperação da Cidade');
 $status = trim($data['status'] ?? 'ATIVO');
+$scopeType = trim($data['scopeType'] ?? 'GLOBAL');
+$scopeValue = isset($data['scopeValue']) && $data['scopeValue'] !== '' ? trim($data['scopeValue']) : null;
 
 $cpf = trim($data['cpf'] ?? '');
 $cargo = trim($data['cargo'] ?? '');
@@ -40,6 +42,7 @@ $restricoesMedicas = trim($data['restricoesMedicas'] ?? '');
 $qualificacoes = trim($data['qualificacoes'] ?? '');
 $feriasProgramadas = trim($data['feriasProgramadas'] ?? '');
 $afastamentos = trim($data['afastamentos'] ?? '');
+$fotoPerfil = trim($data['fotoPerfil'] ?? '');
 
 // Converte roles se for enviado como array (caso comum do frontend)
 if (is_array($roles)) {
@@ -92,7 +95,7 @@ try {
         if (!empty($senha)) {
             // Se informou uma nova senha, gera o hash e atualiza tudo
             $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, senha = :senha, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos WHERE id = :id";
+            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, senha = :senha, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos, foto_perfil = :foto_perfil, scope_type = :scopeType, scope_value = :scopeValue WHERE id = :id";
             $params = [
                 'nome' => $nome,
                 'matricula' => $matricula,
@@ -112,11 +115,14 @@ try {
                 'qualificacoes' => $qualificacoes,
                 'ferias_programadas' => $feriasProgramadas,
                 'afastamentos' => $afastamentos,
+                'foto_perfil' => $fotoPerfil,
+                'scopeType' => $scopeType,
+                'scopeValue' => $scopeValue,
                 'id' => $id
             ];
         } else {
             // Se não informou senha, não altera a senha atual
-            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos WHERE id = :id";
+            $sql = "UPDATE usuarios SET nome = :nome, matricula = :matricula, usuario = :usuario, roles = :roles, posto_principal = :postoPrincipal, status = :status, cpf = :cpf, cargo = :cargo, hierarquia = :hierarquia, jornada_contratual = :jornada_contratual, turno_atual = :turno_atual, preferencia_turno = :preferencia_turno, disponibilidade = :disponibilidade, restricoes_medicas = :restricoes_medicas, qualificacoes = :qualificacoes, ferias_programadas = :ferias_programadas, afastamentos = :afastamentos, foto_perfil = :foto_perfil, scope_type = :scopeType, scope_value = :scopeValue WHERE id = :id";
             $params = [
                 'nome' => $nome,
                 'matricula' => $matricula,
@@ -135,6 +141,9 @@ try {
                 'qualificacoes' => $qualificacoes,
                 'ferias_programadas' => $feriasProgramadas,
                 'afastamentos' => $afastamentos,
+                'foto_perfil' => $fotoPerfil,
+                'scopeType' => $scopeType,
+                'scopeValue' => $scopeValue,
                 'id' => $id
             ];
         }
@@ -159,7 +168,7 @@ try {
         // --- MODO CRIAÇÃO (INSERT) ---
         $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
         
-        $sql = "INSERT INTO usuarios (nome, matricula, usuario, senha, roles, posto_principal, status, cpf, cargo, hierarquia, jornada_contratual, turno_atual, preferencia_turno, disponibilidade, restricoes_medicas, qualificacoes, ferias_programadas, afastamentos) VALUES (:nome, :matricula, :usuario, :senha, :roles, :postoPrincipal, :status, :cpf, :cargo, :hierarquia, :jornada_contratual, :turno_atual, :preferencia_turno, :disponibilidade, :restricoes_medicas, :qualificacoes, :ferias_programadas, :afastamentos)";
+        $sql = "INSERT INTO usuarios (nome, matricula, usuario, senha, roles, posto_principal, status, cpf, cargo, hierarquia, jornada_contratual, turno_atual, preferencia_turno, disponibilidade, restricoes_medicas, qualificacoes, ferias_programadas, afastamentos, foto_perfil, scope_type, scope_value) VALUES (:nome, :matricula, :usuario, :senha, :roles, :postoPrincipal, :status, :cpf, :cargo, :hierarquia, :jornada_contratual, :turno_atual, :preferencia_turno, :disponibilidade, :restricoes_medicas, :qualificacoes, :ferias_programadas, :afastamentos, :foto_perfil, :scopeType, :scopeValue)";
         $params = [
             'nome' => $nome,
             'matricula' => $matricula,
@@ -178,7 +187,10 @@ try {
             'restricoes_medicas' => $restricoesMedicas,
             'qualificacoes' => $qualificacoes,
             'ferias_programadas' => $feriasProgramadas,
-            'afastamentos' => $afastamentos
+            'afastamentos' => $afastamentos,
+            'foto_perfil' => $fotoPerfil,
+            'scopeType' => $scopeType,
+            'scopeValue' => $scopeValue
         ];
 
         $stmt = $pdo->prepare($sql);
