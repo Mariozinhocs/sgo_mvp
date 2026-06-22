@@ -46,6 +46,10 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-06-22]
+- **Correção de Erro de Sintaxe no Painel do Operador**:
+  - Removido um bloco incorreto `} catch(e) {} })();` no final da tag `<script>` em [operador.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/operador.html), resolvendo o erro de JavaScript que bloqueava a execução de todo o script e impedia o funcionamento da interface após o login.
+
 ### [2026-06-20]
 - **Unificação das Funcionalidades de Escala na Aba de Operadores**:
   - Removido a aba principal "Escalas" da barra de navegação superior (`top-tabs`) do painel do gestor.
