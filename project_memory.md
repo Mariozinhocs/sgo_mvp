@@ -46,6 +46,13 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-06-23]
+- **Reestruturação e Mapa no Painel do Gestor (Dashboard, Postos, Equipes)**:
+  - Reformuladas as abas Dashboard, Postos e Equipes do painel [gestor.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/gestor.html) com o padrão visual de "cardápio" (botões grandes), mantendo a identidade das abas de mensagens e operadores.
+  - Integrado mapa operacional interativo na aba Dashboard usando a biblioteca Leaflet. O mapa consome coordenadas geográficas e altera dinamicamente o tema visual (CartoDB Light ou Dark) conforme o modo de cor do sistema.
+  - Ajustados os redirecionamentos dos KPIs de Dashboard para abrir diretamente os sub-painéis de listagem de postos, equipes e operadores.
+  - Corrigido o bug da variável `raw` indefinida no método `renderEscalaHoje()`.
+
 ### [2026-06-22]
 - **Correção de Erro de Sintaxe no Painel do Operador**:
   - Removido um bloco incorreto `} catch(e) {} })();` no final da tag `<script>` em [operador.html](file:///c:/Users/mario/OneDrive/Área de Trabalho/sft/sgo_mvp/operador.html), resolvendo o erro de JavaScript que bloqueava a execução de todo o script e impedia o funcionamento da interface após o login.
