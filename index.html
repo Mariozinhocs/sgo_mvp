@@ -368,7 +368,12 @@
       const token = localStorage.getItem('sgo_auth_token');
       const usuarioRaw = localStorage.getItem('sgo_usuario');
       if (!token || !usuarioRaw) return;
-      window.location.href = 'operador.html';
+              const userObj = JSON.parse(usuarioRaw);
+        if (userObj.roles && (userObj.roles.includes('GESTOR') || userObj.roles.includes('ADMIN'))) {
+          window.location.href = 'gestor.html';
+        } else {
+          window.location.href = 'operador.html';
+        }
     } catch (e) {}
   })();
 
@@ -408,7 +413,12 @@
         localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
       } catch (e) {}
 
-      const prosseguirRedirect = () => { window.location.href = 'operador.html'; };
+      const prosseguirRedirect = () => { const userObj = data.usuario;
+        if (userObj.roles && (userObj.roles.includes('GESTOR') || userObj.roles.includes('ADMIN'))) {
+          window.location.href = 'gestor.html';
+        } else {
+          window.location.href = 'operador.html';
+        } };
 
       const solicitarWebcam = () => {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
