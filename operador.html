@@ -1,4 +1,4 @@
-<!doctype html>
+Ôªø<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -555,8 +555,21 @@
       Operador logado
     </div>
   </div>
-  <div class="header-right">
-    <button id="btnTheme" class="theme-toggle" type="button">
+  <div class="header-right" style="position: relative; display: flex; align-items: center; gap: 10px;">
+      <!-- NOTIFICA√á√ïES (Sininho) -->
+      <div id="btnNotificacoes" style="position: relative; cursor: pointer; padding: 5px; margin-right: 10px;" onclick="togglePainelNotificacoes()">
+        <span style="font-size: 20px;">üîî</span>
+        <div id="badgeNotificacoes" style="display: none; position: absolute; top: 0px; right: 0px; background: var(--red); color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 14px; height: 14px; text-align: center; line-height: 14px;">0</div>
+      </div>
+      <!-- PAINEL SUSPENSO -->
+      <div id="painelNotificacoes" style="display: none; position: absolute; top: 50px; right: 100px; width: 260px; background: rgba(15,23,42,0.95); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.5); z-index: 10000; overflow: hidden; backdrop-filter: blur(10px); color: white;">
+        <div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; font-size: 13px; text-align: center; background: rgba(255,255,255,0.05);">Notifica√ß√µes</div>
+        <div id="listaNotificacoes" style="max-height: 300px; overflow-y: auto; font-size: 12px;">
+          <!-- Itens injetados via JS -->
+        </div>
+      </div>
+
+      <button id="btnTheme" class="theme-toggle" type="button">
       <span class="icon" id="themeIcon">‚òÄÔ∏è</span>
       <span id="themeLabel">Light</span>
     </button>
@@ -2094,7 +2107,7 @@
       const msgNaoLidas = MOCK_MENSAGENS.filter(m => m.status === 'Enviado' && m.remetente_nome !== usuario.nome);
       if (msgNaoLidas.length > 0) {
         notificacoes.push({
-          texto: VocÍ possui  + msgNaoLidas.length +  nova(s) mensagem(ns).,
+          texto: VocÔøΩ possui  + msgNaoLidas.length +  nova(s) mensagem(ns).,
           acao: () => { togglePainelNotificacoes(); document.querySelector('.tab-button[data-tab="mensagens"]').click(); }
         });
       }
@@ -2111,7 +2124,7 @@
       const temEscalaProxMes = MOCK_ESCALAS.some(e => e.mes_referencia === strProxMes);
       if (temEscalaProxMes) {
         notificacoes.push({
-          texto: 'Sua escala do prÛximo mÍs j· est· disponÌvel!',
+          texto: 'Sua escala do prÔøΩximo mÔøΩs jÔøΩ estÔøΩ disponÔøΩvel!',
           acao: () => { togglePainelNotificacoes(); document.querySelector('.tab-button[data-tab="escala"]').click(); }
         });
       }
@@ -2137,11 +2150,11 @@
       });
     } else {
       badge.style.display = 'none';
-      lista.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--muted);">Nenhuma notificaÁ„o nova.</div>';
+      lista.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--muted);">Nenhuma notificaÔøΩÔøΩo nova.</div>';
     }
   };
 
-  // Chama verificaÁ„o de tempos em tempos e ao carregar
+  // Chama verificaÔøΩÔøΩo de tempos em tempos e ao carregar
   setTimeout(verificarNotificacoes, 2000);
   setInterval(verificarNotificacoes, 30000);
 </script>
