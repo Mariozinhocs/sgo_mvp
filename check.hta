@@ -1,0 +1,21 @@
+<html>
+<head>
+<script>
+window.onerror = function(msg, url, line, col, error) {
+    try {
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var f = fso.CreateTextFile("error.txt", true);
+        f.WriteLine(msg + " at " + line + ":" + col);
+        f.Close();
+    } catch(e) {}
+    window.close();
+};
+window.onload = function() {
+    window.close();
+};
+</script>
+</head>
+<body>
+<iframe src="gestor.html" width="100%" height="100%"></iframe>
+</body>
+</html>

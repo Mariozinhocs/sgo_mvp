@@ -1,1174 +1,4 @@
-Ôªø<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>SGO ‚Äì Painel do Gestor</title>
-  <link rel="manifest" href="./manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SGO">
-  <meta name="theme-color" content="#020826" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
-  <link rel="icon" type="image/png" href="./icons/icon-192.png" />
-  <!-- Leaflet Map CDNs -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <style>
-    :root{
-      --bg:#020617; --bg2:#0f172a; --card:#020617; --text:#e5e7eb; --muted:#9ca3af;
-      --green:#22c55e; --red:#ef4444; --yellow:#f59e0b; --border:#1f2937;
-      --lightInput:#e5e7eb; --lightBorder:#d1d5db; --btnLight:#e5e7eb; --btnDark:#111827;
-      --kpi:#0e2e20; --kpiCritical:#861211; --goodText:#8fedc2;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;background:radial-gradient(circle at top,#1d283a,#020617 58%);color:var(--text)}
-    body.theme-light{background:#f3f4f6;color:#020617}
-    body.theme-light .card{background:#fff;border-color:#d1d5db;box-shadow:0 10px 25px rgba(15,23,42,.12)}
-    body.theme-light .table-box, body.theme-light .info-box, body.theme-light .detail-box, body.theme-light .overlay-panel, body.theme-light .calendar-box, body.theme-light .panel-box{background:#f9fafb;border-color:#d1d5db}
-    body.theme-light input, body.theme-light select, body.theme-light textarea{background:var(--lightInput);color:#020617;border-color:var(--lightBorder)}
-    body.theme-light .theme-toggle{background:#e5e7eb;color:#020617;border-color:#9ca3af}
-    body.theme-light .status-badge{background:#e5e7eb;color:#374151;border-color:#9ca3af}
-    body.theme-light .status-badge.active{background:#dcfce7;color:#065f46;border-color:#16a34a}
-    body.theme-light .status-badge.inactive{background:#fee2e2;color:#7f1d1d;border-color:#dc2626}
-    body.theme-light .status-badge.pending{background:#fef3c7;color:#92400e;border-color:#d97706}
-    body.theme-light .list-row:nth-child(odd){background:#fff}
-    body.theme-light .list-row:nth-child(even){background:#f3f4f6}
-    body.theme-light .list-row:hover{background:#e5e7eb}
 
-    header{max-width:1200px;margin:0 auto;padding:14px 14px 6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .logo-box{display:flex;gap:10px;align-items:center}
-    .logo-img{width:54px;height:54px;border-radius:12px;object-fit:contain;background:#020617;border:1px solid rgba(148,163,184,.5);padding:6px}
-    .logo-title{font-size:16px;font-weight:700}
-    .logo-subtitle,.subtitle-header{font-size:11px;color:var(--muted)}
-    .header-left{display:flex;flex-direction:column;gap:4px}
-    .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .theme-toggle,.btn-exit,.secondary,.primary,button{font:inherit;border:none;border-radius:999px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-    .theme-toggle{background:rgba(15,23,42,.9);color:#e5e7eb;border:1px solid rgba(148,163,184,.6)}
-    .btn-exit{background:rgba(127,29,29,.95);color:#fee2e2;border:1px solid rgba(248,113,113,.6)}
-    .secondary{background:var(--btnDark);color:var(--text);border:1px solid rgba(148,163,184,.4)}
-    body.theme-light .secondary{background:var(--btnLight);color:#111827;border-color:#cbd5f5}
-    .primary{background:var(--green);color:#022c22;font-weight:700}
-
-    .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-    .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
-    .tab-button,.subtab-button{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--muted);cursor:pointer}
-    .tab-button{flex:1;text-align:center;padding:8px 16px;border-radius:999px;font-size:13px;display:flex;justify-content:center;align-items:center}
-    .subtab-button{padding:5px 10px;border-radius:999px;font-size:11px}
-    .tab-button.active,.subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
-    .tab-panel,.subtab-panel{display:none}
-    .tab-panel.active,.subtab-panel.active{display:block}
-
-    main{max-width:1200px;margin:0 auto;padding:8px 14px 24px}
-    .card{background:linear-gradient(145deg,#020617,#020617);border-radius:18px;padding:14px 14px 16px;border:1px solid var(--border);box-shadow:0 18px 40px rgba(15,23,42,.85);margin-bottom:14px}
-    h2{margin:0 0 6px;font-size:17px}
-    .small{font-size:12px;color:var(--muted)}
-    .row,.row-between{display:flex;gap:8px;flex-wrap:wrap}
-    .row-between{justify-content:space-between;align-items:center}
-
-    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
-    .kpi-card{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--kpi);cursor:pointer}
-    .kpi-card.critical{background:var(--kpiCritical);border-color:#b91c1c}
-    .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-    .kpi-value{margin-top:4px;font-size:26px;font-weight:800;color:var(--goodText)}
-    .kpi-card.critical .kpi-value{color:#fecaca}
-    .kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
-
-    .table-box,.info-box,.detail-box,.panel-box,.calendar-box,.shift-panel{margin-top:8px;padding:10px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(15,23,42,.8)}
-    table{width:100%;border-collapse:collapse;font-size:12px}
-    th,td{padding:4px 3px;border-bottom:1px solid rgba(31,41,55,.9);text-align:left;white-space:nowrap}
-    th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-    tr.clickable-row{cursor:pointer}
-    tr.clickable-row:hover{background:rgba(31,41,55,.7)}
-
-    .status-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;border:1px solid rgba(148,163,184,.5);color:var(--muted);gap:4px}
-    .status-badge.active{border-color:rgba(34,197,94,.8);color:#bbf7d0;background:rgba(34,197,94,.12)}
-    .status-badge.inactive{border-color:rgba(248,113,113,.8);color:#fecaca;background:rgba(248,113,113,.12)}
-    .status-badge.pending{border-color:rgba(245,158,11,.8);color:#fde68a;background:rgba(245,158,11,.12)}
-
-    .filter-input, input[type="text"], textarea, select{padding:7px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.45);background:#020617;color:var(--text);font-size:12px}
-    textarea{border-radius:10px;width:100%;min-height:90px}
-    body.theme-light .filter-input{background:#f9fafb;color:#020617;border-color:#d1d5db}
-
-    .list-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:12px;cursor:pointer}
-    .list-row:nth-child(odd){background:rgba(15,23,42,.8)}
-    .list-row:nth-child(even){background:rgba(15,23,42,.6)}
-    .list-row:hover{background:rgba(31,41,55,.9)}
-
-    .overlay-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;z-index:9999;padding:18px}
-    .overlay-backdrop.open{display:flex}
-    .overlay-panel{width:min(1080px,100%);max-height:min(90vh,980px);overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.5);background:rgba(15,23,42,.98);border:1px solid var(--border);border-radius:14px;padding:12px}
-    .overlay-title{font-size:15px;font-weight:800}
-    .overlay-sub{font-size:11px;color:var(--muted);margin-top:2px}
-    .overlay-header{display:flex;justify-content:space-between;gap:8px;align-items:center}
-    .overlay-section{margin-top:10px;padding-top:10px;border-top:1px solid rgba(148,163,184,.16)}
-    .overlay-list{margin:6px 0 0;padding-left:16px;font-size:12px}
-    .overlay-list li{margin-bottom:6px}
-
-    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));gap:6px}
-    .day-cell{min-height:96px;border-radius:10px;border:1px solid rgba(148,163,184,.25);background:rgba(2,6,23,.45);padding:6px;font-size:11px}
-    .day-head{font-weight:700;margin-bottom:6px;color:var(--muted)}
-    .shift-chip{display:block;margin-bottom:4px;padding:4px 6px;border-radius:8px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);font-size:11px}
-
-    .legend{display:flex;gap:8px;flex-wrap:wrap}
-    .legend-item{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
-    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
-    .dot.green{background:#22c55e}.dot.yellow{background:#f59e0b}.dot.red{background:#ef4444}.dot.gray{background:#64748b}
-    .section-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:12px}
-    @media (max-width: 900px){ .section-grid{grid-template-columns:1fr} .calendar-grid{grid-template-columns:repeat(2,minmax(90px,1fr))} }
-
-    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
-    .form-grid .full{grid-column:1 / -1}
-    .field{display:flex;flex-direction:column;gap:4px}
-    .field label{font-size:11px;color:var(--muted)}
-    .validation{font-size:11px;color:#fecaca;margin-top:4px;display:none}
-    .validation.show{display:block}
-    .history-item{padding:8px 0;border-bottom:1px solid rgba(148,163,184,.14);font-size:12px}
-    .history-item:last-child{border-bottom:none}
-    .tabs-inline{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .tabs-inline button{padding:6px 10px;font-size:11px}
-
-    /* Card√°pio de Operadores Styles */
-    .cardapio-operadores {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      margin-top: 15px;
-    }
-    .cardapio-card {
-      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.85));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 35px 24px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-    }
-    .cardapio-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--green);
-      box-shadow: 0 12px 28px rgba(34, 197, 94, 0.15);
-      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
-    }
-    .cardapio-icon {
-      font-size: 42px;
-      margin-bottom: 8px;
-      filter: drop-shadow(0 2px 8px rgba(34, 197, 94, 0.25));
-      transition: transform 0.3s ease;
-    }
-    .cardapio-card:hover .cardapio-icon {
-      transform: scale(1.12);
-    }
-    .cardapio-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .cardapio-desc {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    /* Light Theme Support for Cardapio */
-    body.theme-light .cardapio-card {
-      background: #ffffff;
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
-    }
-    body.theme-light .cardapio-card:hover {
-      border-color: #16a34a;
-      box-shadow: 0 10px 20px rgba(22, 163, 74, 0.1);
-      background: #f8fafc;
-    }
-    body.theme-light .cardapio-title {
-      color: #0f172a;
-    }
-
-    /* Career Timeline Styles */
-    .career-timeline {
-      position: relative;
-      padding-left: 20px;
-      margin: 10px 0;
-      border-left: 2px solid var(--border);
-    }
-    body.theme-light .career-timeline {
-      border-left-color: #cbd5e1;
-    }
-    .timeline-item {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    .timeline-item:last-child {
-      margin-bottom: 0;
-    }
-    .timeline-badge {
-      position: absolute;
-      left: -26px;
-      top: 2px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--green);
-      border: 2px solid var(--bg);
-    }
-    body.theme-light .timeline-badge {
-      border-color: #ffffff;
-      background: #16a34a;
-    }
-    .timeline-date {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .timeline-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      margin-top: 2px;
-    }
-    body.theme-light .timeline-title {
-      color: #0f172a;
-    }
-    .timeline-desc {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-
-    /* Modal Backdrop & Card Styles */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.75);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 31000;
-      pointer-events: none;
-    }
-    .modal-card {
-      background: #020617;
-      border-radius: 16px;
-      padding: 16px 18px;
-      border: 1px solid var(--border);
-      max-width: 320px;
-      width: 100%;
-    }
-    body.theme-light .modal-card {
-      background: #ffffff;
-    }
-
-    /* Leaflet Map Styles */
-    #map {
-      width: 100%;
-      height: 400px;
-      border-radius: 12px;
-      margin-top: 10px;
-      border: 1px solid var(--border);
-      background: #020617;
-      z-index: 10;
-    }
-    body.theme-light #map {
-      border-color: #cbd5e1;
-      background: #f1f5f9;
-    }
-    .leaflet-container {
-      transition: filter 0.3s ease;
-    }
-    body:not(.theme-light) .leaflet-container {
-      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-    }
-    body:not(.theme-light) .leaflet-marker-icon {
-      filter: invert(100%) hue-rotate(180deg);
-    }
-  </style>
-</head>
-<body>
-<div id="overlayBackdrop" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayDesc">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="overlayTitle">Detalhe</div>
-        <div class="overlay-sub" id="overlayDesc">Sess√£o aberta.</div>
-      </div>
-      <button type="button" class="secondary" id="btnCloseOverlay">Fechar</button>
-    </div>
-    <div id="overlayContent"></div>
-  </div>
-</div>
-
-<!-- MODAL VISUALIZA√á√ÉO DE FOTO DO PONTO -->
-<div id="modalFoto" class="modal-backdrop">
-  <div class="modal-card" style="max-width:360px;">
-    <h3 style="margin:0 0 6px;font-size:15px;" id="modalFotoTitulo">Foto do Ponto</h3>
-    <div style="text-align:center;margin:10px 0;">
-      <img id="imgModalFoto" src="" style="max-width:100%;max-height:280px;border-radius:10px;border:1px solid var(--border-subtle);" />
-    </div>
-    <div class="row" style="margin-top:8px;justify-content:center;">
-      <button id="btnFecharModalFoto" class="primary" type="button">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<header>
-  <div class="header-left">
-    <div class="logo-box">
-      <img src="icons/icon-512.png" alt="Logo SGO" class="logo-img">
-      <div class="logo-text">
-        <div class="logo-title">SGO ‚Äì Gestor</div>
-        <div class="logo-subtitle">Painel de Gest√£o de Opera√ß√µes</div>
-      </div>
-    </div>
-    <div class="subtitle-header" id="subtitleGestor">Gestor logado</div>
-  </div>
-  <div class="header-right" style="position: relative; display: flex; align-items: center; gap: 10px;">
-      <!-- NOTIFICA√á√ïES (Sininho) -->
-      <div id="btnNotificacoes" style="position: relative; cursor: pointer; padding: 5px; margin-right: 10px;" onclick="togglePainelNotificacoes()">
-        <span style="font-size: 20px;">üîî</span>
-        <div id="badgeNotificacoes" style="display: none; position: absolute; top: 0px; right: 0px; background: var(--red); color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 14px; height: 14px; text-align: center; line-height: 14px;">0</div>
-      </div>
-      <!-- PAINEL SUSPENSO -->
-      <div id="painelNotificacoes" style="display: none; position: absolute; top: 50px; right: 100px; width: 260px; background: rgba(15,23,42,0.95); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.5); z-index: 10000; overflow: hidden; backdrop-filter: blur(10px); color: white;">
-        <div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; font-size: 13px; text-align: center; background: rgba(255,255,255,0.05);">Notifica√ß√µes (Gestor)</div>
-        <div id="listaNotificacoes" style="max-height: 300px; overflow-y: auto; font-size: 12px;">
-          <!-- Itens injetados via JS -->
-        </div>
-      </div>
-
-      <button id="btnTheme" class="theme-toggle" type="button"><span id="themeIcon">‚òÄÔ∏è</span><span id="themeLabel">Light</span></button>
-    <button class="secondary" type="button" id="btnVoltarOperador">Painel do operador</button>
-    <button class="btn-exit" type="button" id="btnSair"><span>‚èè</span>Sair</button>
-  </div>
-</header>
-
-<nav class="top-tabs">
-  <button class="tab-button active" data-tab="tab-dashboard">In√≠cio</button>
-  <button class="tab-button" data-tab="tab-postos">Postos</button>
-  <button class="tab-button" data-tab="tab-equipes">Equipes</button>
-  <button class="tab-button" data-tab="tab-operadores">Operadores</button>
-  <button class="tab-button" data-tab="tab-mensagens">Mensagens</button>
-</nav>
-
-<main>
-  <section id="tab-dashboard" class="tab-panel active">
-    <section class="card">
-      <h2>In√≠cio</h2>
-      <p class="small">Selecione uma das op√ß√µes abaixo para visualizar indicadores, logs ou o mapa operacional.</p>
-
-      <!-- CARDAPIO DO DASHBOARD -->
-      <div id="dashboardCardapio" class="cardapio-operadores" style="margin-top: 15px;">
-        <div class="cardapio-card" onclick="showDashboardSubPanel('dash-indicadores')">
-          <div class="cardapio-icon">üìä</div>
-          <div class="cardapio-title">Dashboard</div>
-          <div class="cardapio-desc">Visualizar KPIs operacionais de postos, operadores, equipes e pend√™ncias.</div>
-        </div>
-        <div class="cardapio-card" onclick="showDashboardSubPanel('dash-logs')">
-          <div class="cardapio-icon">‚è±Ô∏è</div>
-          <div class="cardapio-title">Escala de Hoje (Logs)</div>
-          <div class="cardapio-desc">Monitorar os logs de status e registros de ponto em tempo real de hoje.</div>
-        </div>
-        <div class="cardapio-card" onclick="showDashboardSubPanel('dash-mapa')">
-          <div class="cardapio-icon">üó∫Ô∏è</div>
-          <div class="cardapio-title">Mapa Operacional</div>
-          <div class="cardapio-desc">Visualizar a localiza√ß√£o geogr√°fica dos postos de trabalho e operadores ativos.</div>
-        </div>
-      </div>
-
-      <!-- BARRA DE SUB-ABAS DO DASHBOARD (OCULTA POR PADR√ÉO) -->
-      <div class="subtabs" id="dashboardSubtabs" style="display: none; margin-top: 15px;" role="tablist" aria-label="Sub-abas do Dashboard">
-        <button class="subtab-button active" data-dashtab="dash-indicadores" onclick="showDashboardSubPanel('dash-indicadores')" role="tab">Indicadores Gerais</button>
-        <button class="subtab-button" data-dashtab="dash-logs" onclick="showDashboardSubPanel('dash-logs')" role="tab">Escala de Hoje</button>
-        <button class="subtab-button" data-dashtab="dash-mapa" onclick="showDashboardSubPanel('dash-mapa')" role="tab">Mapa Operacional</button>
-      </div>
-
-      <!-- PAINEL: Indicadores Gerais -->
-      <div id="dash-indicadores" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">‚Üê Voltar</button>
-        </div>
-        <div class="kpi-grid">
-          <div class="kpi-card" data-goto-tab="tab-postos"><div class="kpi-label">Postos ativos</div><div class="kpi-value" id="kpiPostosAtivos">0</div><div class="kpi-sub">Total: <span id="kpiPostosTotal">0</span></div></div>
-          <div class="kpi-card" data-goto-tab="tab-operadores"><div class="kpi-label">Operadores ativos</div><div class="kpi-value" id="kpiOperadoresAtivos">0</div><div class="kpi-sub">Total: <span id="kpiOperadoresTotal">0</span></div></div>
-          <div class="kpi-card" data-goto-tab="tab-equipes"><div class="kpi-label">Equipes ativas</div><div class="kpi-value" id="kpiEquipesAtivas">0</div><div class="kpi-sub">Total: <span id="kpiEquipesTotal">0</span></div></div>
-          <div class="kpi-card critical" data-goto-tab="tab-escalas"><div class="kpi-label">Pend√™ncias</div><div class="kpi-value" id="kpiPendencias">0</div><div class="kpi-sub">Trocas, folgas e aprova√ß√µes</div></div>
-        </div>
-      </div>
-
-      <!-- PAINEL: Escala de Hoje (Logs) -->
-      <div id="dash-logs" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">‚Üê Voltar</button>
-        </div>
-        <div class="table-box">
-          <table>
-            <thead><tr><th>Operador</th><th>Matr√≠cula</th><th>Check-in</th><th>Intervalo In√≠cio</th><th>Intervalo Fim</th><th>Check-out</th><th>Coordenadas</th><th>Status</th></tr></thead>
-            <tbody id="tbodyEscalaHojeGestor"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- PAINEL: Mapa Operacional -->
-      <div id="dash-mapa" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">‚Üê Voltar</button>
-          <select id="mapCityFilter" class="filter-input" style="width:auto; display:inline-block; margin-left:10px;" onchange="filtrarMapaPorCidade(this.value)">
-            <option value="">Todas as Cidades</option>
-          </select>
-        </div>
-        <div id="map"></div>
-      </div>
-    </section>
-  </section>
-
-  <section id="tab-postos" class="tab-panel">
-    <section class="card">
-      <h2>Gest√£o de Postos</h2>
-      <p class="small">Selecione uma das op√ß√µes abaixo para gerenciar os postos de trabalho e suas regras CLT.</p>
-
-      <!-- CARDAPIO DE POSTOS -->
-      <div id="postosCardapio" class="cardapio-operadores" style="margin-top: 15px;">
-        <div class="cardapio-card" onclick="abrirCadastroPostoDireto()">
-          <div class="cardapio-icon">üè¢‚ûï</div>
-          <div class="cardapio-title">Cadastrar Posto</div>
-          <div class="cardapio-desc">Adicionar um novo posto de trabalho com configura√ß√µes de intervalo, adicionais e jornada.</div>
-        </div>
-        <div class="cardapio-card" onclick="showPostosSubPanel('postos-lista')">
-          <div class="cardapio-icon">üè¢</div>
-          <div class="cardapio-title">Lista de Postos</div>
-          <div class="cardapio-desc">Visualizar todos os postos cadastrados, filtrar e conferir sess√µes ativas de operadores e equipes.</div>
-        </div>
-      </div>
-
-      <!-- PAINEL: Lista de Postos (Oculto por padr√£o) -->
-      <div id="postos-lista" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuPostos()">‚Üê Voltar ao Menu de Postos</button>
-          <div class="row" style="gap: 8px; align-items: center;">
-            <input id="filtroPostos" class="filter-input" placeholder="Filtrar por nome/cidade">
-            <button id="btnNovoPostoPrincipal" class="primary" type="button" onclick="abrirCadastroPostoDireto()" style="padding: 6px 12px; font-size:11px;">+ Novo Posto</button>
-          </div>
-        </div>
-        <div class="table-box">
-          <table><thead><tr><th>Posto</th><th>Cidade</th><th>Status</th><th>Operadores</th><th>Respons√°vel</th></tr></thead><tbody id="tbodyPostos"></tbody></table>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <section id="tab-equipes" class="tab-panel">
-    <section class="card">
-      <h2>Gest√£o de Equipes</h2>
-      <p class="small">Selecione uma das op√ß√µes abaixo para gerenciar as equipes operacionais e l√≠deres vinculados.</p>
-
-      <!-- CARDAPIO DE EQUIPES -->
-      <div id="equipesCardapio" class="cardapio-operadores" style="margin-top: 15px;">
-        <div class="cardapio-card" onclick="abrirCadastroEquipeDireto()">
-          <div class="cardapio-icon">üë•‚ûï</div>
-          <div class="cardapio-title">Cadastrar Equipe</div>
-          <div class="cardapio-desc">Adicionar uma nova equipe operacional com turno, l√≠der e posto vinculado.</div>
-        </div>
-        <div class="cardapio-card" onclick="showEquipesSubPanel('equipes-lista')">
-          <div class="cardapio-icon">üë•</div>
-          <div class="cardapio-title">Lista de Equipes</div>
-          <div class="cardapio-desc">Visualizar equipes operacionais, membros empenhados e escalas vinculadas.</div>
-        </div>
-      </div>
-
-      <!-- PAINEL: Lista de Equipes (Oculto por padr√£o) -->
-      <div id="equipes-lista" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuEquipes()">‚Üê Voltar ao Menu de Equipes</button>
-          <div class="row" style="gap: 8px; align-items: center;">
-            <input id="filtroEquipes" class="filter-input" placeholder="Filtrar por equipe/posto/turno">
-            <button id="btnNovaEquipePrincipal" class="primary" type="button" onclick="abrirCadastroEquipeDireto()" style="padding: 6px 12px; font-size:11px;">+ Nova Equipe</button>
-          </div>
-        </div>
-        <div class="table-box">
-          <table><thead><tr><th>Equipe</th><th>Posto</th><th>Turno</th><th>Operadores</th></tr></thead><tbody id="tbodyEquipes"></tbody></table>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- MODAL ESCALAS -->
-  <div id="modalEscalas" class="overlay-backdrop" aria-hidden="true">
-    <div class="overlay-panel" style="width: min(1180px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalEscalasTitle">
-      <div class="overlay-header">
-        <div>
-          <div class="overlay-title" id="modalEscalasTitle">Gest√£o de Escalas</div>
-          <div class="overlay-sub">Controle de escala por posto, com planejamento, disponibilidade, trocas e hist√≥rico.</div>
-        </div>
-        <button type="button" class="secondary" onclick="fecharModalEscalas()">Fechar</button>
-      </div>
-      <div style="margin-top: 15px;">
-      
-      <!-- CARDAPIO DE ESCALAS (MENU INICIAL) -->
-      <div id="scalesCardapio" class="cardapio-operadores" style="margin-bottom: 20px;">
-        <div class="cardapio-card" onclick="showScalesSubPanel('sub-planejamento')">
-          <div class="cardapio-icon">üìÖ</div>
-          <div class="cardapio-title">Planejamento</div>
-          <div class="cardapio-desc">Planejar escalas por posto de trabalho ou equipes.</div>
-        </div>
-        <div class="cardapio-card" onclick="showScalesSubPanel('sub-disponibilidade')">
-          <div class="cardapio-icon">üë§</div>
-          <div class="cardapio-title">Disponibilidade</div>
-          <div class="cardapio-desc">Registros de folgas, f√©rias e indisponibilidade dos operadores.</div>
-        </div>
-        <div class="cardapio-card" onclick="showScalesSubPanel('sub-trocas')">
-          <div class="cardapio-icon">üîÑ</div>
-          <div class="cardapio-title">Trocas</div>
-          <div class="cardapio-desc">Gerenciar solicita√ß√µes de trocas de turno e coberturas.</div>
-        </div>
-        <div class="cardapio-card" onclick="showScalesSubPanel('sub-historico')">
-          <div class="cardapio-icon">üìã</div>
-          <div class="cardapio-title">Hist√≥rico</div>
-          <div class="cardapio-desc">Visualizar logs de hist√≥rico e configura√ß√µes globais.</div>
-        </div>
-      </div>
-
-      <div class="subtabs" id="scalesSubtabs" style="display: none;" role="tablist" aria-label="Sub-abas de escala">
-        <button class="subtab-button active" data-subtab="sub-planejamento" role="tab" aria-selected="true">Planejamento</button>
-        <button class="subtab-button" data-subtab="sub-disponibilidade" role="tab" aria-selected="false">Disponibilidade</button>
-        <button class="subtab-button" data-subtab="sub-trocas" role="tab" aria-selected="false">Trocas</button>
-        <button class="subtab-button" data-subtab="sub-historico" role="tab" aria-selected="false">Hist√≥rico</button>
-      </div>
-
-      <div id="sub-planejamento" class="subtab-panel" role="tabpanel">
-        
-        <!-- Bot√£o Voltar -->
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuEscalas()">‚Üê Voltar ao Menu de Escalas</button>
-        </div>
-
-        <!-- Passo 1: Sele√ß√£o de Escopo -->
-        <div id="planningStepSelection" style="max-width: 600px; margin: 0 auto; padding: 20px 0;">
-          <h3 style="margin-top: 0; font-size: 15px;">Passo Inicial: Escolha o escopo de planejamento</h3>
-          <p class="small">Selecione se deseja planejar por Posto de Trabalho ou por Equipe e indique o per√≠odo.</p>
-          
-          <div class="form-grid" style="grid-template-columns: 1fr; gap: 14px; margin-top: 15px;">
-            <div class="field">
-              <label class="small">Modo de Planejamento</label>
-              <div class="row" style="gap: 12px; margin-top: 4px;">
-                <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px;">
-                  <input type="radio" name="planningScope" value="posto" checked onchange="togglePlanningScope('posto')" style="accent-color: var(--green); cursor: pointer;" /> Por Posto
-                </label>
-                <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px;">
-                  <input type="radio" name="planningScope" value="equipe" onchange="togglePlanningScope('equipe')" style="accent-color: var(--green); cursor: pointer;" /> Por Equipe
-                </label>
-              </div>
-            </div>
-
-            <!-- Sele√ß√£o do Posto -->
-            <div class="field" id="fieldSelectPosto">
-              <label class="small" for="selectPlanningPosto">Posto de Trabalho</label>
-              <select id="selectPlanningPosto" style="width: 100%; border-radius: 10px; margin-top: 4px;"></select>
-            </div>
-
-            <!-- Sele√ß√£o da Equipe -->
-            <div class="field" id="fieldSelectEquipe" style="display: none;">
-              <label class="small" for="selectPlanningEquipe">Equipe Operacional</label>
-              <select id="selectPlanningEquipe" style="width: 100%; border-radius: 10px; margin-top: 4px;"></select>
-            </div>
-
-            <!-- Sele√ß√£o do M√™s -->
-            <div class="field">
-              <label class="small" for="selectPlanningMonthYear">M√™s de Refer√™ncia</label>
-              <select id="selectPlanningMonthYear" style="width: 100%; border-radius: 10px; margin-top: 4px;">
-                <option value="06/2026">Jun/2026</option>
-                <option value="07/2026">Jul/2026</option>
-                <option value="08/2026">Ago/2026</option>
-              </select>
-            </div>
-          </div>
-          
-          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-            <button class="primary" type="button" onclick="iniciarPlanejamento()" style="padding: 8px 24px; font-weight: 700;">Avan√ßar para o Calend√°rio ‚Üí</button>
-          </div>
-        </div>
-
-        <!-- Passo 2: Calend√°rio e Gerador (Oculto por padr√£o) -->
-        <div id="planningStepCalendar" style="display: none; margin-top: 10px;">
-          
-          <!-- Informa√ß√µes do planejamento ativo -->
-          <div class="info-box" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;">
-            <div>
-              <span class="info-label" style="font-size: 10px;">Planejamento Ativo</span>
-              <div class="info-value" id="labelEscopoAtivo" style="font-weight: 700; font-size: 13px; margin-top: 2px;">‚Äî</div>
-            </div>
-            <button class="secondary" type="button" onclick="retornarAosConfiguracoesPlanejamento()" style="padding: 4px 10px; font-size: 11px;">Alterar Escopo</button>
-          </div>
-
-          <div class="row-between" style="margin-top:10px;">
-          <div class="legend">
-            <span class="legend-item"><span class="dot green"></span>Confirmado</span>
-            <span class="legend-item"><span class="dot yellow"></span>Rascunho</span>
-            <span class="legend-item"><span class="dot red"></span>Conflito</span>
-          </div>
-          <div class="row">
-            <button class="primary" type="button" id="btnGerarEscala">Gerar escala</button>
-            <button class="secondary" type="button" id="btnSalvarRascunho">Salvar rascunho</button>
-            <button class="secondary" type="button" id="btnPublicarEscala">Publicar</button>
-          </div>
-        </div>
-        <div class="section-grid">
-          <div class="calendar-box">
-            <div class="row-between" style="gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-              <div><strong>Escala Mensal</strong></div>
-              <div class="row" style="gap:8px; align-items:center;">
-                <label class="small">Posto:</label>
-                <select id="planningPosto" style="border-radius:10px; min-width:140px; padding:4px; font-size:11px;"></select>
-                <label class="small">M√™s:</label>
-                <select id="planningMonthYear" style="border-radius:10px; padding:4px; font-size:11px;">
-                  <option value="06/2026">Jun/2026</option>
-                  <option value="07/2026">Jul/2026</option>
-                  <option value="08/2026">Ago/2026</option>
-                </select>
-              </div>
-            </div>
-            <div class="calendar-grid" id="planningCalendar" style="grid-template-columns: repeat(7, 1fr); gap: 6px;"></div>
-          </div>
-          <div class="panel-box">
-            <div class="row-between">
-              <div><strong>Fila de planejamento</strong><div class="small">Turnos sugeridos e itens sem cobertura.</div></div>
-              <button class="secondary" type="button">+ Novo turno</button>
-            </div>
-            <div id="planningQueue" style="margin-top:8px;"></div>
-          </div>
-        </div>
-        <div class="table-box" style="margin-top:12px;">
-          <table><thead><tr><th>Posto</th><th>M√™s/Ano</th><th>Operadores</th><th>Status</th><th>Assinatura</th></tr></thead><tbody id="tbodyEscalas"></tbody></table>
-        </div>
-
-        <div class="overlay-section" style="border-top:0;padding-top:0;margin-top:14px">
-          <h2 style="margin-top:10px;">Edi√ß√£o de Posto</h2>
-          <p class="small">Selecione um posto para editar as configura√ß√µes e regras de jornada CLT.</p>
-          <div class="row-between">
-            <select id="selectEditPosto" style="min-width:240px;border-radius:10px;"></select>
-            <div class="row">
-              <button class="secondary" type="button" id="btnLoadPosto" onclick="editarPostoSelecionadoNaEscala()">Editar Selecionado</button>
-              <button class="secondary" type="button" id="btnNovoPosto" onclick="abrirCadastroPostoDireto()">Novo Posto</button>
-            </div>
-          </div>
-        </div>
-        </div> <!-- Fechamento de planningStepCalendar -->
-      </div> <!-- Fechamento de sub-planejamento -->
-
-      <div id="sub-disponibilidade" class="subtab-panel" role="tabpanel">
-        
-        <!-- Bot√£o Voltar -->
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuEscalas()">‚Üê Voltar ao Menu de Escalas</button>
-        </div>
-        <div class="section-grid" style="margin-top:10px;">
-          <div class="panel-box">
-            <div class="row-between">
-              <strong>Operadores</strong>
-              <input id="filtroDisponibilidade" class="filter-input" placeholder="Filtrar operador">
-            </div>
-            <div class="table-box" style="max-height:380px;overflow:auto;">
-              <table><thead><tr><th>Nome</th><th>Posto</th><th>Disponibilidade</th></tr></thead><tbody id="tbodyDisponibilidade"></tbody></table>
-            </div>
-          </div>
-          <div class="panel-box">
-            <strong>Registro de disponibilidade</strong>
-            <div class="info-box" style="margin-top:8px;"><div class="small">Operador selecionado</div><div id="dispSelected" style="font-weight:700;margin-top:2px;">‚Äî</div></div>
-            <label class="small" style="margin-top:8px;">Status</label>
-            <select id="dispStatus" style="width:100%;margin:6px 0 8px;border-radius:10px;"><option>Dispon√≠vel</option><option>Folga</option><option>F√©rias</option><option>Restri√ß√£o de hor√°rio</option><option>Indispon√≠vel</option></select>
-            <label class="small">Observa√ß√£o</label>
-            <textarea id="dispObs" placeholder="Observa√ß√µes da disponibilidade"></textarea>
-            <div class="row" style="margin-top:8px;"><button class="primary" type="button">Salvar disponibilidade</button><button class="secondary" type="button">Limpar</button></div>
-
-            <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px; text-align:center;">
-              <p class="small" style="margin-bottom:8px;">Para gerenciar o cadastro e detalhes dos operadores:</p>
-              <button class="secondary" type="button" onclick="fecharModalEscalas(); setTab('tab-operadores')" style="width:100%; justify-content:center; gap:6px;">
-                üë§ Gerenciar Operadores
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="sub-trocas" class="subtab-panel" role="tabpanel">
-        
-        <!-- Bot√£o Voltar -->
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuEscalas()">‚Üê Voltar ao Menu de Escalas</button>
-        </div>
-        <div class="table-box" style="margin-top:10px;">
-          <table><thead><tr><th>Solicita√ß√£o</th><th>Operador</th><th>Turno</th><th>Status</th><th>A√ß√£o</th></tr></thead><tbody id="tbodyTrocas"></tbody></table>
-        </div>
-      </div>
-
-      <div id="sub-historico" class="subtab-panel" role="tabpanel">
-        
-        <!-- Bot√£o Voltar -->
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuEscalas()">‚Üê Voltar ao Menu de Escalas</button>
-        </div>
-        <div class="table-box" style="margin-top:10px;">
-          <table><thead><tr><th>Data/hora</th><th>Evento</th><th>Respons√°vel</th><th>Detalhe</th></tr></thead><tbody id="tbodyHistorico"></tbody></table>
-        </div>
-        <div class="overlay-section">
-          <h2 style="margin-top:10px;">Configura√ß√µes globais</h2>
-          <div class="form-grid">
-            <div class="field"><label>Tipo de jornada</label><input type="text" value="Tradicional 8h/44h" /></div>
-            <div class="field"><label>Tipo de turno</label><input type="text" value="Fixo / Alternado / Revezamento" /></div>
-            <div class="field"><label>Regime</label><input type="text" value="12x36 / 5x2 / 6x1" /></div>
-            <div class="field"><label>Adicionais</label><input type="text" value="Noturno / Insalubridade / Periculosidade" /></div>
-          </div>
-          <div class="row" style="margin-top:8px;">
-            <button class="primary" type="button">Salvar configura√ß√µes</button>
-            <button class="secondary" type="button">Desativar item</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <section id="tab-operadores" class="tab-panel">
-    <section class="card">
-      <h2>Gest√£o de Operadores</h2>
-      <p class="small">Selecione uma das op√ß√µes abaixo para gerenciar o cadastro e status dos operadores.</p>
-      
-      <div class="cardapio-operadores">
-        <div class="cardapio-card" id="btnMenuCadastrar" onclick="abrirModalCadastro()">
-          <div class="cardapio-icon">üë§‚ûï</div>
-          <div class="cardapio-title">Cadastrar Operador</div>
-          <div class="cardapio-desc">Adicionar um novo operador com cargo, acesso, escala CLT e posto.</div>
-        </div>
-        <div class="cardapio-card" id="btnMenuConsultar" onclick="abrirModalConsultar()">
-          <div class="cardapio-icon">üîç</div>
-          <div class="cardapio-title">Consultar Operador</div>
-          <div class="cardapio-desc">Buscar por nome ou matr√≠cula para consultar ou editar detalhes.</div>
-        </div>
-        <div class="cardapio-card" id="btnMenuLista" onclick="abrirModalListaCompleta()">
-          <div class="cardapio-icon">üìã</div>
-          <div class="cardapio-title">Lista Completa</div>
-          <div class="cardapio-desc">Visualizar todos os operadores, editar dados ou fazer altera√ß√µes em lote.</div>
-        </div>
-        <div class="cardapio-card" id="btnMenuEscalas" onclick="abrirModalEscalas()">
-          <div class="cardapio-icon">üìÖ</div>
-          <div class="cardapio-title">Escalas</div>
-          <div class="cardapio-desc">Planejar escalas, registrar disponibilidades e gerenciar trocas.</div>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <section id="tab-mensagens" class="tab-panel">
-    <section class="card">
-      <h2>Mensagens</h2>
-      <p class="small">Selecione uma das op√ß√µes abaixo para gerenciar comunica√ß√µes.</p>
-      
-      <!-- CARDAPIO DE MENSAGENS -->
-      <div id="messagesCardapio" class="cardapio-operadores" style="margin-top: 15px;">
-        <div class="cardapio-card" onclick="showMessagesSubPanel('msg-escrever')">
-          <div class="cardapio-icon">üìù</div>
-          <div class="cardapio-title">Escrever Mensagem</div>
-          <div class="cardapio-desc">Redigir e enviar uma nova mensagem individual ou por grupo.</div>
-        </div>
-        <div class="cardapio-card" onclick="showMessagesSubPanel('msg-recebidas')">
-          <div class="cardapio-icon">üì•</div>
-          <div class="cardapio-title">Caixa de Entrada</div>
-          <div class="cardapio-desc">Mensagens recebidas dos operadores do sistema.</div>
-        </div>
-        <div class="cardapio-card" onclick="showMessagesSubPanel('msg-enviadas')">
-          <div class="cardapio-icon">üì§</div>
-          <div class="cardapio-title">Mensagens Enviadas</div>
-          <div class="cardapio-desc">Hist√≥rico de comunica√ß√µes enviadas pela gest√£o.</div>
-        </div>
-      </div>
-      
-      <!-- BARRA DE SUB-ABAS (OCULTA POR PADR√ÉO) -->
-      <div class="subtabs" id="messagesSubtabs" style="display: none; margin-top: 15px;" role="tablist" aria-label="Sub-abas de mensagens">
-        <button class="subtab-button active" data-msgtab="msg-escrever" onclick="showMessagesSubPanel('msg-escrever')" role="tab">Nova Mensagem</button>
-        <button class="subtab-button" data-msgtab="msg-recebidas" onclick="showMessagesSubPanel('msg-recebidas')" role="tab">Recebidas</button>
-        <button class="subtab-button" data-msgtab="msg-enviadas" onclick="showMessagesSubPanel('msg-enviadas')" role="tab">Enviadas</button>
-      </div>
-
-      <!-- PAINEL: Nova Mensagem -->
-      <div id="msg-escrever" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuMensagens()">‚Üê Voltar ao Menu de Mensagens</button>
-        </div>
-        
-        <div class="form-grid" style="grid-template-columns: 1fr; gap: 14px; max-width: 600px; margin: 0 auto;">
-          <div class="field">
-            <label class="small">Tipo de Destinat√°rio</label>
-            <select id="msgDestTipo" onchange="toggleMsgDestType()" style="width:100%; border-radius:10px;">
-              <option value="INDIVIDUAL">Individual (Colaborador)</option>
-              <option value="POSTO">Por Posto (Grupo)</option>
-              <option value="EQUIPE">Por Equipe (Grupo)</option>
-              <option value="GLOBAL">Geral (Todos os Operadores)</option>
-            </select>
-          </div>
-
-          <!-- Select Destinatario Individual -->
-          <div class="field" id="fieldMsgDestOp">
-            <label class="small">Selecionar Operador</label>
-            <select id="msgDestOp" style="width: 100%; border-radius: 10px;"></select>
-          </div>
-
-          <!-- Select Destinatario Posto -->
-          <div class="field" id="fieldMsgDestPosto" style="display: none;">
-            <label class="small">Selecionar Posto</label>
-            <select id="msgDestPosto" style="width: 100%; border-radius: 10px;"></select>
-          </div>
-
-          <!-- Select Destinatario Equipe -->
-          <div class="field" id="fieldMsgDestEquipe" style="display: none;">
-            <label class="small">Selecionar Equipe</label>
-            <select id="msgDestEquipe" style="width: 100%; border-radius: 10px;"></select>
-          </div>
-
-          <div class="field">
-            <label class="small">Assunto</label>
-            <input id="msgSendAssunto" type="text" style="width: 100%;" placeholder="Digite o assunto da mensagem..." />
-          </div>
-
-          <div class="field full">
-            <label class="small">Mensagem</label>
-            <textarea id="msgSendCorpo" style="width: 100%;" placeholder="Digite o conte√∫do da mensagem..."></textarea>
-          </div>
-          
-          <div class="field full" style="display: none;">
-            <label class="small">Anexo (Opcional - Imagem)</label>
-            <input id="msgSendAnexo" type="file" accept="image/*" class="filter-input" style="width: 100%; border-radius: 10px;" />
-          </div>
-        </div>
-
-        <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 8px; max-width: 600px; margin-left: auto; margin-right: auto;">
-          <button class="primary" type="button" id="btnEnviarMensagemGestao" onclick="enviarMensagemGestao()" style="padding: 8px 24px; font-weight: 700;">Enviar Mensagem ‚úâÔ∏è</button>
-        </div>
-      </div>
-
-      <!-- PAINEL: Caixa de Entrada (Recebidas) -->
-      <div id="msg-recebidas" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuMensagens()">‚Üê Voltar ao Menu de Mensagens</button>
-        </div>
-        <div class="table-box" style="max-height: 500px; overflow: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Remetente</th>
-                <th>Assunto</th>
-                <th>Mensagem</th>
-                <th>A√ß√µes</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyMsgRecebidasGestao"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- PAINEL: Mensagens Enviadas -->
-      <div id="msg-enviadas" class="subtab-panel" style="margin-top: 15px; display: none;">
-        <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuMensagens()">‚Üê Voltar ao Menu de Mensagens</button>
-        </div>
-        <div class="table-box" style="max-height: 500px; overflow: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Destinat√°rio</th>
-                <th>Assunto</th>
-                <th>Mensagem</th>
-                <th>A√ß√µes</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyMsgEnviadasGestao"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </section>
-</main>
-
-<!-- MODAL CADASTRAR / EDITAR OPERADOR -->
-<div id="modalCadastroEdicao" class="overlay-backdrop" style="z-index: 10001;" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(800px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroEdicaoTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalCadastroEdicaoTitle">Cadastrar Operador</div>
-        <div class="overlay-sub">Insira ou edite as informa√ß√µes do operador.</div>
-      </div>
-      <button type="button" class="secondary" onclick="fecharModalCadastroEdicao()">Fechar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <div class="form-grid">
-        <div class="field"><label>Nome completo</label><input id="opNome" type="text" /></div>
-        <div class="field"><label>CPF</label><input id="opCpf" type="text" /></div>
-        <div class="field"><label>Cargo</label><input id="opCargo" type="text" /></div>
-        <div class="field"><label>Hierarquia</label><input id="opHierarquia" type="text" /></div>
-        <div class="field"><label>Jornada contratual (Espec√≠fica)</label><select id="opJornada"><option value="">Seguir Padr√£o do Posto</option><option value="12x36">12x36</option><option value="Comercial (8h/dia)">Comercial (8h/dia)</option><option value="Noturna (12h)">Noturna (12h)</option></select></div>
-        <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
-        <div class="field"><label>Prefer√™ncia de turno</label><input id="opPreferencia" type="text" /></div>
-        <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em f√©rias</option></select></div>
-        <div class="field"><label>Matr√≠cula</label><input id="opMatricula" type="text" /></div>
-        <div class="field"><label>Usu√°rio (login)</label><input id="opUsuario" type="text" /></div>
-        <div class="field"><label>Senha (inicial ou nova)</label><input id="opSenha" type="password" placeholder="Em branco para n√£o alterar" /></div>
-        <div class="field"><label>N√≠vel de Acesso (Papel)</label><select id="opRoles" onchange="toggleFormScopeFields()"><option value="OPERADOR">Operador</option><option value="SUPERVISOR">Supervisor</option><option value="GESTOR">Gestor</option><option value="ADMIN">Administrador</option></select></div>
-        <div class="field" id="fieldOpScopeType" style="display: none;"><label>Tipo de Escopo</label><select id="opScopeType"><option value="UNIDADE">Unidade (Posto)</option><option value="AREA">√Årea (Regi√£o)</option><option value="SETOR">Setor</option><option value="GLOBAL">Global</option></select></div>
-        <div class="field" id="fieldOpScopeValue" style="display: none;"><label>Valor do Escopo (Nome/ID)</label><input id="opScopeValue" type="text" placeholder="Ex: Posto Central, Zona Leste" /></div>
-        <div class="field full"><label>Posto Principal</label><input id="opPostoPrincipal" type="text" value="Centro de Coopera√ß√£o da Cidade" /></div>
-        <div class="field full"><label>Disponibilidade</label><textarea id="opDisponibilidade"></textarea></div>
-        <div class="field full"><label>Restri√ß√µes m√©dicas</label><textarea id="opRestricoes"></textarea></div>
-        <div class="field full"><label>Qualifica√ß√µes</label><textarea id="opQualificacoes"></textarea></div>
-        <div class="field full"><label>F√©rias programadas</label><input id="opFerias" type="text" /></div>
-        <div class="field full"><label>Afastamentos</label><input id="opAfastamentos" type="text" /></div>
-      </div>
-      <div class="validation" id="opValidation"></div>
-      <div class="row" style="margin-top:14px; justify-content: flex-end; gap:8px;">
-        <button class="secondary" type="button" id="btnHistoricoOperador">Hist√≥rico</button>
-        <button class="primary" type="button" id="btnSalvarOperador">Salvar operador</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CADASTRAR / EDITAR POSTO -->
-<div id="modalCadastroPosto" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(800px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroPostoTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalCadastroPostoTitle">Cadastrar / Editar Posto de Trabalho</div>
-        <div class="overlay-sub">Configure as regras de jornada e CLT para o posto.</div>
-      </div>
-      <button type="button" class="secondary" onclick="fecharModalCadastroPosto()">Fechar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <div class="form-grid" id="formPosto">
-        <div class="field"><label>Nome do posto</label><input id="postoNome" type="text" /></div>
-        <div class="field"><label>Cidade</label><input id="postoCidade" type="text" value="Manaus/AM" /></div>
-        <div class="field full"><label>Endere√ßo F√≠sico</label><input id="postoEndereco" type="text" placeholder="Ex: Av. Eduardo Ribeiro, 123 - Centro" /></div>
-        <div class="field full"><label>Link do Google Maps (para extrair coordenadas)</label><input id="postoLinkGMaps" type="text" placeholder="Cole o link completo (com @lat,lng) aqui" /></div>
-        <div class="field"><label>Latitude</label><input id="postoLatitude" type="text" placeholder="-3.1190" /></div>
-        <div class="field"><label>Longitude</label><input id="postoLongitude" type="text" placeholder="-60.0217" /></div>
-        <div class="field"><label>Telefone Contato</label><input id="postoTelefone" type="text" placeholder="(00) 00000-0000" /></div>
-        <div class="field"><label>Operador Respons√°vel</label><select id="postoResponsavel"><option value="">Nenhum</option></select></div>
-        <div class="field"><label>Jornada di√°ria</label><input id="postoJornada" type="text" /></div>
-        <div class="field"><label>Turno preferencial</label><select id="postoTurno"><option>Diurno</option><option>Noturno</option><option>Misto</option></select></div>
-        <div class="field"><label>Intervalo intrajornada</label><input id="postoIntrajornada" type="text" /></div>
-        <div class="field"><label>Intervalo interjornada</label><input id="postoInterjornada" type="text" /></div>
-        <div class="field"><label>Horas extras permitidas</label><input id="postoExtras" type="text" /></div>
-        <div class="field"><label>Banco de horas</label><select id="postoBanco"><option>Sim</option><option>N√£o</option></select></div>
-        <div class="field"><label>DSR obrigat√≥rio</label><select id="postoDsr"><option>Sim</option><option>N√£o</option></select></div>
-        <div class="field"><label>Jornada especial</label><input id="postoEspecial" type="text" /></div>
-        <div class="field"><label>Revezamento necess√°rio</label><select id="postoRevezamento"><option>Sim</option><option>N√£o</option></select></div>
-        <div class="field"><label>Adicional noturno aplic√°vel</label><select id="postoAdicionalNoturno"><option>Sim</option><option>N√£o</option></select></div>
-        <div class="field full"><label>Descri√ß√£o do posto</label><textarea id="postoDescricao"></textarea></div>
-        <div class="field full"><label>Funcionalidades requeridas</label><textarea id="postoFuncionalidades"></textarea></div>
-      </div>
-      <div class="validation" id="postoValidation"></div>
-      <div class="row" style="margin-top:14px; justify-content: space-between; gap:8px;">
-        <button type="button" class="danger" id="btnExcluirPosto" style="display:none;" onclick="excluirPostoDireto()">Excluir Posto</button>
-        <div class="row" style="gap:8px;">
-          <button type="button" class="secondary" onclick="fecharModalCadastroPosto()">Cancelar</button>
-          <button type="button" class="primary" id="btnSalvarPosto" onclick="salvarPostoDireto()">Salvar posto</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CADASTRAR / EDITAR EQUIPE -->
-<div id="modalCadastroEquipe" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(600px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroEquipeTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalCadastroEquipeTitle">Cadastrar / Editar Equipe</div>
-        <div class="overlay-sub">Crie ou edite as informa√ß√µes de uma equipe operacional.</div>
-      </div>
-      <button type="button" class="secondary" onclick="fecharModalCadastroEquipe()">Fechar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <div class="form-grid" style="grid-template-columns: 1fr; gap: 14px;">
-        <div class="field">
-          <label>Nome da Equipe</label>
-          <input id="equipeNome" type="text" placeholder="Ex: Equipe Alfa" />
-        </div>
-        <div class="field">
-          <label>Posto Vinculado</label>
-          <select id="equipePostoId" style="width: 100%; border-radius: 10px;"></select>
-        </div>
-        <div class="field">
-          <label>Turno</label>
-          <input id="equipeTurno" type="text" placeholder="Ex: Dia, Noite, 12x36" />
-        </div>
-        <div class="field">
-          <label>L√≠der da Equipe</label>
-          <input id="equipeLider" type="text" placeholder="Ex: Ana Silva" />
-        </div>
-      </div>
-      <div class="validation" id="equipeValidation"></div>
-      <div class="row" style="margin-top: 14px; justify-content: flex-end; gap: 8px;">
-        <button class="primary" type="button" id="btnSalvarEquipe" onclick="salvarEquipeDireto()">Salvar Equipe</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CONSULTAR OPERADOR -->
-<div id="modalConsultar" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(600px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalConsultarTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalConsultarTitle">Consultar Operador</div>
-        <div class="overlay-sub">Filtre os operadores por nome ou n√∫mero de matr√≠cula.</div>
-      </div>
-      <button type="button" class="secondary" onclick="fecharModalConsultar()">Fechar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <div class="form-grid" style="grid-template-columns: repeat(2, 1fr); gap: 10px;">
-        <div class="field">
-          <label>Nome do Operador</label>
-          <input type="text" id="consultarNome" placeholder="Digite o nome..." />
-        </div>
-        <div class="field">
-          <label>Matr√≠cula</label>
-          <input type="text" id="consultarMatricula" placeholder="Digite a matr√≠cula..." />
-        </div>
-      </div>
-      
-      <div class="row" style="margin-top: 12px; justify-content: flex-end; gap: 8px;">
-        <button class="secondary" type="button" onclick="limparConsulta()">Limpar</button>
-        <button class="primary" type="button" onclick="realizarConsulta()">Buscar</button>
-      </div>
-      
-      <div class="overlay-section" id="resultadosConsultaSec" style="margin-top: 15px; display: none;">
-        <strong>Resultados da Busca</strong>
-        <div class="table-box" style="max-height: 250px; overflow: auto; margin-top: 8px;">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Matr√≠cula</th>
-                <th>Status</th>
-                <th>A√ß√µes</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyResultadosConsulta"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL LISTA COMPLETA -->
-<div id="modalListaCompleta" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(1000px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalListaTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalListaTitle">Lista Completa de Operadores</div>
-        <div class="overlay-sub">Gerencie todos os operadores cadastrados no sistema.</div>
-      </div>
-      <button type="button" class="secondary" onclick="fecharModalListaCompleta()">Fechar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <div class="row-between" style="margin-bottom: 10px;">
-        <div class="small">Selecione para edi√ß√£o em lote ou use o bot√£o para editar individualmente.</div>
-        <input id="filtroOperadores" class="filter-input" placeholder="Filtrar por nome/matr√≠cula" style="width: 250px;">
-      </div>
-      <div class="table-box" style="max-height: 450px; overflow: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 40px; text-align: center;">
-                <input type="checkbox" id="selectAllOps" onclick="event.stopPropagation();" />
-              </th>
-              <th>Nome</th>
-              <th>Matr√≠cula</th>
-              <th>Usu√°rio</th>
-              <th>Posto principal</th>
-              <th>Status</th>
-              <th>A√ß√µes</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyOperadores"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL VISUALIZAR PERFIL -->
-<div id="modalVisualizarPerfil" class="overlay-backdrop" aria-hidden="true">
-  <div class="overlay-panel" style="width: min(700px, 100%); max-height: min(90vh, 800px);" role="dialog" aria-modal="true" aria-labelledby="modalVisualizarPerfilTitle">
-    <div class="overlay-header">
-      <div>
-        <div class="overlay-title" id="modalVisualizarPerfilTitle">Visualizar Perfil</div>
-        <div class="overlay-sub">Ficha de informa√ß√µes do colaborador.</div>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button type="button" class="primary" onclick="editarOperadorDaVisualizacao()">Editar</button>
-        <button type="button" class="secondary" onclick="fecharModalVisualizarPerfil()">Fechar</button>
-      </div>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <!-- Profile tabs/buttons -->
-      <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-        <button id="btnTabInfoGerais" class="primary" type="button" onclick="setProfileTab('info')" style="padding: 6px 14px; font-size: 11px;">Dados Gerais</button>
-        <button id="btnTabHistoricoCarreira" class="secondary" type="button" onclick="setProfileTab('carreira')" style="padding: 6px 14px; font-size: 11px;">Hist√≥rico de Carreira</button>
-      </div>
-
-      <!-- Tab: Info Gerais -->
-      <div id="profileTabInfo" class="profile-tab-content">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; font-size: 13px;">
-          <div><strong>Nome:</strong> <span id="viewOpNome">‚Äî</span></div>
-          <div><strong>Matr√≠cula:</strong> <span id="viewOpMatricula">‚Äî</span></div>
-          <div><strong>CPF:</strong> <span id="viewOpCpf">‚Äî</span></div>
-          <div><strong>Cargo:</strong> <span id="viewOpCargo">‚Äî</span></div>
-          <div><strong>Hierarquia:</strong> <span id="viewOpHierarquia">‚Äî</span></div>
-          <div><strong>Jornada:</strong> <span id="viewOpJornada">‚Äî</span></div>
-          <div><strong>Turno:</strong> <span id="viewOpTurno">‚Äî</span></div>
-          <div><strong>Posto Principal:</strong> <span id="viewOpPosto">‚Äî</span></div>
-          <div style="grid-column: span 2;"><strong>Status:</strong> <span id="viewOpStatus">‚Äî</span></div>
-          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>Qualifica√ß√µes:</strong> <p id="viewOpQualificacoes" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
-          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>Restri√ß√µes M√©dicas:</strong> <p id="viewOpRestricoes" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
-          <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;"><strong>F√©rias & Afastamentos:</strong> <p id="viewOpFerias" style="margin: 4px 0 0; color: var(--muted); font-size: 12px;"></p></div>
-        </div>
-      </div>
-
-      <!-- Tab: Hist√≥rico de Carreira -->
-      <div id="profileTabCarreira" class="profile-tab-content" style="display: none;">
-        <div class="career-timeline" id="careerTimelineContainer"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Floating Batch Edit Bar -->
-<div id="batchEditBar" class="batch-edit-bar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: rgba(15,23,42,0.95); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.6); padding: 12px 24px; border-radius: 14px; display: flex; align-items: center; gap: 20px; z-index: 30000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--text);">
-    <span id="batchCount" style="color: var(--green);">0</span> operadores selecionados
-  </div>
-  <div style="display: flex; gap: 10px;">
-    <button class="primary" type="button" onclick="abrirModalEdicaoLote()" style="padding: 6px 14px; font-size: 12px;">Editar em Lote</button>
-    <button class="secondary" type="button" onclick="limparSelecaoLote()" style="padding: 6px 14px; font-size: 12px;">Limpar</button>
-  </div>
-</div>
-
-<script>
   const THEME_KEY='sgo_theme_login';
   const btnTheme=document.getElementById('btnTheme');
   const themeIcon=document.getElementById('themeIcon');
@@ -1179,21 +9,21 @@
   const overlayDesc=document.getElementById('overlayDesc');
 
   let MOCK_POSTOS=[];
-  const MOCK_EQUIPES=[{nome:'Equipe Alfa',posto:'Posto Central',turno:'Dia',operadores:9,lider:'Ana Silva'},{nome:'Equipe Bravo',posto:'Posto Central',turno:'Noite',operadores:9,lider:'Bruno Costa'},{nome:'Equipe Leste 01',posto:'Base Leste',turno:'Comercial',operadores:8,lider:'Jo√£o Pedro'},{nome:'Equipe Leste 02',posto:'Base Leste',turno:'Noite',operadores:6,lider:'Marina Costa'},{nome:'Equipe Norte 01',posto:'Posto Norte',turno:'12x36',operadores:9,lider:'Ursula Mendes'}];
+  const MOCK_EQUIPES=[{nome:'Equipe Alfa',posto:'Posto Central',turno:'Dia',operadores:9,lider:'Ana Silva'},{nome:'Equipe Bravo',posto:'Posto Central',turno:'Noite',operadores:9,lider:'Bruno Costa'},{nome:'Equipe Leste 01',posto:'Base Leste',turno:'Comercial',operadores:8,lider:'Jo„o Pedro'},{nome:'Equipe Leste 02',posto:'Base Leste',turno:'Noite',operadores:6,lider:'Marina Costa'},{nome:'Equipe Norte 01',posto:'Posto Norte',turno:'12x36',operadores:9,lider:'Ursula Mendes'}];
   let MOCK_OPERADORES=[];
   let MOCK_ESCALAS=[];
-  const MOCK_TROCAS=[{sol:'Troca de turno',operador:'Ana Silva',turno:'Dia',status:'Aguardando aprova√ß√£o'},{sol:'Cobertura de falta',operador:'Jo√£o Pedro',turno:'Noite',status:'Aguardando aprova√ß√£o'},{sol:'Oferta de shift',operador:'Victor Hugo',turno:'12x36',status:'Pendente'}];
+  const MOCK_TROCAS=[{sol:'Troca de turno',operador:'Ana Silva',turno:'Dia',status:'Aguardando aprovaÁ„o'},{sol:'Cobertura de falta',operador:'Jo„o Pedro',turno:'Noite',status:'Aguardando aprovaÁ„o'},{sol:'Oferta de shift',operador:'Victor Hugo',turno:'12x36',status:'Pendente'}];
   let MOCK_HISTORICO=[];
   let MOCK_DISPONIBILIDADE=[];
-  const planningQueue=['Posto Central: refor√ßar turno das 13:00','Base Leste: 1 cobertura pendente no noturno','Posto Norte: validar conflito de dupla aloca√ß√£o'];
+  const planningQueue=['Posto Central: reforÁar turno das 13:00','Base Leste: 1 cobertura pendente no noturno','Posto Norte: validar conflito de dupla alocaÁ„o'];
 
   let currentScaleData={};
   let currentPostoId=0, currentOperadorId=0;
-  const postoModel={id:'',nome:'',cidade:'Manaus/AM',status:'ATIVO',jornada:'8h',turno:'Diurno',intrajornada:'1h',interjornada:'11h',extras:'2h/dia',banco:'Sim',dsr:'Sim',especial:'',descricao:'',funcionalidades:'',revezamentoNecessario:'N√£o',adicionalNoturno:'N√£o',endereco:'',latitude:'',longitude:'',telefone_contato:'',operador_responsavel_id:null};
-  let opModel={id:'',nome:'',cpf:'',cargo:'',hierarquia:'',jornada:'Tradicional 8h/44h',turno:'Fixo',preferencia:'Diurno',status:'Ativo',disponibilidade:'',restricoes:'',qualificacoes:'',ferias:'',afastamentos:'',matricula:'',usuario:'',senha:'',roles:'OPERADOR',postoPrincipal:'Centro de Coopera√ß√£o da Cidade'};
+  const postoModel={id:'',nome:'',cidade:'Manaus/AM',status:'ATIVO',jornada:'8h',turno:'Diurno',intrajornada:'1h',interjornada:'11h',extras:'2h/dia',banco:'Sim',dsr:'Sim',especial:'',descricao:'',funcionalidades:'',revezamentoNecessario:'N„o',adicionalNoturno:'N„o',endereco:'',latitude:'',longitude:'',telefone_contato:'',operador_responsavel_id:null};
+  let opModel={id:'',nome:'',cpf:'',cargo:'',hierarquia:'',jornada:'Tradicional 8h/44h',turno:'Fixo',preferencia:'Diurno',status:'Ativo',disponibilidade:'',restricoes:'',qualificacoes:'',ferias:'',afastamentos:'',matricula:'',usuario:'',senha:'',roles:'OPERADOR',postoPrincipal:'Centro de CooperaÁ„o da Cidade'};
 
-  function badge(status){ const s=(status||'').toLowerCase(); if(s.includes('publicada')||s.includes('confirm')||s==='ativo'||s.includes('dispon')||s==='dispon√≠vel') return '<span class="status-badge active">Ativo</span>'; if(s.includes('rascunho')||s.includes('draft')||s.includes('aguard')||s==='pending'||s.includes('conflit')) return '<span class="status-badge pending">Pendente</span>'; return '<span class="status-badge inactive">Inativo</span>'; }
-  function applyTheme(){ let saved=null; try{saved=localStorage.getItem(THEME_KEY)}catch(e){}; const light=saved==='light'; document.body.classList.toggle('theme-light', light); themeIcon.textContent=light?'üåô':'‚òÄÔ∏è'; themeLabel.textContent=light?'Dark':'Light'; document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f3f4f6' : '#020826'); }
+  function badge(status){ const s=(status||'').toLowerCase(); if(s.includes('publicada')||s.includes('confirm')||s==='ativo'||s.includes('dispon')||s==='disponÌvel') return '<span class="status-badge active">Ativo</span>'; if(s.includes('rascunho')||s.includes('draft')||s.includes('aguard')||s==='pending'||s.includes('conflit')) return '<span class="status-badge pending">Pendente</span>'; return '<span class="status-badge inactive">Inativo</span>'; }
+  function applyTheme(){ let saved=null; try{saved=localStorage.getItem(THEME_KEY)}catch(e){}; const light=saved==='light'; document.body.classList.toggle('theme-light', light); themeIcon.textContent=light?'??':'??'; themeLabel.textContent=light?'Dark':'Light'; document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f3f4f6' : '#020826'); }
   applyTheme();
   btnTheme.addEventListener('click',()=>{ const light=document.body.classList.toggle('theme-light'); try{localStorage.setItem(THEME_KEY, light?'light':'dark')}catch(e){} applyTheme(); });
   document.getElementById('btnSair').addEventListener('click',()=>{
@@ -1217,7 +47,7 @@
   function setSubTab(id){ subTabs.forEach(b=>b.classList.toggle('active', b.dataset.subtab===id)); subPanels.forEach(p=>p.classList.toggle('active', p.id===id)); }
   subTabs.forEach(b=>b.addEventListener('click',()=>setSubTab(b.dataset.subtab)));
 
-  // --- SISTEMA DE NAVEGA√á√ÉO INTERNA DO DASHBOARD ---
+  // --- SISTEMA DE NAVEGA«√O INTERNA DO DASHBOARD ---
   window.showDashboardSubPanel = function(panelId) {
     document.getElementById('dashboardCardapio').style.display = 'none';
     document.getElementById('dashboardSubtabs').style.display = 'none';
@@ -1240,7 +70,7 @@
     document.getElementById('dashboardCardapio').style.display = 'grid';
   };
 
-  // --- SISTEMA DE NAVEGA√á√ÉO INTERNA DE POSTOS ---
+  // --- SISTEMA DE NAVEGA«√O INTERNA DE POSTOS ---
   window.showPostosSubPanel = function(panelId) {
     document.getElementById('postosCardapio').style.display = 'none';
     const panel = document.getElementById(panelId);
@@ -1253,7 +83,7 @@
     document.getElementById('postosCardapio').style.display = 'grid';
   };
 
-  // --- SISTEMA DE NAVEGA√á√ÉO INTERNA DE EQUIPES ---
+  // --- SISTEMA DE NAVEGA«√O INTERNA DE EQUIPES ---
   window.showEquipesSubPanel = function(panelId) {
     document.getElementById('equipesCardapio').style.display = 'none';
     const panel = document.getElementById(panelId);
@@ -1308,7 +138,7 @@
       }
     });
 
-    // Sempre usar tileset Positron Light (Invers√£o aplicada via CSS no dark mode)
+    // Sempre usar tileset Positron Light (Invers„o aplicada via CSS no dark mode)
     const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
       
     L.tileLayer(tileUrl, {
@@ -1347,14 +177,14 @@
         const respName = p.responsavel_nome || 'Nenhum';
         const respClick = p.responsavel_nome ? `onclick="abrirContatoPosto('${p.id}', '${p.nome}', '${p.responsavel_nome}', '${p.telefone_contato||''}')" style="cursor:pointer; color:var(--primary); text-decoration:underline;"` : '';
 
-        // Criar √≠cone customizado com cores baseadas no status
+        // Criar Ìcone customizado com cores baseadas no status
         let color = '#22c55e'; // OK = verde
         const stat = (p.status || '').toUpperCase();
         if (stat === 'INATIVO') {
           color = '#64748b'; // cinza
-        } else if (stat === 'ATEN√á√ÉO' || stat === 'ATENCAO') {
+        } else if (stat === 'ATEN«√O' || stat === 'ATENCAO') {
           color = '#f59e0b'; // laranja
-        } else if (stat === 'ALERTA' || stat === 'CR√çTICO' || stat === 'CRITICO') {
+        } else if (stat === 'ALERTA' || stat === 'CRÕTICO' || stat === 'CRITICO') {
           color = '#ef4444'; // vermelho
         }
         
@@ -1372,7 +202,7 @@
             <div style="font-size:24px; font-weight:bold; line-height:1;">${ativosHoje}</div>
             <div style="font-size:11px; margin-bottom:8px;">Operadores Ativos</div>
             <hr style="border-color:${isLight ? '#ccc' : '#333'}; margin:8px 0;" />
-            <div style="font-size:11px; color:var(--muted);">Operador Respons√°vel</div>
+            <div style="font-size:11px; color:var(--muted);">Operador Respons·vel</div>
             <div ${respClick}><strong>${respName}</strong></div>
           </div>
         `;
@@ -1395,10 +225,10 @@
       Array.from(cidadesSet).sort().forEach(c => {
         selectCity.innerHTML += `<option value="${c}">${c}</option>`;
       });
-      selectCity.value = selectedVal; // Restaurar a sele√ß√£o
+      selectCity.value = selectedVal; // Restaurar a seleÁ„o
     }
 
-    // Plotar posi√ß√£o do Operador se dispon√≠vel no localStorage (Ponto ou Login)
+    // Plotar posiÁ„o do Operador se disponÌvel no localStorage (Ponto ou Login)
     try {
       const geoRaw = localStorage.getItem('sgo_geo_pos');
       if (geoRaw) {
@@ -1416,7 +246,7 @@
 
           const popupContent = `
             <div style="font-family:system-ui,sans-serif; font-size:12px; color:${isLight ? '#020617' : '#e5e7eb'}; padding: 4px;">
-              <strong style="color:#ef4444; font-size:13px; display:block; margin-bottom:4px;">üî¥ √öltimo Login Operador</strong>
+              <strong style="color:#ef4444; font-size:13px; display:block; margin-bottom:4px;">?? ⁄ltimo Login Operador</strong>
               <div><strong>Coordenadas:</strong> ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)}</div>
               <div><strong>Capturado em:</strong> ${new Date(geo.ts).toLocaleTimeString('pt-BR')}</div>
             </div>
@@ -1430,7 +260,7 @@
         }
       }
     } catch (e) {
-      console.warn("Erro ao ler geolocaliza√ß√£o do operador para o mapa:", e);
+      console.warn("Erro ao ler geolocalizaÁ„o do operador para o mapa:", e);
     }
 
     // Ajustar o zoom do mapa para enquadrar todos os pontos
@@ -1438,7 +268,7 @@
       mapInstance.fitBounds(bounds, { padding: [40, 40] });
     }
 
-    // For√ßar atualiza√ß√£o do tamanho para renderizar corretamente
+    // ForÁar atualizaÁ„o do tamanho para renderizar corretamente
     mapInstance.invalidateSize();
   }
 
@@ -1485,10 +315,10 @@
   };
 
   window.showScalesSubPanel = function(subtabId) {
-    // Esconder o card√°pio inicial
+    // Esconder o card·pio inicial
     document.getElementById('scalesCardapio').style.display = 'none';
     
-    // Exibir a barra de sub-abas superior para navega√ß√£o alternativa
+    // Exibir a barra de sub-abas superior para navegaÁ„o alternativa
     document.getElementById('scalesSubtabs').style.display = 'flex';
     
     // Ativar a sub-aba desejada e seu painel correspondente
@@ -1502,20 +332,20 @@
       panel.classList.toggle('active', panel.id === subtabId);
     });
     
-    // Se a aba for planejamento, garantir que inicie no Passo 1 (Sele√ß√£o)
+    // Se a aba for planejamento, garantir que inicie no Passo 1 (SeleÁ„o)
     if (subtabId === 'sub-planejamento') {
       retornarAosConfiguracoesPlanejamento();
     }
   };
 
   window.voltarAoMenuEscalas = function() {
-    // Esconder todos os sub-pain√©is e a barra de sub-abas
+    // Esconder todos os sub-painÈis e a barra de sub-abas
     const subPanels = document.querySelectorAll('.subtab-panel');
     subPanels.forEach(panel => panel.classList.remove('active'));
     
     document.getElementById('scalesSubtabs').style.display = 'none';
     
-    // Exibir o card√°pio de bot√µes inicial
+    // Exibir o card·pio de botıes inicial
     document.getElementById('scalesCardapio').style.display = 'grid';
   };
 
@@ -1547,22 +377,22 @@
     if (scope === 'posto') {
       postoId = document.getElementById('selectPlanningPosto').value;
       const postoObj = MOCK_POSTOS.find(p => p.id == postoId);
-      labelText = `Posto: ${postoObj ? postoObj.nome : 'Desconhecido'} - Per√≠odo: ${mesAno}`;
+      labelText = `Posto: ${postoObj ? postoObj.nome : 'Desconhecido'} - PerÌodo: ${mesAno}`;
     } else {
       const equipeNome = document.getElementById('selectPlanningEquipe').value;
       const equipeObj = MOCK_EQUIPES.find(e => e.nome === equipeNome);
       if (!equipeObj) {
-        alert('Equipe selecionada inv√°lida.');
+        alert('Equipe selecionada inv·lida.');
         return;
       }
       // Resolver para o posto correspondente
       const postoObj = MOCK_POSTOS.find(p => p.nome === equipeObj.posto);
       if (!postoObj) {
-        alert(`N√£o foi poss√≠vel localizar o Posto de Trabalho vinculado √† equipe ${equipeNome}.`);
+        alert(`N„o foi possÌvel localizar o Posto de Trabalho vinculado ‡ equipe ${equipeNome}.`);
         return;
       }
       postoId = postoObj.id;
-      labelText = `Equipe: ${equipeNome} (${postoObj.nome}) - Per√≠odo: ${mesAno}`;
+      labelText = `Equipe: ${equipeNome} (${postoObj.nome}) - PerÌodo: ${mesAno}`;
     }
     
     // Atualizar os seletores internos de planejamento para compatibilidade
@@ -1573,10 +403,10 @@
     
     document.getElementById('labelEscopoAtivo').textContent = labelText;
     
-    // Carregar os dados de escala e atualizar o calend√°rio
+    // Carregar os dados de escala e atualizar o calend·rio
     carregarEscalaDoServidor();
     
-    // Transitar visualmente para o Passo 2 (Calend√°rio)
+    // Transitar visualmente para o Passo 2 (Calend·rio)
     document.getElementById('planningStepSelection').style.display = 'none';
     document.getElementById('planningStepCalendar').style.display = 'block';
   };
@@ -1590,7 +420,7 @@
       container.style.display = 'block';
       const dl = document.getElementById('dlPostosDesignacao');
       if (dl && typeof MOCK_POSTOS !== 'undefined') {
-        dl.innerHTML = MOCK_POSTOS.map(p => `<option value="${p.nome}">`).join('');
+        dl.innerHTML = MOCK_POSTOS.map(p => <option value=" + p.nome + ">).join('');
       }
     } else {
       container.style.display = 'none';
@@ -1612,7 +442,7 @@
       );
       
       if (equipesFiltradas.length > 0) {
-        selectEquipe.innerHTML = '<option value="">Nenhuma equipe especÔøΩfica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
+        selectEquipe.innerHTML = '<option value="">Nenhuma equipe espec?fica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
       } else {
         selectEquipe.innerHTML = '<option value="">Sem equipes cadastradas para este posto</option>';
       }
@@ -1620,7 +450,7 @@
   };
 
   window.abrirModalCadastro = function() {
-    opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Coopera√ß√£o da Cidade' };
+    opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de CooperaÁ„o da Cidade' };
     syncOperadorForm();
     document.getElementById('modalCadastroEdicaoTitle').textContent = 'Cadastrar Operador';
     document.getElementById('modalCadastroEdicao').classList.add('open');
@@ -1674,7 +504,7 @@
     const matriculaVal = document.getElementById('consultarMatricula').value.trim().toLowerCase();
     
     if (!nomeVal && !matriculaVal) {
-      alert('Por favor, informe o nome ou a matr√≠cula para consultar.');
+      alert('Por favor, informe o nome ou a matrÌcula para consultar.');
       return;
     }
     
@@ -1735,24 +565,24 @@
 
     eventos.push({
       data: dataAdmissaoStr,
-      titulo: "Admiss√£o na Empresa",
-      desc: `Admitido sob a matr√≠cula <strong>${op.matricula}</strong> no cargo de <strong>${op.cargo || 'Operador'}</strong>.`
+      titulo: "Admiss„o na Empresa",
+      desc: `Admitido sob a matrÌcula <strong>${op.matricula}</strong> no cargo de <strong>${op.cargo || 'Operador'}</strong>.`
     });
 
     const dataTreinamento = new Date(dataAdmissao);
     dataTreinamento.setMonth(dataTreinamento.getMonth() + 1);
     eventos.push({
       data: dataTreinamento.toLocaleDateString('pt-BR'),
-      titulo: "Treinamento de Integra√ß√£o Conclu√≠do",
-      desc: "Conclus√£o com sucesso do treinamento b√°sico de opera√ß√µes, normas de seguran√ßa e uso dos sistemas SGO."
+      titulo: "Treinamento de IntegraÁ„o ConcluÌdo",
+      desc: "Conclus„o com sucesso do treinamento b·sico de operaÁıes, normas de seguranÁa e uso dos sistemas SGO."
     });
 
     const dataPosto = new Date(dataAdmissao);
     dataPosto.setMonth(dataPosto.getMonth() + 2);
     eventos.push({
       data: dataPosto.toLocaleDateString('pt-BR'),
-      titulo: "Aloca√ß√£o no Posto",
-      desc: `Definido como posto principal: <strong>${op.posto || 'Centro de Coopera√ß√£o da Cidade'}</strong>.`
+      titulo: "AlocaÁ„o no Posto",
+      desc: `Definido como posto principal: <strong>${op.posto || 'Centro de CooperaÁ„o da Cidade'}</strong>.`
     });
 
     if (op.qualificacoes && op.qualificacoes.trim()) {
@@ -1761,8 +591,8 @@
       if (dataQual > dataPosto) {
         eventos.push({
           data: dataQual.toLocaleDateString('pt-BR'),
-          titulo: "Qualifica√ß√£o Registrada",
-          desc: `Certifica√ß√£o adicionada ao perfil: <em>${op.qualificacoes}</em>.`
+          titulo: "QualificaÁ„o Registrada",
+          desc: `CertificaÁ„o adicionada ao perfil: <em>${op.qualificacoes}</em>.`
         });
       }
     }
@@ -1773,16 +603,16 @@
       if (dataPref > dataPosto) {
         eventos.push({
           data: dataPref.toLocaleDateString('pt-BR'),
-          titulo: "Atualiza√ß√£o de Prefer√™ncia de Escala",
-          desc: `Registrada prefer√™ncia pelo turno <strong>${op.preferencia_turno}</strong>.`
+          titulo: "AtualizaÁ„o de PreferÍncia de Escala",
+          desc: `Registrada preferÍncia pelo turno <strong>${op.preferencia_turno}</strong>.`
         });
       }
     }
     if (op.ferias_programadas && op.ferias_programadas.trim()) {
       eventos.push({
         data: op.ferias_programadas.split('-')[0].trim(),
-        titulo: "Programa√ß√£o de F√©rias",
-        desc: `Per√≠odo planejado e aprovado de f√©rias: <strong>${op.ferias_programadas}</strong>.`
+        titulo: "ProgramaÁ„o de FÈrias",
+        desc: `PerÌodo planejado e aprovado de fÈrias: <strong>${op.ferias_programadas}</strong>.`
       });
     }
 
@@ -1804,29 +634,29 @@
     window.currentVisualizarMatricula = matricula;
     const op = MOCK_OPERADORES.find(o => o.matricula === matricula);
     if (!op) {
-      alert('Operador n√£o encontrado.');
+      alert('Operador n„o encontrado.');
       return;
     }
     
-    document.getElementById('viewOpNome').textContent = op.nome || '‚Äî';
-    document.getElementById('viewOpMatricula').textContent = op.matricula || '‚Äî';
-    document.getElementById('viewOpCpf').textContent = op.cpf || '‚Äî';
-    document.getElementById('viewOpCargo').textContent = op.cargo || '‚Äî';
-    document.getElementById('viewOpHierarquia').textContent = op.hierarquia || '‚Äî';
-    document.getElementById('viewOpJornada').textContent = op.jornada_contratual || '‚Äî';
-    document.getElementById('viewOpTurno').textContent = op.turno_atual || '‚Äî';
-    document.getElementById('viewOpPosto').textContent = op.posto || '‚Äî';
+    document.getElementById('viewOpNome').textContent = op.nome || 'ó';
+    document.getElementById('viewOpMatricula').textContent = op.matricula || 'ó';
+    document.getElementById('viewOpCpf').textContent = op.cpf || 'ó';
+    document.getElementById('viewOpCargo').textContent = op.cargo || 'ó';
+    document.getElementById('viewOpHierarquia').textContent = op.hierarquia || 'ó';
+    document.getElementById('viewOpJornada').textContent = op.jornada_contratual || 'ó';
+    document.getElementById('viewOpTurno').textContent = op.turno_atual || 'ó';
+    document.getElementById('viewOpPosto').textContent = op.posto || 'ó';
     document.getElementById('viewOpStatus').innerHTML = badge(op.status);
-    document.getElementById('viewOpQualificacoes').textContent = op.qualificacoes || 'Nenhuma qualifica√ß√£o registrada.';
-    document.getElementById('viewOpRestricoes').textContent = op.restricoes_medicas || 'Nenhuma restri√ß√£o registrada.';
+    document.getElementById('viewOpQualificacoes').textContent = op.qualificacoes || 'Nenhuma qualificaÁ„o registrada.';
+    document.getElementById('viewOpRestricoes').textContent = op.restricoes_medicas || 'Nenhuma restriÁ„o registrada.';
     
     let feriasText = '';
-    if (op.ferias_programadas) feriasText += `F√©rias: ${op.ferias_programadas}`;
+    if (op.ferias_programadas) feriasText += `FÈrias: ${op.ferias_programadas}`;
     if (op.afastamentos) {
       if (feriasText) feriasText += ' | ';
       feriasText += `Afastamentos: ${op.afastamentos}`;
     }
-    document.getElementById('viewOpFerias').textContent = feriasText || 'Nenhum per√≠odo de f√©rias ou afastamento registrado.';
+    document.getElementById('viewOpFerias').textContent = feriasText || 'Nenhum perÌodo de fÈrias ou afastamento registrado.';
 
     const timelineContainer = document.getElementById('careerTimelineContainer');
     const eventos = gerarLinhaDoTempoCarreira(op);
@@ -1966,7 +796,7 @@
           <div class="day-shifts">${shiftsHtml}</div>
         </div>
         <div style="text-align: right; margin-top: 4px;">
-          ${shifts.length > 0 ? '<span style="font-size: 9px; color: #4ade80;">‚úì</span>' : '<span style="font-size: 8px; color: #ef4444; font-weight:bold;">Sem cob.</span>'}
+          ${shifts.length > 0 ? '<span style="font-size: 9px; color: #4ade80;">?</span>' : '<span style="font-size: 8px; color: #ef4444; font-weight:bold;">Sem cob.</span>'}
         </div>
       `;
       cal.appendChild(cell);
@@ -2000,9 +830,9 @@
     const ano = parseInt(anoStr, 10);
     const checkDate = new Date(ano, mes - 1, day);
 
-    // 1. F√©rias
+    // 1. FÈrias
     if (op.ferias_programadas && isDateInPeriod(checkDate, op.ferias_programadas)) {
-      errs.push(`Operador de f√©rias programadas (${op.ferias_programadas}).`);
+      errs.push(`Operador de fÈrias programadas (${op.ferias_programadas}).`);
     }
 
     // 2. Afastamento
@@ -2010,11 +840,11 @@
       errs.push(`Operador afastado (${op.afastamentos}).`);
     }
 
-    // 3. Aloca√ß√£o dupla no mesmo posto
+    // 3. AlocaÁ„o dupla no mesmo posto
     const dayKey = String(day);
     const existing = (currentScaleData[dayKey] || []).find(s => s.usuario_id === op.id);
     if (existing) {
-      errs.push(`Operador j√° est√° alocado para este dia.`);
+      errs.push(`Operador j· est· alocado para este dia.`);
     }
 
     // 4. Interjornada (11h) com dia anterior e posterior
@@ -2038,7 +868,7 @@
       }
     }
 
-    // 5. Limite di√°rio (8h ou 12h)
+    // 5. Limite di·rio (8h ou 12h)
     const [sH, sM] = start.split(':').map(Number);
     const [eH, eM] = end.split(':').map(Number);
     let dur = (eH * 60 + eM) - (sH * 60 + sM);
@@ -2047,7 +877,7 @@
 
     const is12x36 = (op.jornada_contratual || '').toLowerCase().includes('12x36');
     if (durHours > 8 && !is12x36) {
-      errs.push(`Jornada di√°ria superior a 8h para regime tradicional (turno: ${durHours.toFixed(1)}h).`);
+      errs.push(`Jornada di·ria superior a 8h para regime tradicional (turno: ${durHours.toFixed(1)}h).`);
     }
     if (durHours > 12) {
       errs.push(`Jornada de trabalho excede o limite legal de 12 horas consecutivas.`);
@@ -2087,7 +917,7 @@
           </div>
           <div class="field" style="display:flex; gap:6px;">
             <div style="flex:1;">
-              <label class="small">In√≠cio</label>
+              <label class="small">InÌcio</label>
               <input id="addShiftInicio" type="time" value="08:00" style="width:100%; border-radius:6px; padding:4px;" />
             </div>
             <div style="flex:1;">
@@ -2098,7 +928,7 @@
         </div>
         <div class="validation" id="addShiftValidation" style="margin-top:6px; color:#ef4444; font-size:10px; display:none; padding:6px; border:1px solid rgba(239,68,68,0.2); background:rgba(239,68,68,0.05); border-radius:4px;"></div>
         <div class="row" style="margin-top:8px;">
-          <button onclick="addShiftToDay(${day})" class="primary" type="button" style="width:100%; padding:6px; cursor:pointer;">Adicionar Aloca√ß√£o</button>
+          <button onclick="addShiftToDay(${day})" class="primary" type="button" style="width:100%; padding:6px; cursor:pointer;">Adicionar AlocaÁ„o</button>
         </div>
       </div>
     `;
@@ -2199,19 +1029,19 @@
 
         tbody.innerHTML = '';
         data.pontos.forEach(p => {
-          const checkinStr = p.checkin ? new Date(p.checkin.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '‚Äî';
-          const intInicioStr = p.intervalo_inicio ? new Date(p.intervalo_inicio.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '‚Äî';
-          const intFimStr = p.intervalo_fim ? new Date(p.intervalo_fim.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '‚Äî';
-          const checkoutStr = p.checkout ? new Date(p.checkout.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '‚Äî';
+          const checkinStr = p.checkin ? new Date(p.checkin.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : 'ó';
+          const intInicioStr = p.intervalo_inicio ? new Date(p.intervalo_inicio.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : 'ó';
+          const intFimStr = p.intervalo_fim ? new Date(p.intervalo_fim.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : 'ó';
+          const checkoutStr = p.checkout ? new Date(p.checkout.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : 'ó';
           
-          const coords = (p.lat && p.lng) ? `${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)}` : '‚Äî';
+          const coords = (p.lat && p.lng) ? `${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)}` : 'ó';
           
           const checkinFotoBtn = p.foto_checkin 
-            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkin}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Check-in">üì∑</button>` 
+            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkin}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Check-in">??</button>` 
             : '';
             
           const checkoutFotoBtn = p.foto_checkout 
-            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkout}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Checkout">üì∑</button>` 
+            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkout}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Checkout">??</button>` 
             : '';
 
           const tr = document.createElement('tr');
@@ -2252,7 +1082,7 @@
       }
     });
   }
-  function loadPosto(i=0){ const p=MOCK_POSTOS[i]; if(!p) { postoModel.id=''; postoModel.nome=''; postoModel.cidade='Manaus/AM'; postoModel.status='ATIVO'; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=''; postoModel.funcionalidades=''; postoModel.revezamentoNecessario='N√£o'; postoModel.adicionalNoturno='N√£o'; } else { currentPostoId=p.id; postoModel.id=p.id; postoModel.nome=p.nome; postoModel.cidade=p.cidade||'Manaus/AM'; postoModel.status=p.status||'ATIVO'; postoModel.jornada=p.jornada||'8h'; postoModel.turno=p.turno_preferencial||'Diurno'; postoModel.intrajornada=p.intrajornada||'1h'; postoModel.interjornada=p.interjornada||'11h'; postoModel.extras=p.extras||'2h/dia'; postoModel.banco=p.banco_horas||'Sim'; postoModel.dsr=p.dsr||'Sim'; postoModel.especial=p.especial||''; postoModel.descricao=p.descricao||''; postoModel.funcionalidades=p.funcionalidades||''; postoModel.revezamentoNecessario=p.revezamento_necessario||'N√£o'; postoModel.adicionalNoturno=p.adicional_noturno||'N√£o'; postoModel.endereco=p.endereco||''; postoModel.latitude=p.latitude||''; postoModel.longitude=p.longitude||''; postoModel.telefone_contato=p.telefone_contato||''; postoModel.operador_responsavel_id=p.operador_responsavel_id||null; } syncPostoForm(); }
+  function loadPosto(i=0){ const p=MOCK_POSTOS[i]; if(!p) { postoModel.id=''; postoModel.nome=''; postoModel.cidade='Manaus/AM'; postoModel.status='ATIVO'; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=''; postoModel.funcionalidades=''; postoModel.revezamentoNecessario='N„o'; postoModel.adicionalNoturno='N„o'; } else { currentPostoId=p.id; postoModel.id=p.id; postoModel.nome=p.nome; postoModel.cidade=p.cidade||'Manaus/AM'; postoModel.status=p.status||'ATIVO'; postoModel.jornada=p.jornada||'8h'; postoModel.turno=p.turno_preferencial||'Diurno'; postoModel.intrajornada=p.intrajornada||'1h'; postoModel.interjornada=p.interjornada||'11h'; postoModel.extras=p.extras||'2h/dia'; postoModel.banco=p.banco_horas||'Sim'; postoModel.dsr=p.dsr||'Sim'; postoModel.especial=p.especial||''; postoModel.descricao=p.descricao||''; postoModel.funcionalidades=p.funcionalidades||''; postoModel.revezamentoNecessario=p.revezamento_necessario||'N„o'; postoModel.adicionalNoturno=p.adicional_noturno||'N„o'; postoModel.endereco=p.endereco||''; postoModel.latitude=p.latitude||''; postoModel.longitude=p.longitude||''; postoModel.telefone_contato=p.telefone_contato||''; postoModel.operador_responsavel_id=p.operador_responsavel_id||null; } syncPostoForm(); }
   function syncPostoForm(){
     document.getElementById('postoNome').value = postoModel.nome || '';
     document.getElementById('postoCidade').value = postoModel.cidade || 'Manaus/AM';
@@ -2266,8 +1096,8 @@
     document.getElementById('postoEspecial').value = postoModel.especial || '';
     document.getElementById('postoDescricao').value = postoModel.descricao || '';
     document.getElementById('postoFuncionalidades').value = postoModel.funcionalidades || '';
-    document.getElementById('postoRevezamento').value = postoModel.revezamentoNecessario || 'N√£o';
-    document.getElementById('postoAdicionalNoturno').value = postoModel.adicionalNoturno || 'N√£o';
+    document.getElementById('postoRevezamento').value = postoModel.revezamentoNecessario || 'N„o';
+    document.getElementById('postoAdicionalNoturno').value = postoModel.adicionalNoturno || 'N„o';
     
     // Novos campos
     const elEnd = document.getElementById('postoEndereco'); if(elEnd) elEnd.value = postoModel.endereco || '';
@@ -2275,7 +1105,7 @@
     const elLng = document.getElementById('postoLongitude'); if(elLng) elLng.value = postoModel.longitude || '';
     const elTel = document.getElementById('postoTelefone'); if(elTel) elTel.value = postoModel.telefone_contato || '';
     
-    // Atualizar op√ß√µes do Respons√°vel e setar valor
+    // Atualizar opÁıes do Respons·vel e setar valor
     const respSelect = document.getElementById('postoResponsavel');
     if (respSelect) {
       respSelect.innerHTML = '<option value="">Nenhum</option>';
@@ -2361,7 +1191,7 @@
             nome: u.nome,
             matricula: u.matricula,
             usuario: u.usuario,
-            posto: u.posto_principal || 'Centro de Coopera√ß√£o da Cidade',
+            posto: u.posto_principal || 'Centro de CooperaÁ„o da Cidade',
             status: u.status,
             roles: u.roles,
             cpf: u.cpf || '',
@@ -2379,7 +1209,7 @@
             scope_value: u.scope_value || ''
           }));
           
-          // Filtrar por escopo se aplic√°vel
+          // Filtrar por escopo se aplic·vel
           if (loggedUser && loggedUser.roles && !loggedUser.roles.includes('ADMIN')) {
             if (loggedUser.scope_type === 'UNIDADE' && loggedUser.scope_value) {
               MOCK_OPERADORES = MOCK_OPERADORES.filter(o => o.posto === loggedUser.scope_value);
@@ -2389,7 +1219,7 @@
           MOCK_DISPONIBILIDADE = MOCK_OPERADORES.map(o => ({
             nome: o.nome,
             posto: o.posto,
-            disp: o.status === 'ATIVO' ? 'Dispon√≠vel' : (o.status === 'F√âRIAS' ? 'F√©rias' : 'Indispon√≠vel')
+            disp: o.status === 'ATIVO' ? 'DisponÌvel' : (o.status === 'F…RIAS' ? 'FÈrias' : 'IndisponÌvel')
           }));
 
           renderOperadores();
@@ -2412,7 +1242,7 @@
       })
       .catch(err => {
         console.error('Erro ao sincronizar operadores:', err);
-        alert('Falha de comunica√ß√£o com o banco de dados (Operadores): ' + err.message);
+        alert('Falha de comunicaÁ„o com o banco de dados (Operadores): ' + err.message);
       });
   }
 
@@ -2420,7 +1250,7 @@
     currentOperadorId=i;
     const o=MOCK_OPERADORES[i];
     if(!o) {
-      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Coopera√ß√£o da Cidade', scopeType:'UNIDADE', scopeValue:'' };
+      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de CooperaÁ„o da Cidade', scopeType:'UNIDADE', scopeValue:'' };
     } else {
       opModel.id=o.id;
       opModel.nome=o.nome;
@@ -2430,7 +1260,7 @@
       opModel.jornada=o.jornada_contratual || 'Tradicional 8h/44h';
       opModel.turno=o.turno_atual || 'Fixo';
       opModel.preferencia=o.preferencia_turno || 'Diurno';
-      opModel.status=o.status==='ATIVO'?'Ativo':(o.status==='F√âRIAS'?'Em f√©rias':'Inativo');
+      opModel.status=o.status==='ATIVO'?'Ativo':(o.status==='F…RIAS'?'Em fÈrias':'Inativo');
       opModel.disponibilidade=o.disponibilidade || '';
       opModel.restricoes=o.restricoes_medicas || '';
       opModel.qualificacoes=o.qualificacoes || '';
@@ -2495,21 +1325,21 @@
   function validatePosto(){
     const errs=[];
     if (!postoNome.value.trim()) {
-      errs.push('Nome do posto √© obrigat√≥rio.');
+      errs.push('Nome do posto È obrigatÛrio.');
     }
     const j = parseFloat((postoJornada.value||'').replace('h','').replace(',','.'));
     const is12x36 = postoEspecial.value.trim().toLowerCase() === '12x36' || postoJornada.value.trim().toLowerCase() === '12h';
     if (!isNaN(j)) {
       if (j > 8 && !is12x36) {
-        errs.push('Jornada di√°ria deve ser ‚â§ 8h, exceto se for regime 12x36.');
+        errs.push('Jornada di·ria deve ser = 8h, exceto se for regime 12x36.');
       }
       if (j <= 0) {
-        errs.push('Jornada di√°ria deve ser maior que zero.');
+        errs.push('Jornada di·ria deve ser maior que zero.');
       }
     }
     const inter = parseFloat((postoInterjornada.value||'').replace('h','').replace(',','.'));
     if (!isNaN(inter) && inter < 11) {
-      errs.push('Intervalo interjornada m√≠nimo obrigat√≥rio √© de 11h.');
+      errs.push('Intervalo interjornada mÌnimo obrigatÛrio È de 11h.');
     }
     const intra = (postoIntrajornada.value || '').trim();
     if (!isNaN(j)) {
@@ -2519,33 +1349,33 @@
           intraVal = intraVal / 60;
         }
         if (intraVal < 1) {
-          errs.push('Jornada > 6h exige intervalo intrajornada de no m√≠nimo 1h.');
+          errs.push('Jornada > 6h exige intervalo intrajornada de no mÌnimo 1h.');
         }
       } else if (j >= 4 && j <= 6) {
         let intraVal = parseFloat(intra.replace('h', '').replace('min', ''));
         if (!intra.includes('min') && intraVal < 0.25) {
-          errs.push('Jornada entre 4h e 6h exige intervalo intrajornada de no m√≠nimo 15 minutos.');
+          errs.push('Jornada entre 4h e 6h exige intervalo intrajornada de no mÌnimo 15 minutos.');
         }
       }
     }
     const ext = parseFloat((postoExtras.value||'').replace('h','').replace(',','.'));
     if (!isNaN(ext) && ext > 2) {
-      errs.push('Horas extras permitidas n√£o podem exceder 2 horas di√°rias.');
+      errs.push('Horas extras permitidas n„o podem exceder 2 horas di·rias.');
     }
     const adNoturno = document.getElementById('postoAdicionalNoturno').value;
-    if (postoTurno.value === 'Noturno' && adNoturno === 'N√£o') {
-      errs.push('Aviso: Turno noturno exige a aplica√ß√£o de adicional noturno.');
+    if (postoTurno.value === 'Noturno' && adNoturno === 'N„o') {
+      errs.push('Aviso: Turno noturno exige a aplicaÁ„o de adicional noturno.');
     }
     return errs;
   }
   
   function validateOperador(){
     const errs=[];
-    if(!opNome.value.trim()) errs.push('Nome √© obrigat√≥rio.');
-    if(!opMatricula.value.trim()) errs.push('Matr√≠cula √© obrigat√≥ria.');
-    if(!opUsuario.value.trim()) errs.push('Nome de usu√°rio √© obrigat√≥rio.');
+    if(!opNome.value.trim()) errs.push('Nome È obrigatÛrio.');
+    if(!opMatricula.value.trim()) errs.push('MatrÌcula È obrigatÛria.');
+    if(!opUsuario.value.trim()) errs.push('Nome de usu·rio È obrigatÛrio.');
     if(!opModel.id && !opSenha.value.trim()) {
-      errs.push('Senha √© obrigat√≥ria para criar novo usu√°rio.');
+      errs.push('Senha È obrigatÛria para criar novo usu·rio.');
     }
     return errs;
   }
@@ -2575,7 +1405,7 @@
       jornadaContratual: opJornada.value.trim(),
       turnoAtual: opTurno.value,
       preferenciaTurno: opPreferencia.value.trim(),
-      status: opStatus.value === 'Ativo' ? 'ATIVO' : (opStatus.value === 'Em f√©rias' ? 'F√âRIAS' : 'INATIVO'),
+      status: opStatus.value === 'Ativo' ? 'ATIVO' : (opStatus.value === 'Em fÈrias' ? 'F…RIAS' : 'INATIVO'),
       disponibilidade: opDisponibilidade.value.trim(),
       restricoesMedicas: opRestricoes.value.trim(),
       qualificacoes: opQualificacoes.value.trim(),
@@ -2644,7 +1474,7 @@
     const mesAno = document.getElementById('planningMonthYear').value;
     
     if (!postoId || !mesAno) {
-      alert('Selecione um posto e um m√™s v√°lidos.');
+      alert('Selecione um posto e um mÍs v·lidos.');
       return;
     }
     
@@ -2681,7 +1511,7 @@
       }
     })
     .catch(err => {
-      alert('Erro de conex√£o: ' + err.message);
+      alert('Erro de conex„o: ' + err.message);
     });
   }
 
@@ -2706,14 +1536,14 @@
           renderHistorico();
         }
       })
-      .catch(err => console.error('Erro ao buscar logs de hist√≥rico:', err));
+      .catch(err => console.error('Erro ao buscar logs de histÛrico:', err));
   }
 
   window.gerarEscalaAutomatica = function() {
     const postoIdVal = parseInt(document.getElementById('planningPosto').value, 10);
     const posto = MOCK_POSTOS.find(p => p.id === postoIdVal);
     if (!posto) {
-      alert('Selecione um posto v√°lido.');
+      alert('Selecione um posto v·lido.');
       return;
     }
     
@@ -2805,7 +1635,7 @@
       if (idx !== -1) {
         loadOperador(idx);
       } else {
-        alert('Operador n√£o encontrado. Pesquise e escolha um nome da lista sugerida.');
+        alert('Operador n„o encontrado. Pesquise e escolha um nome da lista sugerida.');
       }
     });
   }
@@ -2816,7 +1646,7 @@
   const btnNovoOperador = document.getElementById('btnNovoOperador');
   if (btnNovoOperador) {
     btnNovoOperador.addEventListener('click',()=>{
-      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Coopera√ß√£o da Cidade' };
+      opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de CooperaÁ„o da Cidade' };
       syncOperadorForm();
     });
   }
@@ -2832,7 +1662,7 @@
       visualizarPerfilDesdeConsulta(mat);
     }
   });
-  document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; const op=MOCK_OPERADORES.find(o=>o.nome===tr.dataset.nome); document.getElementById('dispSelected').textContent=tr.dataset.nome; document.getElementById('dispStatus').value=MOCK_DISPONIBILIDADE.find(d=>d.nome===tr.dataset.nome)?.disp||'Dispon√≠vel'; document.getElementById('dispObs').value=`Disponibilidade atual de ${tr.dataset.nome}.`; if(op) openOperadorSession(op.matricula); });
+  document.getElementById('tbodyDisponibilidade').addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; const op=MOCK_OPERADORES.find(o=>o.nome===tr.dataset.nome); document.getElementById('dispSelected').textContent=tr.dataset.nome; document.getElementById('dispStatus').value=MOCK_DISPONIBILIDADE.find(d=>d.nome===tr.dataset.nome)?.disp||'DisponÌvel'; document.getElementById('dispObs').value=`Disponibilidade atual de ${tr.dataset.nome}.`; if(op) openOperadorSession(op.matricula); });
 
   document.getElementById('filtroPostos').addEventListener('input',e=>renderPostos(MOCK_POSTOS.filter(p=>(p.nome+p.cidade).toLowerCase().includes(e.target.value.toLowerCase()))));
   document.getElementById('filtroEquipes').addEventListener('input',e=>renderEquipes(MOCK_EQUIPES.filter(x=>(x.nome+x.posto+x.turno).toLowerCase().includes(e.target.value.toLowerCase()))));
@@ -2873,13 +1703,13 @@
     try { u = JSON.parse(localStorage.getItem('sgo_usuario') || '{}'); } catch(e) {}
     const roles = u.roles || [];
     if (roles.includes('GESTOR') || roles.includes('ADMIN')) {
-      editBtn = `<div style="margin-top:12px; text-align:right;"><button class="primary" onclick="fecharModalPostoEEditar('${posto.nome}')" style="padding: 4px 10px; font-size:11px;">Editar Posto ‚öôÔ∏è</button></div>`;
+      editBtn = `<div style="margin-top:12px; text-align:right;"><button class="primary" onclick="fecharModalPostoEEditar('${posto.nome}')" style="padding: 4px 10px; font-size:11px;">Editar Posto ??</button></div>`;
     }
 
-    openOverlay(posto.nome, `${posto.cidade} ‚Ä¢ sess√£o do posto`, `<div class="detail-box"><div><strong>Status:</strong> ${badge(posto.status)}</div><div><strong>Operadores:</strong> ${posto.operadores || '-'}</div></div><div class="overlay-section"><div class="row-between"><strong>Equipes empenhadas</strong></div><div class="table-box">${equipes.length ? equipes.map(e=>`<div style="padding:4px 0;"><strong>${e.nome}</strong> ‚Ä¢ ${e.turno} ‚Ä¢ ${e.operadores} operadores</div>`).join('') : '<div class="small">Sem equipes vinculadas.</div>'}</div></div><div class="overlay-section"><div class="row-between"><strong>Operadores do posto</strong><span class="small">Clique para travar a sess√£o do operador</span></div><div class="table-box"><div class="list-row" style="font-size:11px;color:var(--muted)"><div>Nome</div><div>Status</div></div><div id="postoOps" class="operadores-list" style="max-height:260px"></div></div></div>${editBtn}`);
+    openOverlay(posto.nome, `${posto.cidade} ï sess„o do posto`, `<div class="detail-box"><div><strong>Status:</strong> ${badge(posto.status)}</div><div><strong>Operadores:</strong> ${posto.operadores || '-'}</div></div><div class="overlay-section"><div class="row-between"><strong>Equipes empenhadas</strong></div><div class="table-box">${equipes.length ? equipes.map(e=>`<div style="padding:4px 0;"><strong>${e.nome}</strong> ï ${e.turno} ï ${e.operadores} operadores</div>`).join('') : '<div class="small">Sem equipes vinculadas.</div>'}</div></div><div class="overlay-section"><div class="row-between"><strong>Operadores do posto</strong><span class="small">Clique para travar a sess„o do operador</span></div><div class="table-box"><div class="list-row" style="font-size:11px;color:var(--muted)"><div>Nome</div><div>Status</div></div><div id="postoOps" class="operadores-list" style="max-height:260px"></div></div></div>${editBtn}`);
     
     const postoOps=document.getElementById('postoOps');
-    postoOps.innerHTML=operadores.map(op=>`<div class="list-row" data-mat="${op.matricula}"><div><div><strong>${op.nome}</strong></div><div class="small">Matr√≠cula ${op.matricula} ‚Ä¢ ${op.usuario}</div></div><div>${badge(op.status)}</div></div>`).join('');
+    postoOps.innerHTML=operadores.map(op=>`<div class="list-row" data-mat="${op.matricula}"><div><div><strong>${op.nome}</strong></div><div class="small">MatrÌcula ${op.matricula} ï ${op.usuario}</div></div><div>${badge(op.status)}</div></div>`).join('');
     postoOps.querySelectorAll('.list-row').forEach(row=>row.addEventListener('click',()=>openOperadorSession(row.dataset.mat)));
   }
 
@@ -2888,7 +1718,7 @@
     editarPostoDireto(nome);
   };
 
-  function openOperadorSession(matricula){ const op=MOCK_OPERADORES.find(o=>o.matricula===matricula); if(!op) return; openOverlay(op.nome, `${op.posto} ‚Ä¢ sess√£o do operador`, `<div class="detail-box"><div><strong>Matr√≠cula:</strong> ${op.matricula}</div><div><strong>Usu√°rio:</strong> ${op.usuario}</div><div><strong>Posto principal:</strong> ${op.posto}</div><div><strong>Status:</strong> ${badge(op.status)}</div></div><div class="overlay-section"><div class="row-between"><strong>Rotina do m√™s</strong><button class="secondary" id="btnMoreOp">+ Info</button></div><div id="opMore" style="display:none"><div class="detail-box"><div><strong>Rotinas:</strong></div><ul class="overlay-list"><li>08:00 ‚Äì confer√™ncia inicial da rotina.</li><li>12:00 ‚Äì apoio operacional no posto.</li><li>18:00 ‚Äì fechamento e observa√ß√µes do m√™s.</li></ul><div style="margin-top:8px;"><strong>Observa√ß√µes:</strong></div><ul class="overlay-list"><li>Mant√©m boa comunica√ß√£o.</li><li>Alta ader√™ncia ao posto.</li><li>Revisar passagens de turno.</li></ul></div></div></div>`); document.getElementById('btnMoreOp').addEventListener('click',()=>{ const box=document.getElementById('opMore'); box.style.display=box.style.display==='none'?'block':'none'; }); }
+  function openOperadorSession(matricula){ const op=MOCK_OPERADORES.find(o=>o.matricula===matricula); if(!op) return; openOverlay(op.nome, `${op.posto} ï sess„o do operador`, `<div class="detail-box"><div><strong>MatrÌcula:</strong> ${op.matricula}</div><div><strong>Usu·rio:</strong> ${op.usuario}</div><div><strong>Posto principal:</strong> ${op.posto}</div><div><strong>Status:</strong> ${badge(op.status)}</div></div><div class="overlay-section"><div class="row-between"><strong>Rotina do mÍs</strong><button class="secondary" id="btnMoreOp">+ Info</button></div><div id="opMore" style="display:none"><div class="detail-box"><div><strong>Rotinas:</strong></div><ul class="overlay-list"><li>08:00 ñ conferÍncia inicial da rotina.</li><li>12:00 ñ apoio operacional no posto.</li><li>18:00 ñ fechamento e observaÁıes do mÍs.</li></ul><div style="margin-top:8px;"><strong>ObservaÁıes:</strong></div><ul class="overlay-list"><li>MantÈm boa comunicaÁ„o.</li><li>Alta aderÍncia ao posto.</li><li>Revisar passagens de turno.</li></ul></div></div></div>`); document.getElementById('btnMoreOp').addEventListener('click',()=>{ const box=document.getElementById('opMore'); box.style.display=box.style.display==='none'?'block':'none'; }); }
 
   function openEquipe(nome){
     const eq=MOCK_EQUIPES.find(e=>e.nome===nome);
@@ -2900,16 +1730,16 @@
     try { u = JSON.parse(localStorage.getItem('sgo_usuario') || '{}'); } catch(e) {}
     const roles = u.roles || [];
     if (roles.includes('GESTOR') || roles.includes('ADMIN')) {
-      editBtn = `<div style="margin-top:12px; text-align:right;"><button class="primary" onclick="editarEquipeDireto('${eq.nome}')" style="padding: 4px 10px; font-size:11px;">Editar Equipe ‚öôÔ∏è</button></div>`;
+      editBtn = `<div style="margin-top:12px; text-align:right;"><button class="primary" onclick="editarEquipeDireto('${eq.nome}')" style="padding: 4px 10px; font-size:11px;">Editar Equipe ??</button></div>`;
     }
 
-    openOverlay(eq.nome, `${eq.posto} ‚Ä¢ sess√£o da equipe`, `<div class="detail-box"><div><strong>L√≠der:</strong> ${eq.lider}</div><div><strong>Posto:</strong> ${eq.posto}</div><div><strong>Turno:</strong> ${eq.turno}</div><div><strong>Operadores previstos:</strong> ${eq.operadores}</div></div><div class="overlay-section"><div class="row-between"><strong>Membros da equipe</strong><button class="secondary" id="btnMoreTeam">+ Info</button></div><div class="table-box" style="max-height:260px;overflow:auto;">${membros.map(m=>`<div class="list-row" data-mat="${m.matricula}"><div><div><strong>${m.nome}</strong></div><div class="small">Matr√≠cula ${m.matricula} ‚Ä¢ ${m.usuario}</div></div><div>${badge(m.status)}</div></div>`).join('')}</div><div id="teamMore" style="display:none"></div></div>${editBtn}`);
+    openOverlay(eq.nome, `${eq.posto} ï sess„o da equipe`, `<div class="detail-box"><div><strong>LÌder:</strong> ${eq.lider}</div><div><strong>Posto:</strong> ${eq.posto}</div><div><strong>Turno:</strong> ${eq.turno}</div><div><strong>Operadores previstos:</strong> ${eq.operadores}</div></div><div class="overlay-section"><div class="row-between"><strong>Membros da equipe</strong><button class="secondary" id="btnMoreTeam">+ Info</button></div><div class="table-box" style="max-height:260px;overflow:auto;">${membros.map(m=>`<div class="list-row" data-mat="${m.matricula}"><div><div><strong>${m.nome}</strong></div><div class="small">MatrÌcula ${m.matricula} ï ${m.usuario}</div></div><div>${badge(m.status)}</div></div>`).join('')}</div><div id="teamMore" style="display:none"></div></div>${editBtn}`);
     
     document.getElementById('btnMoreTeam').addEventListener('click',()=>{
       const box=document.getElementById('teamMore');
       if(box.style.display==='none' || !box.style.display){
         box.style.display='block';
-        box.innerHTML=`<div class="detail-box"><div><strong>Rotinas da equipe:</strong></div><ul class="overlay-list"><li>Ronda e verifica√ß√£o de ponto.</li><li>Passagem de turno com checagem de pend√™ncias.</li><li>Observa√ß√£o de fluxo e apoio em cobertura.</li></ul><div style="margin-top:8px;"><strong>Observa√ß√µes do m√™s:</strong></div><ul class="overlay-list"><li>Bom entrosamento operacional.</li><li>Validar escalas de folga antes de publicar.</li><li>Sem ocorr√™ncias cr√≠ticas no per√≠odo.</li></ul></div>`;
+        box.innerHTML=`<div class="detail-box"><div><strong>Rotinas da equipe:</strong></div><ul class="overlay-list"><li>Ronda e verificaÁ„o de ponto.</li><li>Passagem de turno com checagem de pendÍncias.</li><li>ObservaÁ„o de fluxo e apoio em cobertura.</li></ul><div style="margin-top:8px;"><strong>ObservaÁıes do mÍs:</strong></div><ul class="overlay-list"><li>Bom entrosamento operacional.</li><li>Validar escalas de folga antes de publicar.</li><li>Sem ocorrÍncias crÌticas no perÌodo.</li></ul></div>`;
       } else {
         box.style.display='none';
         box.innerHTML='';
@@ -2928,14 +1758,14 @@
       const u = JSON.parse(raw);
       const roles = u.roles || [];
       if (!roles.includes('GESTOR') && !roles.includes('ADMIN') && !roles.includes('SUPERVISOR')) {
-        alert('Acesso negado. Usu√°rio sem permiss√£o de gest√£o.');
+        alert('Acesso negado. Usu·rio sem permiss„o de gest„o.');
         window.location.href = 'index.html';
         return;
       }
       
-      document.getElementById('subtitleGestor').textContent = `${u.roles || 'Gestor'} logado ‚Äì ${u.nome || u.username || 'Gestor'}`;
+      document.getElementById('subtitleGestor').textContent = `${u.roles || 'Gestor'} logado ñ ${u.nome || u.username || 'Gestor'}`;
       
-      // Aplicar restri√ß√µes para SUPERVISOR
+      // Aplicar restriÁıes para SUPERVISOR
       if (roles.includes('SUPERVISOR')) {
         const idsToHide = [
           'btnMenuCadastrar', 'btnNovoPostoPrincipal', 'btnNovaEquipePrincipal',
@@ -2956,7 +1786,7 @@
     }
   }
 
-  // Opera√ß√µes de Postos em Modal
+  // OperaÁıes de Postos em Modal
   window.abrirCadastroPostoDireto = function() {
     postoModel.id = '';
     postoModel.nome = '';
@@ -2972,8 +1802,8 @@
     postoModel.especial = '';
     postoModel.descricao = '';
     postoModel.funcionalidades = '';
-    postoModel.revezamentoNecessario = 'N√£o';
-    postoModel.adicionalNoturno = 'N√£o';
+    postoModel.revezamentoNecessario = 'N„o';
+    postoModel.adicionalNoturno = 'N„o';
     postoModel.endereco = '';
     postoModel.latitude = '';
     postoModel.longitude = '';
@@ -3023,7 +1853,7 @@
 
   window.excluirPostoDireto = async function() {
     if (!postoModel.id) return;
-    const confirmacao = await sgoConfirm('Tem certeza que deseja excluir este posto? Todos os pontos vinculados a ele podem perder a refer√™ncia.', 'Excluir Posto');
+    const confirmacao = await sgoConfirm('Tem certeza que deseja excluir este posto? Todos os pontos vinculados a ele podem perder a referÍncia.', 'Excluir Posto');
     if (!confirmacao) return;
 
     const btn = document.getElementById('btnExcluirPosto');
@@ -3047,7 +1877,7 @@
     })
     .catch(err => {
       btn.disabled = false;
-      alert('Erro de conex√£o: ' + err.message);
+      alert('Erro de conex„o: ' + err.message);
     });
   };
 
@@ -3105,7 +1935,7 @@
     });
   };
 
-  // Opera√ß√µes de Equipes
+  // OperaÁıes de Equipes
   let currentEquipeId = null;
   window.abrirCadastroEquipeDireto = function() {
     currentEquipeId = null;
@@ -3127,7 +1957,7 @@
   };
 
   window.editarEquipeDireto = function(nome) {
-    closeOverlay(); // fecha a sess√£o da equipe
+    closeOverlay(); // fecha a sess„o da equipe
     const eq = MOCK_EQUIPES.find(e => e.nome === nome);
     if (eq) {
       currentEquipeId = eq.id;
@@ -3149,7 +1979,7 @@
     const lider = document.getElementById('equipeLider').value.trim();
     
     if (!nome) {
-      alert('O nome da equipe √© obrigat√≥rio.');
+      alert('O nome da equipe È obrigatÛrio.');
       return;
     }
     
@@ -3196,7 +2026,7 @@
         if (data.sucesso) {
           MOCK_EQUIPES = data.equipes;
           
-          // Filtrar equipes por escopo se aplic√°vel
+          // Filtrar equipes por escopo se aplic·vel
           if (loggedUser && loggedUser.roles && !loggedUser.roles.includes('ADMIN')) {
             if (loggedUser.scope_type === 'UNIDADE' && loggedUser.scope_value) {
               MOCK_EQUIPES = MOCK_EQUIPES.filter(e => e.posto === loggedUser.scope_value);
@@ -3219,7 +2049,7 @@
       .catch(err => console.error('Erro ao buscar equipes:', err));
   };
 
-  // Servi√ßo de Mensagens
+  // ServiÁo de Mensagens
   let MOCK_MENSAGENS = [];
   window.showMessagesSubPanel = function(panelId) {
     document.getElementById('messagesCardapio').style.display = 'none';
@@ -3287,7 +2117,7 @@
         recebidas.forEach(m => {
           const tr = document.createElement('tr');
           const dataStr = new Date(m.data_envio).toLocaleString('pt-BR');
-          const anexoBtn = m.anexo_path ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex;">üì∑ Ver</button>` : '';
+          const anexoBtn = m.anexo_path ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex;">?? Ver</button>` : '';
           tr.innerHTML = `
             <td>${dataStr}</td>
             <td><strong>${m.remetente_nome}</strong></td>
@@ -3317,7 +2147,7 @@
             <td><strong>${dest}</strong></td>
             <td>${m.assunto}</td>
             <td style="white-space:normal; max-width:300px;">${m.corpo}</td>
-            <td>‚Äî</td>
+            <td>ó</td>
           `;
           tbodyEnviadas.appendChild(tr);
         });
@@ -3340,7 +2170,7 @@
     const corpo = document.getElementById('msgSendCorpo').value.trim();
     
     if (!assunto || !corpo) {
-      alert('Assunto e mensagem s√£o obrigat√≥rios.');
+      alert('Assunto e mensagem s„o obrigatÛrios.');
       return;
     }
     
@@ -3378,11 +2208,11 @@
     })
     .catch(err => {
       btn.disabled = false;
-      alert('Erro de conex√£o: ' + err.message);
+      alert('Erro de conex„o: ' + err.message);
     });
   };
 
-  // Escopos din√¢micos no form do operador
+  // Escopos din‚micos no form do operador
   window.toggleFormScopeFields = function() {
     const roles = document.getElementById('opRoles').value;
     const isOperador = roles === 'OPERADOR';
@@ -3390,7 +2220,7 @@
     document.getElementById('fieldOpScopeValue').style.display = isOperador ? 'none' : 'block';
   };
 
-  // L√≥gica de Edi√ß√£o em Lote
+  // LÛgica de EdiÁ„o em Lote
   let selectedOpIds = new Set();
   window.selectedOpIds = selectedOpIds;
 
@@ -3450,8 +2280,8 @@
     
     let html = `
       <div style="margin-bottom:12px; font-size: 13px;">
-        Voc√™ est√° editando <strong>${count}</strong> operador(es) simultaneamente. 
-        <div class="small" style="color: var(--yellow); margin-top:2px;">Marque a caixa ao lado de cada campo para habilit√°-lo e aplicar a altera√ß√£o em lote.</div>
+        VocÍ est· editando <strong>${count}</strong> operador(es) simultaneamente. 
+        <div class="small" style="color: var(--yellow); margin-top:2px;">Marque a caixa ao lado de cada campo para habilit·-lo e aplicar a alteraÁ„o em lote.</div>
       </div>
       
       <div class="form-grid" style="grid-template-columns: 1fr; gap: 10px; margin-top:10px;">
@@ -3496,16 +2326,16 @@
             <select id="batchStatus" disabled style="width:100%; border-radius:10px; padding:6px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-subtle);">
               <option value="ATIVO">Ativo</option>
               <option value="INATIVO">Inativo</option>
-              <option value="F√âRIAS">Em f√©rias</option>
+              <option value="F…RIAS">Em fÈrias</option>
             </select>
           </div>
         </div>
 
-        <!-- F√©rias Programadas -->
+        <!-- FÈrias Programadas -->
         <div style="display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="chk_batchFerias" onchange="toggleBatchField('batchFerias')" />
           <div style="flex:1;">
-            <label class="small">F√©rias Programadas (ex: DD/MM/AAAA - DD/MM/AAAA)</label>
+            <label class="small">FÈrias Programadas (ex: DD/MM/AAAA - DD/MM/AAAA)</label>
             <input type="text" id="batchFerias" disabled placeholder="01/06/2026 - 15/06/2026" style="width:100%; border-radius:6px; padding:4px;" />
           </div>
         </div>
@@ -3515,15 +2345,15 @@
           <input type="checkbox" id="chk_batchAfastamentos" onchange="toggleBatchField('batchAfastamentos')" />
           <div style="flex:1;">
             <label class="small">Afastamentos</label>
-            <input type="text" id="batchAfastamentos" disabled placeholder="Licen√ßa M√©dica" style="width:100%; border-radius:6px; padding:4px;" />
+            <input type="text" id="batchAfastamentos" disabled placeholder="LicenÁa MÈdica" style="width:100%; border-radius:6px; padding:4px;" />
           </div>
         </div>
 
-        <!-- Qualifica√ß√µes -->
+        <!-- QualificaÁıes -->
         <div style="display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="chk_batchQualificacoes" onchange="toggleBatchField('batchQualificacoes')" />
           <div style="flex:1;">
-            <label class="small">Qualifica√ß√µes</label>
+            <label class="small">QualificaÁıes</label>
             <input type="text" id="batchQualificacoes" disabled placeholder="Monitoramento" style="width:100%; border-radius:6px; padding:4px;" />
           </div>
         </div>
@@ -3535,7 +2365,7 @@
       </div>
     `;
     
-    openOverlay("Edi√ß√£o de Operadores em Lote", "A√ß√µes em Lote", html);
+    openOverlay("EdiÁ„o de Operadores em Lote", "AÁıes em Lote", html);
   };
 
   window.toggleBatchField = function(fieldId) {
@@ -3586,7 +2416,7 @@
     }
 
     if (!hasField) {
-      alert('Selecione pelo menos um campo para altera√ß√£o em lote.');
+      alert('Selecione pelo menos um campo para alteraÁ„o em lote.');
       return;
     }
 
@@ -3614,7 +2444,7 @@
       }
     })
     .catch(err => {
-      alert('Erro de conex√£o: ' + err.message);
+      alert('Erro de conex„o: ' + err.message);
       if (btn) btn.disabled = false;
     });
   };
@@ -3719,31 +2549,8 @@
     checkTimeout();
     setInterval(checkTimeout, 10000);
   })();
-</script>
-<!-- MODAL ALERTA CUSTOMIZADO -->
-<div id="modalAlerta" class="overlay-backdrop" style="z-index: 100000;" aria-hidden="true">
-  <div class="overlay-panel" style="max-width: 320px; text-align: center; border-radius: 16px;">
-    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalAlertaTitulo">SGO diz</h3>
-    <p id="modalAlertaMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap; font-size: 14px; color: var(--text-light);"></p>
-    <div class="row" style="margin-top: 16px; justify-content: center;">
-      <button id="btnModalAlertaFechar" class="primary" type="button" style="min-width: 140px; justify-content: center;">OK</button>
-    </div>
-  </div>
-</div>
 
-<!-- MODAL CONFIRMA√á√ÉO CUSTOMIZADO -->
-<div id="modalConfirm" class="overlay-backdrop" style="z-index: 100000;" aria-hidden="true">
-  <div class="overlay-panel" style="max-width: 320px; text-align: center; border-radius: 16px;">
-    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalConfirmTitulo">Aten√ß√£o</h3>
-    <p id="modalConfirmMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap; font-size: 14px; color: var(--text-light);"></p>
-    <div class="row" style="margin-top: 16px; justify-content: center; gap: 8px;">
-      <button id="btnModalConfirmCancelar" class="secondary" type="button" style="min-width: 100px;">Cancelar</button>
-      <button id="btnModalConfirmConfirmar" class="danger" type="button" style="min-width: 100px;">Confirmar</button>
-    </div>
-  </div>
-</div>
 
-<script>
   // GLOBAL ALERTS
   const originalAlert = window.alert;
   window.sgoAlert = function(mensagem, titulo = 'SGO diz') {
@@ -3760,7 +2567,7 @@
     }
   };
 
-  window.sgoConfirm = function(mensagem, titulo = 'Aten√ß√£o') {
+  window.sgoConfirm = function(mensagem, titulo = 'AtenÁ„o') {
     return new Promise((resolve) => {
       const modal = document.getElementById('modalConfirm');
       const msgEl = document.getElementById('modalConfirmMensagem');
@@ -3808,8 +2615,8 @@
       }
     });
   }
-</script>
-<script>
+
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js')
@@ -3817,8 +2624,8 @@
         .catch(err => console.log('SW Falha: ', err));
     });
   }
-</script>
-<script>
+
+
   window.togglePainelNotificacoes = function() {
     const painel = document.getElementById("painelNotificacoes");
     if (painel.style.display === "none") {
@@ -3834,7 +2641,7 @@
       const trocasPendentes = MOCK_TROCAS.filter(t => t.status === "pending" || t.status.toLowerCase().includes("aguardando"));
       if (trocasPendentes.length > 0) {
         notificacoes.push({
-          texto: "Voc√™ possui " + trocasPendentes.length + " pend√™ncia(s) de troca de turno.",
+          texto: "VocÍ possui " + trocasPendentes.length + " pendÍncia(s) de troca de turno.",
           acao: () => { togglePainelNotificacoes(); }
         });
       }
@@ -3853,7 +2660,7 @@
           div.style.padding = "10px";
           div.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
           div.style.cursor = "pointer";
-          div.textContent = "üìã " + n.texto;
+          div.textContent = "?? " + n.texto;
           div.onclick = n.acao;
           div.onmouseover = () => div.style.background = "rgba(255,255,255,0.1)";
           div.onmouseout = () => div.style.background = "transparent";
@@ -3861,18 +2668,12 @@
         });
       } else {
         badge.style.display = "none";
-        lista.innerHTML = "<div style=\"padding: 10px; text-align: center; color: var(--muted);\">Nenhuma pend√™ncia nova.</div>";
+        lista.innerHTML = "<div style=\"padding: 10px; text-align: center; color: var(--muted);\">Nenhuma pendÍncia nova.</div>";
       }
     }
   };
 
   setTimeout(verificarNotificacoesGestor, 3000);
   setInterval(verificarNotificacoesGestor, 30000);
-</script>
-</body>
-</html>
-
-
-
 
 
