@@ -21,7 +21,7 @@ if ($data === null) {
 
 $id = isset($data['id']) ? (int)$data['id'] : null;
 $nome = trim($data['nome'] ?? '');
-$cidade = trim($data['cidade'] ?? 'São Paulo/SP');
+$cidade = trim($data['cidade'] ?? 'Manaus/AM');
 $status = trim($data['status'] ?? 'ATIVO');
 $jornada = trim($data['jornada'] ?? '8h');
 $turnoPreferencial = trim($data['turnoPreferencial'] ?? 'Diurno');
@@ -35,6 +35,11 @@ $descricao = trim($data['descricao'] ?? '');
 $funcionalidades = trim($data['funcionalidades'] ?? '');
 $revezamentoNecessario = trim($data['revezamentoNecessario'] ?? 'Não');
 $adicionalNoturno = trim($data['adicionalNoturno'] ?? 'Não');
+$latitude = isset($data['latitude']) && $data['latitude'] !== '' ? (float)$data['latitude'] : null;
+$longitude = isset($data['longitude']) && $data['longitude'] !== '' ? (float)$data['longitude'] : null;
+$endereco = trim($data['endereco'] ?? '');
+$operador_responsavel_id = isset($data['operador_responsavel_id']) && $data['operador_responsavel_id'] !== '' ? (int)$data['operador_responsavel_id'] : null;
+$telefone_contato = trim($data['telefone_contato'] ?? '');
 
 if (empty($nome)) {
     http_response_code(400);
@@ -48,7 +53,7 @@ if (empty($nome)) {
 try {
     if (!empty($id)) {
         // Mode: Update
-        $sql = "UPDATE postos SET nome = :nome, cidade = :cidade, status = :status, jornada = :jornada, turno_preferencial = :turno_preferencial, intrajornada = :intrajornada, interjornada = :interjornada, extras = :extras, banco_horas = :banco_horas, dsr = :dsr, especial = :especial, descricao = :descricao, funcionalidades = :funcionalidades, revezamento_necessario = :revezamento_necessario, adicional_noturno = :adicional_noturno WHERE id = :id";
+        $sql = "UPDATE postos SET nome = :nome, cidade = :cidade, status = :status, jornada = :jornada, turno_preferencial = :turno_preferencial, intrajornada = :intrajornada, interjornada = :interjornada, extras = :extras, banco_horas = :banco_horas, dsr = :dsr, especial = :especial, descricao = :descricao, funcionalidades = :funcionalidades, revezamento_necessario = :revezamento_necessario, adicional_noturno = :adicional_noturno, latitude = :latitude, longitude = :longitude, endereco = :endereco, operador_responsavel_id = :operador_responsavel_id, telefone_contato = :telefone_contato WHERE id = :id";
         $params = [
             'nome' => $nome,
             'cidade' => $cidade,
@@ -65,11 +70,16 @@ try {
             'funcionalidades' => $funcionalidades,
             'revezamento_necessario' => $revezamentoNecessario,
             'adicional_noturno' => $adicionalNoturno,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'endereco' => $endereco,
+            'operador_responsavel_id' => $operador_responsavel_id,
+            'telefone_contato' => $telefone_contato,
             'id' => $id
         ];
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-
+        
         // System Audit log
         $stmtLog = $pdo->prepare("INSERT INTO historico_logs (evento, responsavel, detalhe) VALUES (:evento, :responsavel, :detalhe)");
         $stmtLog->execute([
@@ -85,7 +95,7 @@ try {
 
     } else {
         // Mode: Insert
-        $sql = "INSERT INTO postos (nome, cidade, status, jornada, turno_preferencial, intrajornada, interjornada, extras, banco_horas, dsr, especial, descricao, funcionalidades, revezamento_necessario, adicional_noturno) VALUES (:nome, :cidade, :status, :jornada, :turno_preferencial, :intrajornada, :interjornada, :extras, :banco_horas, :dsr, :especial, :descricao, :funcionalidades, :revezamento_necessario, :adicional_noturno)";
+        $sql = "INSERT INTO postos (nome, cidade, status, jornada, turno_preferencial, intrajornada, interjornada, extras, banco_horas, dsr, especial, descricao, funcionalidades, revezamento_necessario, adicional_noturno, latitude, longitude, endereco, operador_responsavel_id, telefone_contato) VALUES (:nome, :cidade, :status, :jornada, :turno_preferencial, :intrajornada, :interjornada, :extras, :banco_horas, :dsr, :especial, :descricao, :funcionalidades, :revezamento_necessario, :adicional_noturno, :latitude, :longitude, :endereco, :operador_responsavel_id, :telefone_contato)";
         $params = [
             'nome' => $nome,
             'cidade' => $cidade,
@@ -101,7 +111,12 @@ try {
             'descricao' => $descricao,
             'funcionalidades' => $funcionalidades,
             'revezamento_necessario' => $revezamentoNecessario,
-            'adicional_noturno' => $adicionalNoturno
+            'adicional_noturno' => $adicionalNoturno,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'endereco' => $endereco,
+            'operador_responsavel_id' => $operador_responsavel_id,
+            'telefone_contato' => $telefone_contato
         ];
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);

@@ -1,7 +1,7 @@
 {
-  "name": "SGO – Ponto Eletrônico",
-  "short_name": "SGO Ponto",
-  "description": "Sistema de registro de ponto eletrônico com geolocalização para equipes em postos distribuídos.",
+  "name": "SGO",
+  "short_name": "SGO",
+  "description": "Sistema de Gestão Operacional",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

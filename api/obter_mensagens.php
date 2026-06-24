@@ -30,24 +30,27 @@ try {
         // Obter posto_id e equipe_id associados a este operador
         $userQuery = $pdo->prepare("SELECT posto_principal, 
                                    (SELECT id FROM postos WHERE nome = posto_principal LIMIT 1) AS posto_id,
-                                   (SELECT e.id FROM equipes e JOIN equipe_operadores eo ON eo.equipe_id = e.id WHERE eo.usuario_id = :uid LIMIT 1) AS equipe_id
-                                   FROM usuarios WHERE id = :uid");
-        $userQuery->execute(['uid' => $usuario_id]);
+                                   (SELECT e.id FROM equipes e JOIN equipe_operadores eo ON eo.equipe_id = e.id WHERE eo.usuario_id = :uid1 LIMIT 1) AS equipe_id
+                                   FROM usuarios WHERE id = :uid2");
+        $userQuery->execute([
+            'uid1' => $usuario_id,
+            'uid2' => $usuario_id
+        ]);
         $userInfo = $userQuery->fetch(PDO::FETCH_ASSOC);
         
         $posto_id = $userInfo['posto_id'] ?? null;
         $equipe_id = $userInfo['equipe_id'] ?? null;
         
         $sql = "SELECT m.id, m.remetente_id, r.nome AS remetente_nome, m.assunto, m.corpo, m.anexo_path, m.data_envio,
-                       m.tipo_destinatario, m.destinatario_id, m.posto_id, m.equipe_id,
+                       m.tipo_destinatario, m.destinatario_id, m.posto_id, m.equipe_id, m.latitude, m.longitude,
                        d.nome AS destinatario_nome, p.nome AS posto_nome, eq.nome AS equipe_nome
                 FROM mensagens m
                 LEFT JOIN usuarios r ON m.remetente_id = r.id
                 LEFT JOIN usuarios d ON m.destinatario_id = d.id
                 LEFT JOIN postos p ON m.posto_id = p.id
                 LEFT JOIN equipes eq ON m.equipe_id = eq.id
-                WHERE m.remetente_id = :my_id
-                   OR m.destinatario_id = :my_id
+                WHERE m.remetente_id = :my_id1
+                   OR m.destinatario_id = :my_id2
                    OR (m.tipo_destinatario = 'POSTO' AND m.posto_id = :posto_id)
                    OR (m.tipo_destinatario = 'EQUIPE' AND m.equipe_id = :equipe_id)
                    OR m.tipo_destinatario = 'GLOBAL'
@@ -55,7 +58,8 @@ try {
                 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'my_id' => $usuario_id,
+            'my_id1' => $usuario_id,
+            'my_id2' => $usuario_id,
             'posto_id' => $posto_id,
             'equipe_id' => $equipe_id
         ]);
@@ -63,7 +67,7 @@ try {
     } else {
         // Gestor / Supervisor / Admin vê todas as mensagens
         $sql = "SELECT m.id, m.remetente_id, r.nome AS remetente_nome, m.assunto, m.corpo, m.anexo_path, m.data_envio,
-                       m.tipo_destinatario, m.destinatario_id, m.posto_id, m.equipe_id,
+                       m.tipo_destinatario, m.destinatario_id, m.posto_id, m.equipe_id, m.latitude, m.longitude,
                        d.nome AS destinatario_nome, p.nome AS posto_nome, eq.nome AS equipe_nome
                 FROM mensagens m
                 LEFT JOIN usuarios r ON m.remetente_id = r.id

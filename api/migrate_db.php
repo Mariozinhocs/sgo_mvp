@@ -63,12 +63,14 @@ foreach ($alterEscalas as $sql) {
     runQuery($pdo, $sql, $logs, $success);
 }
 
-// 4. Alterar tabela de mensagens para adicionar destinatários
+// 4. Alterar tabela de mensagens para adicionar destinatários e coordenadas
 $alterMensagens = [
     "ALTER TABLE mensagens ADD COLUMN destinatario_id INT NULL",
     "ALTER TABLE mensagens ADD COLUMN posto_id INT NULL",
     "ALTER TABLE mensagens ADD COLUMN equipe_id INT NULL",
-    "ALTER TABLE mensagens ADD COLUMN tipo_destinatario VARCHAR(20) DEFAULT 'INDIVIDUAL'"
+    "ALTER TABLE mensagens ADD COLUMN tipo_destinatario VARCHAR(20) DEFAULT 'INDIVIDUAL'",
+    "ALTER TABLE mensagens ADD COLUMN latitude DECIMAL(10, 8) NULL",
+    "ALTER TABLE mensagens ADD COLUMN longitude DECIMAL(11, 8) NULL"
 ];
 
 foreach ($alterMensagens as $sql) {
@@ -106,6 +108,31 @@ $alterRegistroPonto = [
 ];
 
 foreach ($alterRegistroPonto as $sql) {
+    runQuery($pdo, $sql, $logs, $success);
+}
+
+// 3. Alterar tabela de postos para adicionar colunas de coordenadas, endereço e responsável
+$alterPostos = [
+    "ALTER TABLE postos ADD COLUMN latitude DECIMAL(10, 8) NULL",
+    "ALTER TABLE postos ADD COLUMN longitude DECIMAL(11, 8) NULL",
+    "ALTER TABLE postos ADD COLUMN endereco VARCHAR(255) NULL",
+    "ALTER TABLE postos ADD COLUMN operador_responsavel_id INT NULL",
+    "ALTER TABLE postos ADD COLUMN telefone_contato VARCHAR(20) NULL"
+];
+
+foreach ($alterPostos as $sql) {
+    runQuery($pdo, $sql, $logs, $success);
+}
+
+// 8. Atualizar postos padrões com suas coordenadas reais se forem NULL
+$updatePostosCoords = [
+    "UPDATE postos SET latitude = -23.561684, longitude = -46.655981 WHERE nome = 'Posto Central' AND (latitude IS NULL OR longitude IS NULL)",
+    "UPDATE postos SET latitude = -23.541434, longitude = -46.574677 WHERE nome = 'Base Leste' AND (latitude IS NULL OR longitude IS NULL)",
+    "UPDATE postos SET latitude = -23.462778, longitude = -46.533333 WHERE nome = 'Posto Norte' AND (latitude IS NULL OR longitude IS NULL)",
+    "UPDATE postos SET latitude = -23.666667, longitude = -46.533333 WHERE nome = 'Base Sul' AND (latitude IS NULL OR longitude IS NULL)"
+];
+
+foreach ($updatePostosCoords as $sql) {
     runQuery($pdo, $sql, $logs, $success);
 }
 

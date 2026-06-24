@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SGO">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="theme-color" content="#020826" />
   <title>SGO – Operador</title>
 
@@ -666,7 +671,7 @@
 
       <div class="escala-box" id="escalaBox"></div>
 
-      <div class="row" style="margin-top:8px%;">
+      <div class="row" style="margin-top:8px;">
         <button id="btnGerarPdfEscala" class="secondary" type="button" disabled>
           Gerar PDF da escala (em breve)
         </button>
@@ -727,14 +732,14 @@
       <div id="msg-recebidas" class="tab-panel inner">
         <div class="info-box">
           <div class="info-label">Recebidas</div>
-          <div class="info-value">Nenhuma mensagem recebida (MVP).</div>
+          <div class="info-value">Nenhuma mensagem recebida.</div>
         </div>
       </div>
 
       <div id="msg-enviadas" class="tab-panel inner">
         <div class="info-box">
           <div class="info-label">Enviadas</div>
-          <div class="info-value">Nenhuma mensagem enviada (MVP).</div>
+          <div class="info-value">Nenhuma mensagem enviada.</div>
         </div>
       </div>
     </section>
@@ -1023,6 +1028,22 @@
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
+  function obterUrlHorarioServidor(username) {
+    let latVal = '';
+    let lngVal = '';
+    try {
+      const rawGeo = localStorage.getItem('sgo_geo_pos');
+      if (rawGeo) {
+        const geo = JSON.parse(rawGeo);
+        if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
+          latVal = geo.lat.toString();
+          lngVal = geo.lng.toString();
+        }
+      }
+    } catch(err) {}
+    return `api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}&lat=${latVal}&lng=${lngVal}`;
+  }
+
   function registrarStatusNaEscala(statusLabel, fotoBase64 = null, dateObj = null) {
     const username = usuario.username || '';
     
@@ -1128,7 +1149,7 @@
       };
       prosseguirComHorario(dataPayload, isOffline);
     } else {
-      fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+      fetch(obterUrlHorarioServidor(username))
         .then(r => r.json())
         .then(data => {
           prosseguirComHorario(data, !data.sucesso);
@@ -1285,7 +1306,7 @@
     pararWebcam();
 
     const username = usuario.username || '';
-    fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+    fetch(obterUrlHorarioServidor(username))
       .then(r => r.json())
       .then(data => {
         let serverTimeStr;
@@ -1358,7 +1379,7 @@
 
     const username = usuario.username || '';
     
-    fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+    fetch(obterUrlHorarioServidor(username))
       .then(r => r.json())
       .then(data => {
         let serverTimeStr;
@@ -1941,45 +1962,66 @@
       }
 
       const enviarPayload = (anexoBase64 = '') => {
-        const payload = {
-          remetente_id: usuario.id,
-          tipo_destinatario: tipoDestinatario,
-          destinatario_id: destinatarioId,
-          posto_id: null,
-          equipe_id: null,
-          assunto: assunto,
-          corpo: corpo,
-          anexo_base64: anexoBase64
+        const dispararComCoords = (lat, lng) => {
+          const payload = {
+            remetente_id: usuario.id,
+            tipo_destinatario: tipoDestinatario,
+            destinatario_id: destinatarioId,
+            posto_id: null,
+            equipe_id: null,
+            assunto: assunto,
+            corpo: corpo,
+            anexo_base64: anexoBase64,
+            latitude: lat,
+            longitude: lng
+          };
+
+          fetch('api/salvar_mensagem.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(r => r.json())
+          .then(data => {
+            btnEnviarMsg.disabled = false;
+            btnEnviarMsg.textContent = 'Enviar Mensagem';
+            if (data.sucesso) {
+              sgoAlert(data.mensagem);
+              msgAssunto.value = '';
+              msgCorpo.value = '';
+              msgAnexo.value = '';
+              buscarMensagensDoServidor();
+              
+              const btnEnviadas = document.querySelector('.tab-button.inner[data-inner="msg-enviadas"]');
+              if (btnEnviadas) btnEnviadas.click();
+            } else {
+              sgoAlert('Erro ao enviar mensagem: ' + data.erro);
+            }
+          })
+          .catch(err => {
+            btnEnviarMsg.disabled = false;
+            btnEnviarMsg.textContent = 'Enviar Mensagem';
+            sgoAlert('Erro de conexão: ' + err.message);
+          });
         };
 
-        fetch('api/salvar_mensagem.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-        .then(r => r.json())
-        .then(data => {
-          btnEnviarMsg.disabled = false;
-          btnEnviarMsg.textContent = 'Enviar Mensagem';
-          if (data.sucesso) {
-            sgoAlert(data.mensagem);
-            msgAssunto.value = '';
-            msgCorpo.value = '';
-            msgAnexo.value = '';
-            buscarMensagensDoServidor();
-            
-            // Trocar aba inner para 'Enviadas'
-            const btnEnviadas = document.querySelector('.tab-button.inner[data-inner="msg-enviadas"]');
-            if (btnEnviadas) btnEnviadas.click();
-          } else {
-            sgoAlert('Erro ao enviar mensagem: ' + data.erro);
-          }
-        })
-        .catch(err => {
-          btnEnviarMsg.disabled = false;
-          btnEnviarMsg.textContent = 'Enviar Mensagem';
-          sgoAlert('Erro de conexão: ' + err.message);
-        });
+        if (navigator.geolocation) {
+          btnEnviarMsg.textContent = 'Obtendo localização...';
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              btnEnviarMsg.textContent = 'Enviando...';
+              dispararComCoords(pos.coords.latitude, pos.coords.longitude);
+            },
+            (err) => {
+              console.warn('Geolocalização indisponível para mensagem:', err);
+              btnEnviarMsg.textContent = 'Enviando...';
+              dispararComCoords(null, null);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
+        } else {
+          dispararComCoords(null, null);
+        }
       };
 
       if (msgAnexo && msgAnexo.files && msgAnexo.files[0]) {
@@ -2020,6 +2062,15 @@
       } else {
         enviarPayload('');
       }
+    });
+  }
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW Registrado: ', reg.scope))
+        .catch(err => console.log('SW Falha: ', err));
     });
   }
 </script>

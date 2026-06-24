@@ -5,6 +5,33 @@ header('Content-Type: application/json; charset=utf-8');
 
 $username = isset($_GET['usuario']) ? trim($_GET['usuario']) : '';
 
+function getTimezoneForLatLng($lat, $lng) {
+    $lat = (float)$lat;
+    $lng = (float)$lng;
+    
+    if (empty($lat) || empty($lng)) {
+        return null;
+    }
+    
+    // Fernando de Noronha (UTC-2)
+    if ($lng > -34.5) {
+        return 'America/Noronha';
+    }
+    
+    // Acre e Extremo Oeste do Amazonas (UTC-5)
+    if ($lng < -70.0) {
+        return 'America/Rio_Branco';
+    }
+    
+    // Central/Norte (UTC-4: MS, MT, RO, RR, maioria do AM)
+    if ($lng < -54.0) {
+        return 'America/Manaus';
+    }
+    
+    // Leste/Sudeste/Nordeste (UTC-3: Padrão Brasília/SP)
+    return 'America/Sao_Paulo';
+}
+
 function getTimezoneForCity($cidade) {
     $cidade = strtolower(trim($cidade));
     if (empty($cidade)) {
@@ -41,7 +68,23 @@ try {
     $postoNome = '';
     $cidade = '';
 
-    if (!empty($username)) {
+    $lat = isset($_GET['lat']) ? trim($_GET['lat']) : '';
+    $lng = isset($_GET['lng']) ? trim($_GET['lng']) : '';
+    
+    $geoTimezone = getTimezoneForLatLng($lat, $lng);
+    
+    if ($geoTimezone) {
+        $timezoneName = $geoTimezone;
+        if (!empty($username)) {
+            // 1. Obter posto para contexto informativo
+            $stmtUser = $pdo->prepare("SELECT posto_principal FROM usuarios WHERE usuario = :usuario LIMIT 1");
+            $stmtUser->execute(['usuario' => $username]);
+            $user = $stmtUser->fetch();
+            if ($user && !empty($user['posto_principal'])) {
+                $postoNome = $user['posto_principal'];
+            }
+        }
+    } else if (!empty($username)) {
         // 1. Get user's principal post name
         $stmtUser = $pdo->prepare("SELECT posto_principal FROM usuarios WHERE usuario = :usuario LIMIT 1");
         $stmtUser->execute(['usuario' => $username]);

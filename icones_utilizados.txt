@@ -1,0 +1,28 @@
+# Documentação de Ícones do SGO
+
+Este documento lista as imagens e ícones originais do projeto SGO utilizados na implementação do PWA (Progressive Web App), permitindo a "instalação" do sistema no mobile como um App nativo.
+
+## 1. Ícone PWA - 192x192
+- **Arquivo:** `icon-192.png`
+- **Formato:** PNG (Portable Network Graphics)
+- **Dimensões:** 192 x 192 pixels
+- **Local de Uso:** 
+  - Pasta `icons/`
+  - Referenciado em `manifest.json` para dispositivos móveis genéricos e telas menores.
+  - Referenciado no `<head>` dos arquivos HTML (`index.html`, `gestor.html`, `operador.html`) como `apple-touch-icon` para ser o ícone exibido na Home Screen do iOS (iPhone/iPad).
+
+## 2. Ícone PWA - 512x512
+- **Arquivo:** `icon-512.png`
+- **Formato:** PNG (Portable Network Graphics)
+- **Dimensões:** 512 x 512 pixels
+- **Local de Uso:**
+  - Pasta `icons/`
+  - Referenciado em `manifest.json` como o ícone principal de alta resolução. Ele é utilizado por sistemas Android (via Google Chrome) como Splash Screen e ícone principal na tela de aplicativos.
+
+## 3. Favicon Padrão
+- **Arquivo:** `favicon.ico`
+- **Formato:** ICO
+- **Dimensões:** Múltiplas (normalmente 16x16, 32x32, 48x48)
+- **Local de Uso:**
+  - Pasta `icons/`
+  - Exibido na aba do navegador em computadores Desktop. Referenciado no `<head>` dos arquivos HTML.

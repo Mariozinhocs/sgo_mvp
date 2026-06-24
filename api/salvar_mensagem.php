@@ -19,14 +19,43 @@ if ($data === null) {
     $data = $_POST;
 }
 
+function getTimezoneForLatLng($lat, $lng) {
+    $lat = (float)$lat;
+    $lng = (float)$lng;
+    
+    if (empty($lat) || empty($lng)) {
+        return 'America/Sao_Paulo';
+    }
+    
+    // Fernando de Noronha (UTC-2)
+    if ($lng > -34.5) {
+        return 'America/Noronha';
+    }
+    
+    // Acre e Extremo Oeste do Amazonas (UTC-5)
+    if ($lng < -70.0) {
+        return 'America/Rio_Branco';
+    }
+    
+    // Central/Norte (UTC-4: MS, MT, RO, RR, maioria do AM)
+    if ($lng < -54.0) {
+        return 'America/Manaus';
+    }
+    
+    // Leste/Sudeste/Nordeste (UTC-3: Padrão Brasília/SP)
+    return 'America/Sao_Paulo';
+}
+
 $remetente_id = isset($data['remetente_id']) ? (int)$data['remetente_id'] : null;
-$tipo_destinatario = trim($data['tipo_destinatario'] ?? 'INDIVIDUAL'); // INDIVIDUAL, POSTO, EQUIPE, GLOBAL
+$tipo_destinatario = trim($data['tipo_destinatario'] ?? 'INDIVIDUAL');
 $destinatario_id = isset($data['destinatario_id']) && $data['destinatario_id'] !== '' ? (int)$data['destinatario_id'] : null;
 $posto_id = isset($data['posto_id']) && $data['posto_id'] !== '' ? (int)$data['posto_id'] : null;
 $equipe_id = isset($data['equipe_id']) && $data['equipe_id'] !== '' ? (int)$data['equipe_id'] : null;
 $assunto = trim($data['assunto'] ?? '');
 $corpo = trim($data['corpo'] ?? '');
 $anexo_base64 = trim($data['anexo_base64'] ?? '');
+$lat = isset($data['latitude']) && $data['latitude'] !== '' ? (float)$data['latitude'] : null;
+$lng = isset($data['longitude']) && $data['longitude'] !== '' ? (float)$data['longitude'] : null;
 
 if (empty($remetente_id) || empty($assunto) || empty($corpo)) {
     http_response_code(400);
@@ -38,8 +67,12 @@ if (empty($remetente_id) || empty($assunto) || empty($corpo)) {
 }
 
 try {
-    $sql = "INSERT INTO mensagens (remetente_id, tipo_destinatario, destinatario_id, posto_id, equipe_id, assunto, corpo, anexo_path)
-            VALUES (:remetente_id, :tipo_destinatario, :destinatario_id, :posto_id, :equipe_id, :assunto, :corpo, :anexo_path)";
+    $tzName = getTimezoneForLatLng($lat, $lng);
+    $dt = new DateTime("now", new DateTimeZone($tzName));
+    $data_envio = $dt->format("Y-m-d H:i:s");
+
+    $sql = "INSERT INTO mensagens (remetente_id, tipo_destinatario, destinatario_id, posto_id, equipe_id, assunto, corpo, anexo_path, data_envio, latitude, longitude)
+            VALUES (:remetente_id, :tipo_destinatario, :destinatario_id, :posto_id, :equipe_id, :assunto, :corpo, :anexo_path, :data_envio, :lat, :lng)";
             
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -50,7 +83,10 @@ try {
         'equipe_id' => $equipe_id,
         'assunto' => $assunto,
         'corpo' => $corpo,
-        'anexo_path' => $anexo_base64 ?: null
+        'anexo_path' => $anexo_base64 ?: null,
+        'data_envio' => $data_envio,
+        'lat' => $lat,
+        'lng' => $lng
     ]);
     
     echo json_encode([

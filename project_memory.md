@@ -46,6 +46,14 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-06-24]
+- **MVP Fase 2 - Gestão Avançada de Postos, UX e PWA**:
+  - **Ativação PWA (App Mobile)**: Registrados o `manifest.json` e `service-worker.js` em todos os HTMLs (`index.html`, `gestor.html`, `operador.html`). Criado `icones_utilizados.txt` para documentar assets de ícones nativos (192x192 e 512x512).
+  - **Exclusão de Postos**: Implementada a funcionalidade segura de exclusão via backend (`api/excluir_posto.php`), com atualização imediata da lista e do mapa operacional.
+  - **Diálogos Modais Customizados**: O uso de `window.alert` e `window.confirm` foi universalmente substituído no Gestor pelos modais flutuantes `sgoAlert` e `sgoConfirm`, refinando a estética da plataforma. O botão OK foi centralizado para maior harmonia.
+  - **Mapa Operacional Interativo**: Removidas hardcodes legadas de coordenadas. O Leaflet agora plota postos a partir das colunas reais de latitude/longitude. Inserido no topo do mapa um filtro Dropdown de Cidades que executa reenquadramento inteligente dinâmico das marcações (`fitBounds`).
+  - **Navegação em Pílulas (Pills)**: Ajustado CSS do painel do Gestor (`.top-tabs`) migrando a lógica de esticamento automático (`flex: 1`) para centralização (`justify-content: center`).
+
 ### [2026-06-23]
 - **Backup e Ponto de Restauração**:
   - Criado e executado o script remoto temporário (`api/criar_backup.php`) para fazer o backup completo da hospedagem. O processo realizou o dump estruturado da base de dados MySQL (`banco_backup_20260623.sql`) e empacotou todos os arquivos em um arquivo ZIP recursivo, movendo tudo para a pasta `/backup_20260623/` no FTP.
