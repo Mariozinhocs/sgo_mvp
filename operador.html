@@ -753,6 +753,23 @@
 <!-- INPUT DE CAPTURA DO PONTO -->
 <input type="file" id="pontoFotoInput" accept="image/*" capture="user" style="display:none;" />
 
+<!-- MODAL CAPTURA DE SELFIE (WEBCAM) -->
+<div id="modalWebcam" class="modal-backdrop">
+  <div class="modal-card" style="max-width: 360px; text-align: center;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalWebcamTitulo">Capturar Foto</h3>
+    <p class="small" style="margin-bottom: 10px;">Posicione seu rosto na câmera</p>
+    
+    <div style="position: relative; margin: 10px auto; width: 320px; height: 240px; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-subtle);">
+      <video id="webcamVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+    </div>
+    
+    <div class="row" style="margin-top: 12px; justify-content: center;">
+      <button id="btnWebcamCapturar" class="primary" type="button">Tirar Foto</button>
+      <button id="btnWebcamCancelar" class="secondary" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZAÇÃO DE FOTO DO PONTO -->
 <div id="modalFoto" class="modal-backdrop">
   <div class="modal-card" style="max-width:360px;">
@@ -1123,9 +1140,88 @@
   let acaoPontoPendente = '';
   const pontoFotoInput = document.getElementById('pontoFotoInput');
 
+  // Webcam modal elements
+  const modalWebcam = document.getElementById('modalWebcam');
+  const webcamVideo = document.getElementById('webcamVideo');
+  const btnWebcamCapturar = document.getElementById('btnWebcamCapturar');
+  const btnWebcamCancelar = document.getElementById('btnWebcamCancelar');
+  let webcamStream = null;
+
+  function pararWebcam() {
+    if (webcamStream) {
+      webcamStream.getTracks().forEach(track => track.stop());
+      webcamStream = null;
+    }
+    webcamVideo.srcObject = null;
+    modalWebcam.style.display = 'none';
+    modalWebcam.style.pointerEvents = 'none';
+  }
+
+  btnWebcamCancelar.addEventListener('click', pararWebcam);
+
+  function aplicarMarcaDaguaEDispararPonto(canvas, dateObj, dtStr) {
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const userObj = carregarUsuario() || { nome: 'Operador' };
+    const userStr = `User: ${userObj.nome || userObj.username}`;
+
+    let geoStr = 'Lat/Lng: Não disponível';
+    try {
+      const rawGeo = localStorage.getItem('sgo_geo_pos');
+      if (rawGeo) {
+        const geo = JSON.parse(rawGeo);
+        if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
+          geoStr = `Lat: ${geo.lat.toFixed(6)} | Lng: ${geo.lng.toFixed(6)}`;
+        }
+      }
+    } catch(err) {}
+
+    const rectHeight = 44;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    ctx.fillRect(0, height - rectHeight, width, rectHeight);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 9px system-ui, sans-serif';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillText(`${userStr} | ${dtStr}`, 8, height - 30);
+    ctx.fillText(geoStr, 8, height - 14);
+
+    const fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+    if (acaoPontoPendente === 'checkin') {
+      executarCheckin(fotoBase64, dateObj);
+    } else if (acaoPontoPendente === 'checkout') {
+      executarCheckout(fotoBase64, dateObj);
+    }
+    pontoFotoInput.value = '';
+  }
+
+  function iniciarCapturaPonto(acao) {
+    acaoPontoPendente = acao;
+    
+    // Tenta ligar a webcam se suportado e disponível
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 320, height: 240 } })
+        .then(stream => {
+          webcamStream = stream;
+          webcamVideo.srcObject = stream;
+          modalWebcam.style.display = 'flex';
+          modalWebcam.style.pointerEvents = 'auto';
+        })
+        .catch(err => {
+          console.warn('Falha ou negado acesso à webcam, usando seletor de arquivos:', err);
+          pontoFotoInput.click();
+        });
+    } else {
+      pontoFotoInput.click();
+    }
+  }
+
   btnCheckin.addEventListener('click', () => {
-    acaoPontoPendente = 'checkin';
-    pontoFotoInput.click();
+    iniciarCapturaPonto('checkin');
   });
 
   btnIntervalo.addEventListener('click', () => {
@@ -1147,8 +1243,57 @@
   });
 
   btnCheckout.addEventListener('click', () => {
-    acaoPontoPendente = 'checkout';
-    pontoFotoInput.click();
+    iniciarCapturaPonto('checkout');
+  });
+
+  btnWebcamCapturar.addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const ctx = canvas.getContext('2d');
+    
+    // Capturar espelhado para visualização natural de selfie
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // restaurar transformações
+
+    pararWebcam();
+
+    const username = usuario.username || '';
+    fetch(`api/obter_horario_servidor.php?usuario=${encodeURIComponent(username)}`)
+      .then(r => r.json())
+      .then(data => {
+        let serverTimeStr;
+        let serverDateObj;
+        
+        if (data && data.sucesso) {
+          const dateParts = data.data.split('-');
+          const timeParts = data.hora.split(':');
+          serverDateObj = new Date(
+            parseInt(dateParts[0], 10),
+            parseInt(dateParts[1], 10) - 1,
+            parseInt(dateParts[2], 10),
+            parseInt(timeParts[0], 10),
+            parseInt(timeParts[1], 10),
+            parseInt(timeParts[2], 10)
+          );
+          serverTimeStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${data.hora}`;
+        } else {
+          serverDateObj = new Date();
+          serverDateObj.isOfflineFallback = true;
+          serverTimeStr = serverDateObj.toLocaleString('pt-BR') + ' [Offline]';
+        }
+        
+        aplicarMarcaDaguaEDispararPonto(canvas, serverDateObj, serverTimeStr);
+      })
+      .catch(err => {
+        console.warn('Erro ao obter horário do servidor para foto, usando local:', err);
+        const localDate = new Date();
+        localDate.isOfflineFallback = true;
+        const serverTimeStr = localDate.toLocaleString('pt-BR') + ' [Offline]';
+        aplicarMarcaDaguaEDispararPonto(canvas, localDate, serverTimeStr);
+      });
   });
 
   function executarCheckin(fotoBase64, dateObj) {
@@ -1252,39 +1397,7 @@
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        const userObj = carregarUsuario() || { nome: 'Operador' };
-        const userStr = `User: ${userObj.nome || userObj.username}`;
-
-        let geoStr = 'Lat/Lng: Não disponível';
-        try {
-          const rawGeo = localStorage.getItem('sgo_geo_pos');
-          if (rawGeo) {
-            const geo = JSON.parse(rawGeo);
-            if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
-              geoStr = `Lat: ${geo.lat.toFixed(6)} | Lng: ${geo.lng.toFixed(6)}`;
-            }
-          }
-        } catch(err) {}
-
-        const rectHeight = 44;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-        ctx.fillRect(0, height - rectHeight, width, rectHeight);
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 9px system-ui, sans-serif';
-        ctx.textBaseline = 'middle';
-
-        ctx.fillText(`${userStr} | ${dtStr}`, 8, height - 30);
-        ctx.fillText(geoStr, 8, height - 14);
-
-        const fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-        if (acaoPontoPendente === 'checkin') {
-          executarCheckin(fotoBase64, dateObj);
-        } else if (acaoPontoPendente === 'checkout') {
-          executarCheckout(fotoBase64, dateObj);
-        }
-        pontoFotoInput.value = '';
+        aplicarMarcaDaguaEDispararPonto(canvas, dateObj, dtStr);
       };
       img.src = evt.target.result;
     };
