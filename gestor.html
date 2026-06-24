@@ -54,7 +54,7 @@
     .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
     .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
     .tab-button,.subtab-button{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--muted);cursor:pointer}
-    .tab-button{text-align:center;padding:8px 16px;border-radius:999px;font-size:13px;display:flex;justify-content:center;align-items:center}
+    .tab-button{flex:1;text-align:center;padding:8px 16px;border-radius:999px;font-size:13px;display:flex;justify-content:center;align-items:center}
     .subtab-button{padding:5px 10px;border-radius:999px;font-size:11px}
     .tab-button.active,.subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
     .tab-panel,.subtab-panel{display:none}
@@ -3818,57 +3818,57 @@
     });
   }
 </script>
+<script>
   window.togglePainelNotificacoes = function() {
-    const painel = document.getElementById('painelNotificacoes');
-    if (painel.style.display === 'none') {
-      painel.style.display = 'block';
+    const painel = document.getElementById("painelNotificacoes");
+    if (painel.style.display === "none") {
+      painel.style.display = "block";
     } else {
-      painel.style.display = 'none';
+      painel.style.display = "none";
     }
   };
 
   window.verificarNotificacoesGestor = function() {
     let notificacoes = [];
-    if (typeof MOCK_TROCAS !== 'undefined') {
-      const trocasPendentes = MOCK_TROCAS.filter(t => t.status === 'pending' || t.status.toLowerCase().includes('aguardando'));
+    if (typeof MOCK_TROCAS !== "undefined") {
+      const trocasPendentes = MOCK_TROCAS.filter(t => t.status === "pending" || t.status.toLowerCase().includes("aguardando"));
       if (trocasPendentes.length > 0) {
         notificacoes.push({
-          texto: 'Você possui ' + trocasPendentes.length + ' pendência(s) de troca de turno.',
+          texto: "Você possui " + trocasPendentes.length + " pendência(s) de troca de turno.",
           acao: () => { togglePainelNotificacoes(); }
         });
       }
     }
     
-    // Podemos contar mensagens como notificações de gestor também, se aplicável
-    
-    const badge = document.getElementById('badgeNotificacoes');
-    const lista = document.getElementById('listaNotificacoes');
+    const badge = document.getElementById("badgeNotificacoes");
+    const lista = document.getElementById("listaNotificacoes");
     
     if (badge && lista) {
       if (notificacoes.length > 0) {
-        badge.style.display = 'block';
+        badge.style.display = "block";
         badge.textContent = notificacoes.length;
-        lista.innerHTML = '';
+        lista.innerHTML = "";
         notificacoes.forEach(n => {
-          const div = document.createElement('div');
-          div.style.padding = '10px';
-          div.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-          div.style.cursor = 'pointer';
-          div.textContent = '📋 ' + n.texto;
+          const div = document.createElement("div");
+          div.style.padding = "10px";
+          div.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+          div.style.cursor = "pointer";
+          div.textContent = "📋 " + n.texto;
           div.onclick = n.acao;
-          div.onmouseover = () => div.style.background = 'rgba(255,255,255,0.1)';
-          div.onmouseout = () => div.style.background = 'transparent';
+          div.onmouseover = () => div.style.background = "rgba(255,255,255,0.1)";
+          div.onmouseout = () => div.style.background = "transparent";
           lista.appendChild(div);
         });
       } else {
-        badge.style.display = 'none';
-        lista.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--muted);">Nenhuma pendência nova.</div>';
+        badge.style.display = "none";
+        lista.innerHTML = "<div style=\"padding: 10px; text-align: center; color: var(--muted);\">Nenhuma pendência nova.</div>";
       }
     }
   };
 
   setTimeout(verificarNotificacoesGestor, 3000);
   setInterval(verificarNotificacoesGestor, 30000);
+</script>
 </body>
 </html>
 
