@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -51,10 +51,10 @@
     body.theme-light .secondary{background:var(--btnLight);color:#111827;border-color:#cbd5f5}
     .primary{background:var(--green);color:#022c22;font-weight:700}
 
-    .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap}
+    .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
     .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
     .tab-button,.subtab-button{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--muted);cursor:pointer}
-    .tab-button{flex:1;text-align:center;padding:8px 16px;border-radius:999px;font-size:13px}
+    .tab-button{text-align:center;padding:8px 16px;border-radius:999px;font-size:13px;display:flex;justify-content:center;align-items:center}
     .subtab-button{padding:5px 10px;border-radius:999px;font-size:11px}
     .tab-button.active,.subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
     .tab-panel,.subtab-panel{display:none}
@@ -330,8 +330,21 @@
     </div>
     <div class="subtitle-header" id="subtitleGestor">Gestor logado</div>
   </div>
-  <div class="header-right">
-    <button id="btnTheme" class="theme-toggle" type="button"><span id="themeIcon">☀️</span><span id="themeLabel">Light</span></button>
+  <div class="header-right" style="position: relative; display: flex; align-items: center; gap: 10px;">
+      <!-- NOTIFICAÇÕES (Sininho) -->
+      <div id="btnNotificacoes" style="position: relative; cursor: pointer; padding: 5px; margin-right: 10px;" onclick="togglePainelNotificacoes()">
+        <span style="font-size: 20px;">🔔</span>
+        <div id="badgeNotificacoes" style="display: none; position: absolute; top: 0px; right: 0px; background: var(--red); color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 14px; height: 14px; text-align: center; line-height: 14px;">0</div>
+      </div>
+      <!-- PAINEL SUSPENSO -->
+      <div id="painelNotificacoes" style="display: none; position: absolute; top: 50px; right: 100px; width: 260px; background: rgba(15,23,42,0.95); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.5); z-index: 10000; overflow: hidden; backdrop-filter: blur(10px); color: white;">
+        <div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; font-size: 13px; text-align: center; background: rgba(255,255,255,0.05);">Notificações (Gestor)</div>
+        <div id="listaNotificacoes" style="max-height: 300px; overflow-y: auto; font-size: 12px;">
+          <!-- Itens injetados via JS -->
+        </div>
+      </div>
+
+      <button id="btnTheme" class="theme-toggle" type="button"><span id="themeIcon">☀️</span><span id="themeLabel">Light</span></button>
     <button class="secondary" type="button" id="btnVoltarOperador">Painel do operador</button>
     <button class="btn-exit" type="button" id="btnSair"><span>⏏</span>Sair</button>
   </div>
@@ -1599,7 +1612,7 @@
       );
       
       if (equipesFiltradas.length > 0) {
-        selectEquipe.innerHTML = '<option value="">Nenhuma equipe espec�fica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
+        selectEquipe.innerHTML = '<option value="">Nenhuma equipe espec�fica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
       } else {
         selectEquipe.innerHTML = '<option value="">Sem equipes cadastradas para este posto</option>';
       }
@@ -2453,7 +2466,21 @@
     opUsuario.value=opModel.usuario || '';
     opSenha.value='';
     opRoles.value=opModel.roles || 'OPERADOR';
-    opPostoPrincipal.value=opModel.postoPrincipal || 'Centro de Cooperação da Cidade';
+          const chkDesignar = document.getElementById('chkDesignarPosto');
+      const inputDesignado = document.getElementById('opPostoDesignado');
+      const selectEq = document.getElementById('opEquipeDesignada');
+      if (opModel.postoPrincipal && opModel.postoPrincipal.trim() !== '') {
+        if(chkDesignar) chkDesignar.checked = true;
+        if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
+        if(inputDesignado) inputDesignado.value = opModel.postoPrincipal;
+        if(typeof filtrarEquipesPorPosto === 'function') filtrarEquipesPorPosto(opModel.postoPrincipal);
+        if (opModel.equipe && selectEq) {
+          selectEq.value = opModel.equipe;
+        }
+      } else {
+        if(chkDesignar) chkDesignar.checked = false;
+        if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
+      }
     
     document.getElementById('opScopeType').value=opModel.scopeType || 'UNIDADE';
     document.getElementById('opScopeValue').value=opModel.scopeValue || '';
@@ -2558,7 +2585,8 @@
       usuario: opUsuario.value.trim(),
       senha: opSenha.value.trim(),
       roles: opRoles.value,
-      postoPrincipal: opPostoPrincipal.value.trim(),
+            postoPrincipal: document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked ? document.getElementById('opPostoDesignado').value.trim() : '',
+      equipe: document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked && document.getElementById('opEquipeDesignada') ? document.getElementById('opEquipeDesignada').value : '',
       scopeType: document.getElementById('opScopeType').value,
       scopeValue: document.getElementById('opScopeValue').value
     };
@@ -3790,6 +3818,57 @@
     });
   }
 </script>
+  window.togglePainelNotificacoes = function() {
+    const painel = document.getElementById('painelNotificacoes');
+    if (painel.style.display === 'none') {
+      painel.style.display = 'block';
+    } else {
+      painel.style.display = 'none';
+    }
+  };
+
+  window.verificarNotificacoesGestor = function() {
+    let notificacoes = [];
+    if (typeof MOCK_TROCAS !== 'undefined') {
+      const trocasPendentes = MOCK_TROCAS.filter(t => t.status === 'pending' || t.status.toLowerCase().includes('aguardando'));
+      if (trocasPendentes.length > 0) {
+        notificacoes.push({
+          texto: 'Você possui ' + trocasPendentes.length + ' pendência(s) de troca de turno.',
+          acao: () => { togglePainelNotificacoes(); }
+        });
+      }
+    }
+    
+    // Podemos contar mensagens como notificações de gestor também, se aplicável
+    
+    const badge = document.getElementById('badgeNotificacoes');
+    const lista = document.getElementById('listaNotificacoes');
+    
+    if (badge && lista) {
+      if (notificacoes.length > 0) {
+        badge.style.display = 'block';
+        badge.textContent = notificacoes.length;
+        lista.innerHTML = '';
+        notificacoes.forEach(n => {
+          const div = document.createElement('div');
+          div.style.padding = '10px';
+          div.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+          div.style.cursor = 'pointer';
+          div.textContent = '📋 ' + n.texto;
+          div.onclick = n.acao;
+          div.onmouseover = () => div.style.background = 'rgba(255,255,255,0.1)';
+          div.onmouseout = () => div.style.background = 'transparent';
+          lista.appendChild(div);
+        });
+      } else {
+        badge.style.display = 'none';
+        lista.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--muted);">Nenhuma pendência nova.</div>';
+      }
+    }
+  };
+
+  setTimeout(verificarNotificacoesGestor, 3000);
+  setInterval(verificarNotificacoesGestor, 30000);
 </body>
 </html>
 
