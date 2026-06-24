@@ -2074,5 +2074,78 @@
     });
   }
 </script>
+<script>
+  window.togglePainelNotificacoes = function() {
+    const painel = document.getElementById('painelNotificacoes');
+    if (painel.style.display === 'none') {
+      painel.style.display = 'block';
+    } else {
+      painel.style.display = 'none';
+    }
+  };
+
+  window.verificarNotificacoes = function() {
+    if (!usuario || !usuario.id) return;
+    
+    let notificacoes = [];
+    
+    // Verifica mensagens via chamada rapida ou usando a lista mock_mensagens se ja estiver carregada
+    if (typeof MOCK_MENSAGENS !== 'undefined') {
+      const msgNaoLidas = MOCK_MENSAGENS.filter(m => m.status === 'Enviado' && m.remetente_nome !== usuario.nome);
+      if (msgNaoLidas.length > 0) {
+        notificacoes.push({
+          texto: Você possui  + msgNaoLidas.length +  nova(s) mensagem(ns).,
+          acao: () => { togglePainelNotificacoes(); document.querySelector('.tab-button[data-tab="mensagens"]').click(); }
+        });
+      }
+    }
+    
+    // Verifica escalas do proximo mes
+    if (typeof MOCK_ESCALAS !== 'undefined' && MOCK_ESCALAS.length > 0) {
+      const hoje = new Date();
+      let proxMes = hoje.getMonth() + 2; 
+      let ano = hoje.getFullYear();
+      if (proxMes > 12) { proxMes = 1; ano++; }
+      const strProxMes = String(proxMes).padStart(2, '0') + '/' + ano;
+      
+      const temEscalaProxMes = MOCK_ESCALAS.some(e => e.mes_referencia === strProxMes);
+      if (temEscalaProxMes) {
+        notificacoes.push({
+          texto: 'Sua escala do próximo mês já está disponível!',
+          acao: () => { togglePainelNotificacoes(); document.querySelector('.tab-button[data-tab="escala"]').click(); }
+        });
+      }
+    }
+    
+    const badge = document.getElementById('badgeNotificacoes');
+    const lista = document.getElementById('listaNotificacoes');
+    
+    if (notificacoes.length > 0) {
+      badge.style.display = 'block';
+      badge.textContent = notificacoes.length;
+      lista.innerHTML = '';
+      notificacoes.forEach(n => {
+        const div = document.createElement('div');
+        div.style.padding = '10px';
+        div.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+        div.style.cursor = 'pointer';
+        div.textContent = '?? ' + n.texto;
+        div.onclick = n.acao;
+        div.onmouseover = () => div.style.background = 'rgba(255,255,255,0.1)';
+        div.onmouseout = () => div.style.background = 'transparent';
+        lista.appendChild(div);
+      });
+    } else {
+      badge.style.display = 'none';
+      lista.innerHTML = '<div style="padding: 10px; text-align: center; color: var(--muted);">Nenhuma notificação nova.</div>';
+    }
+  };
+
+  // Chama verificação de tempos em tempos e ao carregar
+  setTimeout(verificarNotificacoes, 2000);
+  setInterval(verificarNotificacoes, 30000);
+</script>
 </body>
 </html>
+
+

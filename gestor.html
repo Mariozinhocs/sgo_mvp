@@ -1567,6 +1567,45 @@
     document.getElementById('planningStepSelection').style.display = 'none';
     document.getElementById('planningStepCalendar').style.display = 'block';
   };
+  window.toggleDesignacaoPosto = function() {
+    const chk = document.getElementById('chkDesignarPosto');
+    const container = document.getElementById('designacaoContainer');
+    const inputPosto = document.getElementById('opPostoDesignado');
+    const selectEquipe = document.getElementById('opEquipeDesignada');
+    
+    if (chk.checked) {
+      container.style.display = 'block';
+      const dl = document.getElementById('dlPostosDesignacao');
+      if (dl && typeof MOCK_POSTOS !== 'undefined') {
+        dl.innerHTML = MOCK_POSTOS.map(p => <option value=" + p.nome + ">).join('');
+      }
+    } else {
+      container.style.display = 'none';
+      if(inputPosto) inputPosto.value = '';
+      if(selectEquipe) selectEquipe.innerHTML = '<option value="">Selecione um posto primeiro...</option>';
+    }
+  };
+
+  window.filtrarEquipesPorPosto = function(postoNome) {
+    const selectEquipe = document.getElementById('opEquipeDesignada');
+    if (!postoNome) {
+      selectEquipe.innerHTML = '<option value="">Selecione um posto primeiro...</option>';
+      return;
+    }
+    
+    if (typeof MOCK_EQUIPES !== 'undefined') {
+      const equipesFiltradas = MOCK_EQUIPES.filter(e => 
+        e.posto === postoNome || e.nome.toLowerCase().includes('evento') || e.nome.toLowerCase().includes('especial')
+      );
+      
+      if (equipesFiltradas.length > 0) {
+        selectEquipe.innerHTML = '<option value="">Nenhuma equipe espec�fica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
+      } else {
+        selectEquipe.innerHTML = '<option value="">Sem equipes cadastradas para este posto</option>';
+      }
+    }
+  };
+
   window.abrirModalCadastro = function() {
     opModel = { id:'', nome:'', cpf:'', cargo:'', hierarquia:'', jornada:'Tradicional 8h/44h', turno:'Fixo', preferencia:'Diurno', status:'Ativo', disponibilidade:'', restricoes:'', qualificacoes:'', ferias:'', afastamentos:'', matricula:'', usuario:'', senha:'', roles:'OPERADOR', postoPrincipal:'Centro de Cooperação da Cidade' };
     syncOperadorForm();
@@ -3753,5 +3792,8 @@
 </script>
 </body>
 </html>
+
+
+
 
 
