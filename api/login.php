@@ -45,6 +45,7 @@ try {
                 "sucesso" => true,
                 "token" => "sgo-token-" . time() . "-" . bin2hex(random_bytes(4)),
                 "usuario" => [
+                    "id" => (int)$userRow['id'],
                     "nome" => $userRow['nome'],
                     "username" => $userRow['usuario'],
                     "matricula" => $userRow['matricula'],

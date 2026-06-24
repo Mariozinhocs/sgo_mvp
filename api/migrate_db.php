@@ -99,8 +99,19 @@ foreach ($createTables as $sql) {
     runQuery($pdo, $sql, $logs, $success);
 }
 
+// 6. Alterar tabela de registro_ponto para adicionar fotos de checkin/checkout
+$alterRegistroPonto = [
+    "ALTER TABLE registro_ponto ADD COLUMN foto_checkin LONGTEXT NULL",
+    "ALTER TABLE registro_ponto ADD COLUMN foto_checkout LONGTEXT NULL"
+];
+
+foreach ($alterRegistroPonto as $sql) {
+    runQuery($pdo, $sql, $logs, $success);
+}
+
 echo json_encode([
     "sucesso" => $success,
     "logs" => $logs
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
 

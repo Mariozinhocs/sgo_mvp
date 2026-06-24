@@ -405,6 +405,27 @@
         localStorage.setItem('sgo_usuario', JSON.stringify(data.usuario));
       } catch (e) {}
 
+      const prosseguirRedirect = () => {
+        window.location.href = 'operador.html';
+      };
+
+      const solicitarWebcam = () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          feedback.textContent = 'Solicitando acesso à webcam...';
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+              stream.getTracks().forEach(track => track.stop());
+              prosseguirRedirect();
+            })
+            .catch(err => {
+              console.warn('Permissão de webcam negada ou não disponível:', err);
+              prosseguirRedirect();
+            });
+        } else {
+          prosseguirRedirect();
+        }
+      };
+
       if (navigator.geolocation) {
         feedback.textContent = 'Capturando localização...';
 
@@ -418,16 +439,16 @@
               }));
             } catch (e) {}
             feedback.textContent = '';
-            window.location.href = 'operador.html';
+            solicitarWebcam();
           },
           () => {
             feedback.textContent = '';
-            window.location.href = 'operador.html';
+            solicitarWebcam();
           },
           { enableHighAccuracy: true, timeout: 10000 }
         );
       } else {
-        window.location.href = 'operador.html';
+        solicitarWebcam();
       }
     })
     .catch(err => {

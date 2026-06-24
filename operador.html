@@ -1025,6 +1025,52 @@
 
       salvarMarcacoes(mes, ano, marcados);
 
+      // Persistir no servidor via API
+      let latVal = '';
+      let lngVal = '';
+      try {
+        const rawGeo = localStorage.getItem('sgo_geo_pos');
+        if (rawGeo) {
+          const geo = JSON.parse(rawGeo);
+          if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
+            latVal = geo.lat.toString();
+            lngVal = geo.lng.toString();
+          }
+        }
+      } catch(err) {}
+
+      let tipoPonto = '';
+      if (statusLabel === 'Ativo') {
+        tipoPonto = fotoBase64 ? 'checkin' : 'intervalo_fim';
+      } else if (statusLabel === 'Inativo (intervalo)') {
+        tipoPonto = 'intervalo_inicio';
+      } else if (statusLabel === 'Inativo') {
+        tipoPonto = 'checkout';
+      }
+
+      if (usuario && usuario.id && tipoPonto) {
+        fetch('api/salvar_ponto.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario_id: usuario.id,
+            tipo: tipoPonto,
+            lat: latVal,
+            lng: lngVal,
+            foto_base64: fotoBase64 || ''
+          })
+        })
+        .then(res => res.json())
+        .then(resData => {
+          if (!resData.sucesso) {
+            console.error('Erro ao persistir ponto no servidor:', resData.erro);
+          }
+        })
+        .catch(fetchErr => {
+          console.error('Erro de conexão ao persistir ponto:', fetchErr);
+        });
+      }
+
       const mesSelecionado = parseInt(escalaMes.value, 10);
       const anoSelecionado = parseInt(escalaAno.value, 10);
       if (mesSelecionado === mes && anoSelecionado === ano) {

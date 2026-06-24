@@ -276,6 +276,15 @@
       border-color: #cbd5e1;
       background: #f1f5f9;
     }
+    .leaflet-container {
+      transition: filter 0.3s ease;
+    }
+    body:not(.theme-light) .leaflet-container {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
+    body:not(.theme-light) .leaflet-marker-icon {
+      filter: invert(100%) hue-rotate(180deg);
+    }
   </style>
 </head>
 <body>
@@ -324,7 +333,7 @@
 </header>
 
 <nav class="top-tabs">
-  <button class="tab-button active" data-tab="tab-dashboard">Dashboard</button>
+  <button class="tab-button active" data-tab="tab-dashboard">Início</button>
   <button class="tab-button" data-tab="tab-postos">Postos</button>
   <button class="tab-button" data-tab="tab-equipes">Equipes</button>
   <button class="tab-button" data-tab="tab-operadores">Operadores</button>
@@ -334,14 +343,14 @@
 <main>
   <section id="tab-dashboard" class="tab-panel active">
     <section class="card">
-      <h2>Dashboard</h2>
+      <h2>Início</h2>
       <p class="small">Selecione uma das opções abaixo para visualizar indicadores, logs ou o mapa operacional.</p>
 
       <!-- CARDAPIO DO DASHBOARD -->
       <div id="dashboardCardapio" class="cardapio-operadores" style="margin-top: 15px;">
         <div class="cardapio-card" onclick="showDashboardSubPanel('dash-indicadores')">
           <div class="cardapio-icon">📊</div>
-          <div class="cardapio-title">Indicadores Gerais</div>
+          <div class="cardapio-title">Dashboard</div>
           <div class="cardapio-desc">Visualizar KPIs operacionais de postos, operadores, equipes e pendências.</div>
         </div>
         <div class="cardapio-card" onclick="showDashboardSubPanel('dash-logs')">
@@ -383,7 +392,7 @@
         </div>
         <div class="table-box">
           <table>
-            <thead><tr><th>Dia</th><th>Logs de status</th><th>Último status</th></tr></thead>
+            <thead><tr><th>Operador</th><th>Matrícula</th><th>Check-in</th><th>Intervalo Início</th><th>Intervalo Fim</th><th>Check-out</th><th>Coordenadas</th><th>Status</th></tr></thead>
             <tbody id="tbodyEscalaHojeGestor"></tbody>
           </table>
         </div>
@@ -1176,7 +1185,7 @@
   // --- SISTEMA DE NAVEGAÇÃO INTERNA DO DASHBOARD ---
   window.showDashboardSubPanel = function(panelId) {
     document.getElementById('dashboardCardapio').style.display = 'none';
-    document.getElementById('dashboardSubtabs').style.display = 'flex';
+    document.getElementById('dashboardSubtabs').style.display = 'none';
     
     const tabs = document.querySelectorAll('[data-dashtab]');
     const panels = document.querySelectorAll('#tab-dashboard .subtab-panel');
@@ -1248,10 +1257,8 @@
       }
     });
 
-    // Definir tileset baseado no tema (Visual Premium)
-    const tileUrl = isLight 
-      ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    // Sempre usar tileset Positron Light (Inversão aplicada via CSS no dark mode)
+    const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
       
     L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -1276,8 +1283,17 @@
         const statusText = p.status === 'ATIVO' ? 'Ativo' : 'Inativo';
         const opCount = p.operadores || 0;
         
-        // Criar ícone customizado com cores harmoniosas
-        const color = p.status === 'ATIVO' ? '#22c55e' : '#64748b';
+        // Criar ícone customizado com cores baseadas no status
+        let color = '#22c55e'; // OK = verde
+        const stat = (p.status || '').toUpperCase();
+        if (stat === 'INATIVO') {
+          color = '#64748b'; // cinza
+        } else if (stat === 'ATENÇÃO' || stat === 'ATENCAO') {
+          color = '#f59e0b'; // laranja
+        } else if (stat === 'ALERTA' || stat === 'CRÍTICO' || stat === 'CRITICO') {
+          color = '#ef4444'; // vermelho
+        }
+        
         const iconHtml = `<div style="background-color:${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,0,0,0.5);"></div>`;
         const customIcon = L.divIcon({
           html: iconHtml,
@@ -2045,47 +2061,52 @@
   function renderEscalaHoje(){
     const tbody = document.getElementById('tbodyEscalaHojeGestor');
     if (!tbody) return;
-    const hoje = new Date();
-    const diaVal = hoje.getDate();
-    const mesVal = hoje.getMonth();
-    const anoVal = hoje.getFullYear();
-    const diaStr = String(diaVal).padStart(2, '0');
-    const mesStr = String(mesVal + 1).padStart(2, '0');
 
-    const chave = `sgo_escala_${anoVal}-${mesStr}`;
-    let marcados = {};
-    const raw = localStorage.getItem(chave);
-    try {
-      if (raw) marcados = JSON.parse(raw) || {};
-    } catch(e) {}
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:12px;">Carregando check-ins de hoje...</td></tr>';
 
-    const infoDia = marcados[String(diaVal)];
-    if (infoDia && infoDia.logs && infoDia.logs.length > 0) {
-      const logsHtml = infoDia.logs.map(l => {
-        if (typeof l === 'string') {
-          return `<div>${l}</div>`;
+    fetch('api/obter_pontos_hoje.php')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.sucesso || !data.pontos || data.pontos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:12px;">Nenhum check-in registrado hoje.</td></tr>';
+          return;
         }
-        const fotoButton = l.foto
-          ? `<button class="btn-ver-foto" onclick="visualizarFoto('${l.foto}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto">📷</button>`
-          : '';
-        return `<div>${l.hora} – ${l.status}${fotoButton}</div>`;
-      }).join('');
 
-      const ultimoLog = infoDia.logs[infoDia.logs.length - 1];
-      const ultimoStatus = typeof ultimoLog === 'string' ? ultimoLog : ultimoLog.status;
+        tbody.innerHTML = '';
+        data.pontos.forEach(p => {
+          const checkinStr = p.checkin ? new Date(p.checkin.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
+          const intInicioStr = p.intervalo_inicio ? new Date(p.intervalo_inicio.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
+          const intFimStr = p.intervalo_fim ? new Date(p.intervalo_fim.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
+          const checkoutStr = p.checkout ? new Date(p.checkout.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
+          
+          const coords = (p.lat && p.lng) ? `${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)}` : '—';
+          
+          const checkinFotoBtn = p.foto_checkin 
+            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkin}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Check-in">📷</button>` 
+            : '';
+            
+          const checkoutFotoBtn = p.foto_checkout 
+            ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkout}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Checkout">📷</button>` 
+            : '';
 
-      tbody.innerHTML = `<tr>
-        <td>${diaStr}/${mesStr}</td>
-        <td>${logsHtml}</td>
-        <td>${badge(ultimoStatus)}</td>
-      </tr>`;
-    } else {
-      tbody.innerHTML = `<tr>
-        <td>${diaStr}/${mesStr}</td>
-        <td>Sem registros de status no dispositivo.</td>
-        <td>${badge('inactive')}</td>
-      </tr>`;
-    }
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${p.usuario_nome}</strong></td>
+            <td>${p.usuario_matricula}</td>
+            <td>${checkinStr} ${checkinFotoBtn}</td>
+            <td>${intInicioStr}</td>
+            <td>${intFimStr}</td>
+            <td>${checkoutStr} ${checkoutFotoBtn}</td>
+            <td>${coords}</td>
+            <td>${badge(p.status)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error('Erro ao carregar escala de hoje:', err);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--red);padding:12px;">Falha ao carregar registros do servidor.</td></tr>';
+      });
   }
 
   function fillSelects(){ const sp=document.getElementById('selectEditPosto'); if(sp) sp.innerHTML=MOCK_POSTOS.map((p,i)=>`<option value="${i}">${p.nome}</option>`).join(''); const dl=document.getElementById('datalistOperadores'); if(dl) dl.innerHTML=MOCK_OPERADORES.map(o=>`<option value="${o.nome}"></option>`).join(''); }
@@ -2622,8 +2643,16 @@
     // mock add log via DB and reload historico
   }
 
-  document.getElementById('btnHistoricoPosto').addEventListener('click',()=>setSubTab('sub-historico'));
-  document.getElementById('btnLoadPosto').addEventListener('click',()=>loadPosto(parseInt(selectEditPosto.value||'0',10)));
+  const btnHistoricoPosto = document.getElementById('btnHistoricoPosto');
+  if (btnHistoricoPosto) {
+    btnHistoricoPosto.addEventListener('click',()=>setSubTab('sub-historico'));
+  }
+  
+  const btnLoadPosto = document.getElementById('btnLoadPosto');
+  if (btnLoadPosto) {
+    btnLoadPosto.addEventListener('click',()=>loadPosto(parseInt(selectEditPosto.value||'0',10)));
+  }
+  
   const btnLoadOperador = document.getElementById('btnLoadOperador');
   if (btnLoadOperador) {
     btnLoadOperador.addEventListener('click',()=>{
@@ -2636,7 +2665,10 @@
       }
     });
   }
-  document.getElementById('btnNovoPosto').addEventListener('click',()=>{ currentPostoId=0; loadPosto(-1); });
+  const btnNovoPosto = document.getElementById('btnNovoPosto');
+  if (btnNovoPosto) {
+    btnNovoPosto.addEventListener('click',()=>{ currentPostoId=0; loadPosto(-1); });
+  }
   const btnNovoOperador = document.getElementById('btnNovoOperador');
   if (btnNovoOperador) {
     btnNovoOperador.addEventListener('click',()=>{
