@@ -56,6 +56,17 @@
       border-color: var(--input-light-border);
     }
 
+    body.theme-light .status-badge.ativo {
+      color: #166534;
+      background: rgba(34,197,94,0.15);
+      border-color: rgba(34,197,94,0.8);
+    }
+    body.theme-light .status-badge.off {
+      color: #991b1b;
+      background: rgba(239,68,68,0.15);
+      border-color: rgba(239,68,68,0.8);
+    }
+
     * { box-sizing: border-box; }
 
     body {
@@ -682,7 +693,9 @@
 
       <div id="msg-nova" class="tab-panel inner active">
         <div class="label-inline">Para</div>
-        <input type="text" class="perfil-input" value="Administradores do sistema" disabled />
+        <select id="msgDestinatarioSelect" class="perfil-input">
+          <option value="GLOBAL">Administradores do sistema</option>
+        </select>
 
         <div class="label-inline">Assunto</div>
         <input id="msgAssunto" type="text" class="perfil-input" placeholder="Descreva o assunto" />
@@ -690,7 +703,7 @@
         <div class="label-inline">Mensagem</div>
         <textarea id="msgCorpo" class="perfil-input" rows="4" placeholder="Digite sua mensagem"></textarea>
 
-        <div class="label-inline">Anexar imagem (câmera)</div>
+        <div class="label-inline" id="msgAnexoLabel">Anexar imagem (câmera)</div>
         <input
           id="msgAnexo"
           type="file"
@@ -779,6 +792,17 @@
     </div>
     <div class="row" style="margin-top:8px;justify-content:center;">
       <button id="btnFecharModalFoto" class="primary" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALERTA CUSTOMIZADO -->
+<div id="modalAlerta" class="modal-backdrop" style="z-index: 100000;">
+  <div class="modal-card" style="max-width: 320px; text-align: center;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalAlertaTitulo">SGO diz</h3>
+    <p id="modalAlertaMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap;"></p>
+    <div class="row" style="margin-top: 12px; justify-content: center;">
+      <button id="btnModalAlertaFechar" class="primary" type="button">OK</button>
     </div>
   </div>
 </div>
@@ -1720,6 +1744,84 @@
 
   // --- SISTEMA DE MENSAGENS DO OPERADOR ---
   let MENSAGENS = [];
+  let superiorGlobal = null;
+  let rhGlobal = null;
+
+  window.sgoAlert = function(mensagem, titulo = 'SGO diz') {
+    const modal = document.getElementById('modalAlerta');
+    const msgEl = document.getElementById('modalAlertaMensagem');
+    const titEl = document.getElementById('modalAlertaTitulo');
+    if (modal && msgEl && titEl) {
+      titEl.textContent = titulo;
+      msgEl.textContent = mensagem;
+      modal.style.display = 'flex';
+      modal.style.pointerEvents = 'auto';
+    } else {
+      alert(mensagem);
+    }
+  };
+
+  const btnModalAlertaFechar = document.getElementById('btnModalAlertaFechar');
+  if (btnModalAlertaFechar) {
+    btnModalAlertaFechar.addEventListener('click', () => {
+      const modal = document.getElementById('modalAlerta');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
+      }
+    });
+  }
+
+  (function configurarLabelAnexo() {
+    const label = document.getElementById('msgAnexoLabel');
+    if (!label) return;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      label.textContent = "Anexar imagem (câmera)";
+    } else {
+      label.textContent = "Anexar imagem/arquivo";
+    }
+  })();
+
+  function buscarDestinatariosDisponiveis() {
+    if (!usuario || !usuario.id) return;
+    fetch(`api/obter_destinatarios_operador.php?usuario_id=${usuario.id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.sucesso) {
+          superiorGlobal = data.superior;
+          rhGlobal = data.rh;
+          renderDestinatariosSelect();
+        }
+      })
+      .catch(err => console.error('Erro ao obter destinatários:', err));
+  }
+
+  function renderDestinatariosSelect() {
+    const selectDest = document.getElementById('msgDestinatarioSelect');
+    if (!selectDest) return;
+    
+    selectDest.innerHTML = '';
+    
+    if (superiorGlobal) {
+      const optSup = document.createElement('option');
+      optSup.value = `SUPERIOR:${superiorGlobal.id}`;
+      optSup.textContent = `Superior Imediato (${superiorGlobal.nome})`;
+      selectDest.appendChild(optSup);
+    } else {
+      const optGlobal = document.createElement('option');
+      optGlobal.value = 'GLOBAL';
+      optGlobal.textContent = 'Administradores do sistema';
+      selectDest.appendChild(optGlobal);
+    }
+    
+    if (rhGlobal) {
+      const optRH = document.createElement('option');
+      optRH.value = `RH:${rhGlobal.id}`;
+      optRH.textContent = `Recursos Humanos (RH - ${rhGlobal.nome})`;
+      selectDest.appendChild(optRH);
+    }
+  }
 
   function buscarMensagensDoServidor() {
     if (!usuario || !usuario.id) return;
@@ -1739,8 +1841,8 @@
     const divEnviadas = document.getElementById('msg-enviadas');
     if (!divRecebidas || !divEnviadas) return;
 
-    const enviadas = MENSAGENS.filter(m => m.remetente_id === usuario.id);
-    const recebidas = MENSAGENS.filter(m => m.remetente_id !== usuario.id);
+    const enviadas = MENSAGENS.filter(m => Number(m.remetente_id) === Number(usuario.id));
+    const recebidas = MENSAGENS.filter(m => Number(m.remetente_id) !== Number(usuario.id));
 
     // Renderizar Recebidas
     if (recebidas.length === 0) {
@@ -1781,9 +1883,14 @@
         const anexoBtn = m.anexo_path 
           ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex; margin-top:6px;">📷 Ver Anexo</button>` 
           : '';
+        
+        const destNome = m.tipo_destinatario === 'INDIVIDUAL' && m.destinatario_nome 
+          ? m.destinatario_nome 
+          : 'Administradores';
+
         html += `
           <div class="info-box" style="margin-top: 8px;">
-            <div class="info-label">${dataStr} · Para: Administradores</div>
+            <div class="info-label">${dataStr} · Para: ${destNome}</div>
             <div class="info-value" style="font-weight: 600; margin-top: 2px;">Assunto: ${m.assunto}</div>
             <div class="info-value" style="white-space: pre-wrap; margin-top: 4px;">${m.corpo}</div>
             ${anexoBtn}
@@ -1793,8 +1900,9 @@
     }
   }
 
-  // Inicializa a busca inicial de mensagens
+  // Inicializa a busca inicial de mensagens e destinatários
   if (usuario && usuario.id) {
+    buscarDestinatariosDisponiveis();
     buscarMensagensDoServidor();
   }
 
@@ -1810,18 +1918,33 @@
       const corpo = msgCorpo.value.trim();
 
       if (!assunto || !corpo) {
-        alert('Assunto e conteúdo da mensagem são obrigatórios.');
+        sgoAlert('Assunto e conteúdo da mensagem são obrigatórios.');
         return;
       }
 
       btnEnviarMsg.disabled = true;
       btnEnviarMsg.textContent = 'Enviando...';
 
+      const selectDest = document.getElementById('msgDestinatarioSelect');
+      let tipoDestinatario = 'GLOBAL';
+      let destinatarioId = null;
+
+      if (selectDest) {
+        const val = selectDest.value;
+        if (val.startsWith('SUPERIOR:')) {
+          tipoDestinatario = 'INDIVIDUAL';
+          destinatarioId = parseInt(val.split(':')[1], 10);
+        } else if (val.startsWith('RH:')) {
+          tipoDestinatario = 'INDIVIDUAL';
+          destinatarioId = parseInt(val.split(':')[1], 10);
+        }
+      }
+
       const enviarPayload = (anexoBase64 = '') => {
         const payload = {
           remetente_id: usuario.id,
-          tipo_destinatario: 'GLOBAL',
-          destinatario_id: null,
+          tipo_destinatario: tipoDestinatario,
+          destinatario_id: destinatarioId,
           posto_id: null,
           equipe_id: null,
           assunto: assunto,
@@ -1839,23 +1962,23 @@
           btnEnviarMsg.disabled = false;
           btnEnviarMsg.textContent = 'Enviar Mensagem';
           if (data.sucesso) {
-            alert(data.mensagem);
+            sgoAlert(data.mensagem);
             msgAssunto.value = '';
             msgCorpo.value = '';
             msgAnexo.value = '';
             buscarMensagensDoServidor();
             
-            // Trocar aba inner para 'Recebidas' ou 'Enviadas'
+            // Trocar aba inner para 'Enviadas'
             const btnEnviadas = document.querySelector('.tab-button.inner[data-inner="msg-enviadas"]');
             if (btnEnviadas) btnEnviadas.click();
           } else {
-            alert('Erro ao enviar mensagem: ' + data.erro);
+            sgoAlert('Erro ao enviar mensagem: ' + data.erro);
           }
         })
         .catch(err => {
           btnEnviarMsg.disabled = false;
           btnEnviarMsg.textContent = 'Enviar Mensagem';
-          alert('Erro de conexão: ' + err.message);
+          sgoAlert('Erro de conexão: ' + err.message);
         });
       };
 
