@@ -1,12 +1,17 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#020826" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>SGO – Painel do Gestor</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SGO">
+  <meta name="theme-color" content="#020826" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
-  <link rel="icon" type="image/png" href="icons/icon-512.png" />
+  <link rel="icon" type="image/png" href="./icons/icon-192.png" />
   <!-- Leaflet Map CDNs -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -49,7 +54,7 @@
     .top-tabs,.subtabs{display:flex;gap:6px;flex-wrap:wrap}
     .top-tabs{max-width:1200px;margin:4px auto 10px;padding:0 14px}
     .tab-button,.subtab-button{border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--muted);cursor:pointer}
-    .tab-button{flex:1;text-align:center;padding:8px 10px;border-radius:999px;font-size:12px}
+    .tab-button{flex:1;text-align:center;padding:8px 16px;border-radius:999px;font-size:13px}
     .subtab-button{padding:5px 10px;border-radius:999px;font-size:11px}
     .tab-button.active,.subtab-button.active{background:var(--green);border-color:var(--green);color:#022c22;font-weight:700}
     .tab-panel,.subtab-panel{display:none}
@@ -375,7 +380,7 @@
       <!-- PAINEL: Indicadores Gerais -->
       <div id="dash-indicadores" class="subtab-panel" style="margin-top: 15px; display: none;">
         <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar ao Dashboard</button>
+          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar</button>
         </div>
         <div class="kpi-grid">
           <div class="kpi-card" data-goto-tab="tab-postos"><div class="kpi-label">Postos ativos</div><div class="kpi-value" id="kpiPostosAtivos">0</div><div class="kpi-sub">Total: <span id="kpiPostosTotal">0</span></div></div>
@@ -388,7 +393,7 @@
       <!-- PAINEL: Escala de Hoje (Logs) -->
       <div id="dash-logs" class="subtab-panel" style="margin-top: 15px; display: none;">
         <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar ao Dashboard</button>
+          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar</button>
         </div>
         <div class="table-box">
           <table>
@@ -401,7 +406,10 @@
       <!-- PAINEL: Mapa Operacional -->
       <div id="dash-mapa" class="subtab-panel" style="margin-top: 15px; display: none;">
         <div style="margin-bottom: 12px;">
-          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar ao Dashboard</button>
+          <button class="secondary" type="button" onclick="voltarAoMenuDashboard()">← Voltar</button>
+          <select id="mapCityFilter" class="filter-input" style="width:auto; display:inline-block; margin-left:10px;" onchange="filtrarMapaPorCidade(this.value)">
+            <option value="">Todas as Cidades</option>
+          </select>
         </div>
         <div id="map"></div>
       </div>
@@ -437,7 +445,7 @@
           </div>
         </div>
         <div class="table-box">
-          <table><thead><tr><th>Posto</th><th>Cidade</th><th>Status</th><th>Operadores</th></tr></thead><tbody id="tbodyPostos"></tbody></table>
+          <table><thead><tr><th>Posto</th><th>Cidade</th><th>Status</th><th>Operadores</th><th>Responsável</th></tr></thead><tbody id="tbodyPostos"></tbody></table>
         </div>
       </div>
     </section>
@@ -877,7 +885,7 @@
 </main>
 
 <!-- MODAL CADASTRAR / EDITAR OPERADOR -->
-<div id="modalCadastroEdicao" class="overlay-backdrop" aria-hidden="true">
+<div id="modalCadastroEdicao" class="overlay-backdrop" style="z-index: 10001;" aria-hidden="true">
   <div class="overlay-panel" style="width: min(800px, 100%);" role="dialog" aria-modal="true" aria-labelledby="modalCadastroEdicaoTitle">
     <div class="overlay-header">
       <div>
@@ -893,7 +901,7 @@
         <div class="field"><label>CPF</label><input id="opCpf" type="text" /></div>
         <div class="field"><label>Cargo</label><input id="opCargo" type="text" /></div>
         <div class="field"><label>Hierarquia</label><input id="opHierarquia" type="text" /></div>
-        <div class="field"><label>Jornada contratual</label><input id="opJornada" type="text" /></div>
+        <div class="field"><label>Jornada contratual (Específica)</label><select id="opJornada"><option value="">Seguir Padrão do Posto</option><option value="12x36">12x36</option><option value="Comercial (8h/dia)">Comercial (8h/dia)</option><option value="Noturna (12h)">Noturna (12h)</option></select></div>
         <div class="field"><label>Turno atual</label><select id="opTurno"><option>Fixo</option><option>Alternado</option><option>Revezamento</option></select></div>
         <div class="field"><label>Preferência de turno</label><input id="opPreferencia" type="text" /></div>
         <div class="field"><label>Status</label><select id="opStatus"><option>Ativo</option><option>Inativo</option><option>Em férias</option></select></div>
@@ -933,6 +941,13 @@
     <div style="margin-top: 15px;">
       <div class="form-grid" id="formPosto">
         <div class="field"><label>Nome do posto</label><input id="postoNome" type="text" /></div>
+        <div class="field"><label>Cidade</label><input id="postoCidade" type="text" value="Manaus/AM" /></div>
+        <div class="field full"><label>Endereço Físico</label><input id="postoEndereco" type="text" placeholder="Ex: Av. Eduardo Ribeiro, 123 - Centro" /></div>
+        <div class="field full"><label>Link do Google Maps (para extrair coordenadas)</label><input id="postoLinkGMaps" type="text" placeholder="Cole o link completo (com @lat,lng) aqui" /></div>
+        <div class="field"><label>Latitude</label><input id="postoLatitude" type="text" placeholder="-3.1190" /></div>
+        <div class="field"><label>Longitude</label><input id="postoLongitude" type="text" placeholder="-60.0217" /></div>
+        <div class="field"><label>Telefone Contato</label><input id="postoTelefone" type="text" placeholder="(00) 00000-0000" /></div>
+        <div class="field"><label>Operador Responsável</label><select id="postoResponsavel"><option value="">Nenhum</option></select></div>
         <div class="field"><label>Jornada diária</label><input id="postoJornada" type="text" /></div>
         <div class="field"><label>Turno preferencial</label><select id="postoTurno"><option>Diurno</option><option>Noturno</option><option>Misto</option></select></div>
         <div class="field"><label>Intervalo intrajornada</label><input id="postoIntrajornada" type="text" /></div>
@@ -947,8 +962,12 @@
         <div class="field full"><label>Funcionalidades requeridas</label><textarea id="postoFuncionalidades"></textarea></div>
       </div>
       <div class="validation" id="postoValidation"></div>
-      <div class="row" style="margin-top:14px; justify-content: flex-end; gap:8px;">
-        <button class="primary" type="button" id="btnSalvarPosto" onclick="salvarPostoDireto()">Salvar posto</button>
+      <div class="row" style="margin-top:14px; justify-content: space-between; gap:8px;">
+        <button type="button" class="danger" id="btnExcluirPosto" style="display:none;" onclick="excluirPostoDireto()">Excluir Posto</button>
+        <div class="row" style="gap:8px;">
+          <button type="button" class="secondary" onclick="fecharModalCadastroPosto()">Cancelar</button>
+          <button type="button" class="primary" id="btnSalvarPosto" onclick="salvarPostoDireto()">Salvar posto</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1086,7 +1105,10 @@
         <div class="overlay-title" id="modalVisualizarPerfilTitle">Visualizar Perfil</div>
         <div class="overlay-sub">Ficha de informações do colaborador.</div>
       </div>
-      <button type="button" class="secondary" onclick="fecharModalVisualizarPerfil()">Fechar</button>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="primary" onclick="editarOperadorDaVisualizacao()">Editar</button>
+        <button type="button" class="secondary" onclick="fecharModalVisualizarPerfil()">Fechar</button>
+      </div>
     </div>
     
     <div style="margin-top: 15px;">
@@ -1154,7 +1176,7 @@
 
   let currentScaleData={};
   let currentPostoId=0, currentOperadorId=0;
-  const postoModel={id:'',nome:'',cidade:'São Paulo/SP',status:'ATIVO',jornada:'8h',turno:'Diurno',intrajornada:'1h',interjornada:'11h',extras:'2h/dia',banco:'Sim',dsr:'Sim',especial:'',descricao:'',funcionalidades:'',revezamentoNecessario:'Não',adicionalNoturno:'Não'};
+  const postoModel={id:'',nome:'',cidade:'Manaus/AM',status:'ATIVO',jornada:'8h',turno:'Diurno',intrajornada:'1h',interjornada:'11h',extras:'2h/dia',banco:'Sim',dsr:'Sim',especial:'',descricao:'',funcionalidades:'',revezamentoNecessario:'Não',adicionalNoturno:'Não',endereco:'',latitude:'',longitude:'',telefone_contato:'',operador_responsavel_id:null};
   let opModel={id:'',nome:'',cpf:'',cargo:'',hierarquia:'',jornada:'Tradicional 8h/44h',turno:'Fixo',preferencia:'Diurno',status:'Ativo',disponibilidade:'',restricoes:'',qualificacoes:'',ferias:'',afastamentos:'',matricula:'',usuario:'',senha:'',roles:'OPERADOR',postoPrincipal:'Centro de Cooperação da Cidade'};
 
   function badge(status){ const s=(status||'').toLowerCase(); if(s.includes('publicada')||s.includes('confirm')||s==='ativo'||s.includes('dispon')||s==='disponível') return '<span class="status-badge active">Ativo</span>'; if(s.includes('rascunho')||s.includes('draft')||s.includes('aguard')||s==='pending'||s.includes('conflit')) return '<span class="status-badge pending">Pendente</span>'; return '<span class="status-badge inactive">Inativo</span>'; }
@@ -1234,6 +1256,22 @@
   // --- SISTEMA DE MAPA OPERACIONAL (LEAFLET) ---
   let mapInstance = null;
   let mapMarkers = [];
+  
+  window.filtrarMapaPorCidade = function(cidade) {
+    if (!mapInstance) return;
+    const bounds = [];
+    mapMarkers.forEach(m => {
+      if (cidade === '' || m.postoObj.cidade === cidade) {
+        if (!mapInstance.hasLayer(m)) mapInstance.addLayer(m);
+        bounds.push(m.getLatLng());
+      } else {
+        if (mapInstance.hasLayer(m)) mapInstance.removeLayer(m);
+      }
+    });
+    if (bounds.length > 0) {
+      mapInstance.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+    }
+  };
 
   function inicializarMapa() {
     const mapDiv = document.getElementById('map');
@@ -1266,23 +1304,36 @@
       maxZoom: 20
     }).addTo(mapInstance);
 
-    // Coordenadas mockadas dos Postos de Trabalho para plotagem no MVP
-    const coordsPostos = {
-      'Posto Central': [-23.561684, -46.655981],
-      'Base Leste': [-23.541434, -46.574677],
-      'Posto Norte': [-23.462778, -46.533333],
-      'Base Sul': [-23.666667, -46.533333]
-    };
-
     const bounds = [];
+    const cidadesSet = new Set();
 
     // Adicionar marcadores de Postos
     MOCK_POSTOS.forEach(p => {
-      const coords = coordsPostos[p.nome];
-      if (coords) {
+      let coords = null;
+      if (p.latitude && p.longitude && p.latitude !== '' && p.longitude !== '') {
+        coords = [parseFloat(p.latitude), parseFloat(p.longitude)];
+      }
+
+      if (p.cidade && p.cidade.trim() !== '') {
+        cidadesSet.add(p.cidade.trim());
+      }
+
+      if (coords && !isNaN(coords[0]) && !isNaN(coords[1])) {
         const statusText = p.status === 'ATIVO' ? 'Ativo' : 'Inativo';
         const opCount = p.operadores || 0;
         
+        // Calcular Operadores Ativos para este posto (via PONTOS_HOJE)
+        let ativosHoje = 0;
+        if (typeof PONTOS_HOJE !== 'undefined') {
+          ativosHoje = PONTOS_HOJE.filter(pt => 
+            (pt.posto_id == p.id || pt.posto_nome === p.nome) && 
+            (pt.tipo === 'ENTRADA' || pt.tipo === 'RETORNO_ALMOCO')
+          ).length;
+        }
+
+        const respName = p.responsavel_nome || 'Nenhum';
+        const respClick = p.responsavel_nome ? `onclick="abrirContatoPosto('${p.id}', '${p.nome}', '${p.responsavel_nome}', '${p.telefone_contato||''}')" style="cursor:pointer; color:var(--primary); text-decoration:underline;"` : '';
+
         // Criar ícone customizado com cores baseadas no status
         let color = '#22c55e'; // OK = verde
         const stat = (p.status || '').toUpperCase();
@@ -1303,11 +1354,13 @@
         });
 
         const popupContent = `
-          <div style="font-family:system-ui,sans-serif; font-size:12px; color:${isLight ? '#020617' : '#e5e7eb'}; background:${isLight ? '#fff' : '#020617'}; padding: 4px;">
-            <strong style="font-size:13px; display:block; margin-bottom:4px;">🏢 ${p.nome}</strong>
-            <div><strong>Cidade:</strong> ${p.cidade || 'São Paulo'}</div>
-            <div><strong>Status:</strong> <span style="color:${color}; font-weight:bold;">${statusText}</span></div>
-            <div><strong>Operadores:</strong> ${opCount}</div>
+          <div style="font-family:system-ui,sans-serif; font-size:12px; color:${isLight ? '#020617' : '#e5e7eb'}; background:${isLight ? '#fff' : '#020617'}; padding: 4px; text-align:center;">
+            <strong style="font-size:16px; display:block; margin-bottom:8px;">${p.nome}</strong>
+            <div style="font-size:24px; font-weight:bold; line-height:1;">${ativosHoje}</div>
+            <div style="font-size:11px; margin-bottom:8px;">Operadores Ativos</div>
+            <hr style="border-color:${isLight ? '#ccc' : '#333'}; margin:8px 0;" />
+            <div style="font-size:11px; color:var(--muted);">Operador Responsável</div>
+            <div ${respClick}><strong>${respName}</strong></div>
           </div>
         `;
 
@@ -1315,9 +1368,22 @@
           .addTo(mapInstance)
           .bindPopup(popupContent);
           
+        marker.postoObj = p;
+        mapMarkers.push(marker);
         bounds.push(coords);
       }
     });
+
+    // Atualizar dropdown de cidades
+    const selectCity = document.getElementById('mapCityFilter');
+    if (selectCity) {
+      const selectedVal = selectCity.value;
+      selectCity.innerHTML = '<option value="">Todas as Cidades</option>';
+      Array.from(cidadesSet).sort().forEach(c => {
+        selectCity.innerHTML += `<option value="${c}">${c}</option>`;
+      });
+      selectCity.value = selectedVal; // Restaurar a seleção
+    }
 
     // Plotar posição do Operador se disponível no localStorage (Ponto ou Login)
     try {
@@ -1660,7 +1726,6 @@
         });
       }
     }
-
     if (op.ferias_programadas && op.ferias_programadas.trim()) {
       eventos.push({
         data: op.ferias_programadas.split('-')[0].trim(),
@@ -1684,6 +1749,7 @@
   };
 
   window.visualizarPerfilDesdeConsulta = function(matricula) {
+    window.currentVisualizarMatricula = matricula;
     const op = MOCK_OPERADORES.find(o => o.matricula === matricula);
     if (!op) {
       alert('Operador não encontrado.');
@@ -1725,6 +1791,13 @@
 
     document.getElementById('modalVisualizarPerfil').classList.add('open');
     document.getElementById('modalVisualizarPerfil').setAttribute('aria-hidden', 'false');
+  };
+
+  window.editarOperadorDaVisualizacao = function() {
+    fecharModalVisualizarPerfil();
+    if (window.currentVisualizarMatricula) {
+      editarOperadorPorMatricula(window.currentVisualizarMatricula);
+    }
   };
 
   window.setProfileTab = function(tab) {
@@ -2029,7 +2102,7 @@
   };
 
   function atualizarKpis(){ document.getElementById('kpiPostosAtivos').textContent=MOCK_POSTOS.filter(p=>p.status==='ATIVO').length; document.getElementById('kpiPostosTotal').textContent=MOCK_POSTOS.length; document.getElementById('kpiOperadoresAtivos').textContent=MOCK_OPERADORES.filter(o=>o.status==='ATIVO').length; document.getElementById('kpiOperadoresTotal').textContent=MOCK_OPERADORES.length; document.getElementById('kpiEquipesAtivas').textContent=MOCK_EQUIPES.length; document.getElementById('kpiEquipesTotal').textContent=MOCK_EQUIPES.length; document.getElementById('kpiPendencias').textContent=MOCK_TROCAS.length+3; }
-  function renderPostos(list=MOCK_POSTOS){ const tbody=document.getElementById('tbodyPostos'); tbody.innerHTML=''; list.forEach(p=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.postoNome=p.nome; tr.innerHTML=`<td>${p.nome}</td><td>${p.cidade || 'São Paulo/SP'}</td><td>${badge(p.status)}</td><td>${p.operadores || '-'}</td>`; tbody.appendChild(tr); }); }
+  function renderPostos(list=MOCK_POSTOS){ const tbody=document.getElementById('tbodyPostos'); tbody.innerHTML=''; list.forEach(p=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.postoNome=p.nome; const respName = p.responsavel_nome || 'Nenhum'; const respHtml = p.responsavel_nome ? `<a href="javascript:void(0)" onclick="event.stopPropagation(); abrirContatoPosto('${p.id}', '${p.nome}', '${p.responsavel_nome}', '${p.telefone_contato||''}')">${p.responsavel_nome}</a>` : 'Nenhum'; tr.innerHTML=`<td>${p.nome}</td><td>${p.cidade || 'Manaus/AM'}</td><td>${badge(p.status)}</td><td>${p.operadores || '-'}</td><td>${respHtml}</td>`; tbody.appendChild(tr); }); }
   function renderEquipes(list=MOCK_EQUIPES){ const tbody=document.getElementById('tbodyEquipes'); tbody.innerHTML=''; list.forEach(e=>{ const tr=document.createElement('tr'); tr.className='clickable-row'; tr.dataset.equipeNome=e.nome; tr.innerHTML=`<td>${e.nome}</td><td>${e.posto}</td><td>${e.turno}</td><td>${e.operadores}</td>`; tbody.appendChild(tr); }); }
   function renderOperadores(list=MOCK_OPERADORES){
     const tbody=document.getElementById('tbodyOperadores');
@@ -2110,8 +2183,63 @@
   }
 
   function fillSelects(){ const sp=document.getElementById('selectEditPosto'); if(sp) sp.innerHTML=MOCK_POSTOS.map((p,i)=>`<option value="${i}">${p.nome}</option>`).join(''); const dl=document.getElementById('datalistOperadores'); if(dl) dl.innerHTML=MOCK_OPERADORES.map(o=>`<option value="${o.nome}"></option>`).join(''); }
-  function loadPosto(i=0){ const p=MOCK_POSTOS[i]; if(!p) { postoModel.id=''; postoModel.nome=''; postoModel.cidade='São Paulo/SP'; postoModel.status='ATIVO'; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=''; postoModel.funcionalidades=''; postoModel.revezamentoNecessario='Não'; postoModel.adicionalNoturno='Não'; } else { currentPostoId=p.id; postoModel.id=p.id; postoModel.nome=p.nome; postoModel.cidade=p.cidade||'São Paulo/SP'; postoModel.status=p.status||'ATIVO'; postoModel.jornada=p.jornada||'8h'; postoModel.turno=p.turno_preferencial||'Diurno'; postoModel.intrajornada=p.intrajornada||'1h'; postoModel.interjornada=p.interjornada||'11h'; postoModel.extras=p.extras||'2h/dia'; postoModel.banco=p.banco_horas||'Sim'; postoModel.dsr=p.dsr||'Sim'; postoModel.especial=p.especial||''; postoModel.descricao=p.descricao||''; postoModel.funcionalidades=p.funcionalidades||''; postoModel.revezamentoNecessario=p.revezamento_necessario||'Não'; postoModel.adicionalNoturno=p.adicional_noturno||'Não'; } syncPostoForm(); }
-  function syncPostoForm(){ postoNome.value=postoModel.nome; postoJornada.value=postoModel.jornada; postoTurno.value=postoModel.turno; postoIntrajornada.value=postoModel.intrajornada; postoInterjornada.value=postoModel.interjornada; postoExtras.value=postoModel.extras; postoBanco.value=postoModel.banco; postoDsr.value=postoModel.dsr; postoEspecial.value=postoModel.especial; postoDescricao.value=postoModel.descricao; postoFuncionalidades.value=postoModel.funcionalidades; document.getElementById('postoRevezamento').value=postoModel.revezamentoNecessario; document.getElementById('postoAdicionalNoturno').value=postoModel.adicionalNoturno; }
+
+  // Parser do GMaps
+  const linkGmapsEl = document.getElementById('postoLinkGMaps');
+  if(linkGmapsEl) {
+    linkGmapsEl.addEventListener('input', (e) => {
+      const url = e.target.value;
+      const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (match) {
+        const lat = match[1];
+        const lng = match[2];
+        const latEl = document.getElementById('postoLatitude');
+        const lngEl = document.getElementById('postoLongitude');
+        if (latEl) latEl.value = lat;
+        if (lngEl) lngEl.value = lng;
+      }
+    });
+  }
+  function loadPosto(i=0){ const p=MOCK_POSTOS[i]; if(!p) { postoModel.id=''; postoModel.nome=''; postoModel.cidade='Manaus/AM'; postoModel.status='ATIVO'; postoModel.jornada='8h'; postoModel.turno='Diurno'; postoModel.intrajornada='1h'; postoModel.interjornada='11h'; postoModel.extras='2h/dia'; postoModel.banco='Sim'; postoModel.dsr='Sim'; postoModel.especial=''; postoModel.descricao=''; postoModel.funcionalidades=''; postoModel.revezamentoNecessario='Não'; postoModel.adicionalNoturno='Não'; } else { currentPostoId=p.id; postoModel.id=p.id; postoModel.nome=p.nome; postoModel.cidade=p.cidade||'Manaus/AM'; postoModel.status=p.status||'ATIVO'; postoModel.jornada=p.jornada||'8h'; postoModel.turno=p.turno_preferencial||'Diurno'; postoModel.intrajornada=p.intrajornada||'1h'; postoModel.interjornada=p.interjornada||'11h'; postoModel.extras=p.extras||'2h/dia'; postoModel.banco=p.banco_horas||'Sim'; postoModel.dsr=p.dsr||'Sim'; postoModel.especial=p.especial||''; postoModel.descricao=p.descricao||''; postoModel.funcionalidades=p.funcionalidades||''; postoModel.revezamentoNecessario=p.revezamento_necessario||'Não'; postoModel.adicionalNoturno=p.adicional_noturno||'Não'; postoModel.endereco=p.endereco||''; postoModel.latitude=p.latitude||''; postoModel.longitude=p.longitude||''; postoModel.telefone_contato=p.telefone_contato||''; postoModel.operador_responsavel_id=p.operador_responsavel_id||null; } syncPostoForm(); }
+  function syncPostoForm(){
+    document.getElementById('postoNome').value = postoModel.nome || '';
+    document.getElementById('postoCidade').value = postoModel.cidade || 'Manaus/AM';
+    document.getElementById('postoJornada').value = postoModel.jornada || '';
+    document.getElementById('postoTurno').value = postoModel.turno || '';
+    document.getElementById('postoIntrajornada').value = postoModel.intrajornada || '';
+    document.getElementById('postoInterjornada').value = postoModel.interjornada || '';
+    document.getElementById('postoExtras').value = postoModel.extras || '';
+    document.getElementById('postoBanco').value = postoModel.banco || '';
+    document.getElementById('postoDsr').value = postoModel.dsr || '';
+    document.getElementById('postoEspecial').value = postoModel.especial || '';
+    document.getElementById('postoDescricao').value = postoModel.descricao || '';
+    document.getElementById('postoFuncionalidades').value = postoModel.funcionalidades || '';
+    document.getElementById('postoRevezamento').value = postoModel.revezamentoNecessario || 'Não';
+    document.getElementById('postoAdicionalNoturno').value = postoModel.adicionalNoturno || 'Não';
+    
+    // Novos campos
+    const elEnd = document.getElementById('postoEndereco'); if(elEnd) elEnd.value = postoModel.endereco || '';
+    const elLat = document.getElementById('postoLatitude'); if(elLat) elLat.value = postoModel.latitude || '';
+    const elLng = document.getElementById('postoLongitude'); if(elLng) elLng.value = postoModel.longitude || '';
+    const elTel = document.getElementById('postoTelefone'); if(elTel) elTel.value = postoModel.telefone_contato || '';
+    
+    // Atualizar opções do Responsável e setar valor
+    const respSelect = document.getElementById('postoResponsavel');
+    if (respSelect) {
+      respSelect.innerHTML = '<option value="">Nenhum</option>';
+      if (typeof MOCK_OPERADORES !== 'undefined' && Array.isArray(MOCK_OPERADORES)) {
+        MOCK_OPERADORES.forEach(op => {
+          const opt = document.createElement('option');
+          opt.value = op.id;
+          opt.textContent = op.nome;
+          respSelect.appendChild(opt);
+        });
+      }
+      if (postoModel.operador_responsavel_id) {
+        respSelect.value = postoModel.operador_responsavel_id;
+      }
+    }
+  }
   
   function buscarPostosDoServidor() {
     let loggedUser = null;
@@ -2364,57 +2492,6 @@
     }
   }
 
-  document.getElementById('btnSalvarPosto').addEventListener('click',()=>{
-    const errs=validatePosto();
-    showValidation('postoValidation', errs);
-    if(errs.length) return;
-
-    const btn = document.getElementById('btnSalvarPosto');
-    btn.disabled = true;
-
-    const payload = {
-      id: postoModel.id || null,
-      nome: postoNome.value.trim(),
-      cidade: postoModel.cidade || 'São Paulo/SP',
-      status: postoModel.status || 'ATIVO',
-      jornada: postoJornada.value.trim(),
-      turnoPreferencial: postoTurno.value,
-      intrajornada: postoIntrajornada.value.trim(),
-      interjornada: postoInterjornada.value.trim(),
-      extras: postoExtras.value.trim(),
-      bancoHoras: postoBanco.value,
-      dsr: postoDsr.value,
-      especial: postoEspecial.value.trim(),
-      descricao: postoDescricao.value.trim(),
-      funcionalidades: postoFuncionalidades.value.trim(),
-      revezamentoNecessario: document.getElementById('postoRevezamento').value,
-      adicionalNoturno: document.getElementById('postoAdicionalNoturno').value
-    };
-
-    fetch('api/salvar_posto.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(r => {
-      if (!r.ok) {
-        return r.json().then(err => { throw new Error(err.erro || 'Erro ao salvar posto.'); });
-      }
-      return r.json();
-    })
-    .then(data => {
-      btn.disabled = false;
-      alert(data.mensagem);
-      buscarPostosDoServidor();
-    })
-    .catch(err => {
-      btn.disabled = false;
-      alert('Erro: ' + err.message);
-    });
-  });
-  
   document.getElementById('btnSalvarOperador').addEventListener('click',()=>{
     const errs=validateOperador();
     showValidation('opValidation', errs);
@@ -2667,7 +2744,7 @@
   }
   const btnNovoPosto = document.getElementById('btnNovoPosto');
   if (btnNovoPosto) {
-    btnNovoPosto.addEventListener('click',()=>{ currentPostoId=0; loadPosto(-1); });
+    btnNovoPosto.addEventListener('click',()=>{ abrirCadastroPostoDireto(); });
   }
   const btnNovoOperador = document.getElementById('btnNovoOperador');
   if (btnNovoOperador) {
@@ -2797,7 +2874,7 @@
           'btnMenuCadastrar', 'btnNovoPostoPrincipal', 'btnNovaEquipePrincipal',
           'btnNovoPosto', 'btnSalvarPosto', 'btnSalvarEquipe',
           'btnGerarEscala', 'btnSalvarRascunho', 'btnPublicarEscala',
-          'btnSalvarOperador'
+          'btnSalvarOperador', 'btnExcluirPosto'
         ];
         idsToHide.forEach(id => {
           const el = document.getElementById(id);
@@ -2816,7 +2893,7 @@
   window.abrirCadastroPostoDireto = function() {
     postoModel.id = '';
     postoModel.nome = '';
-    postoModel.cidade = 'São Paulo/SP';
+    postoModel.cidade = 'Manaus/AM';
     postoModel.status = 'ATIVO';
     postoModel.jornada = '8h';
     postoModel.turno = 'Diurno';
@@ -2830,9 +2907,16 @@
     postoModel.funcionalidades = '';
     postoModel.revezamentoNecessario = 'Não';
     postoModel.adicionalNoturno = 'Não';
+    postoModel.endereco = '';
+    postoModel.latitude = '';
+    postoModel.longitude = '';
+    postoModel.telefone_contato = '';
+    postoModel.operador_responsavel_id = null;
     
     syncPostoForm();
-    document.getElementById('modalCadastroPostoTitle').textContent = 'Cadastrar Posto de Trabalho';
+    document.getElementById('postoLinkGMaps').value = '';
+    document.getElementById('modalCadastroPostoTitle').textContent = 'Novo Posto de Trabalho';
+    document.getElementById('btnExcluirPosto').style.display = 'none';
     document.getElementById('modalCadastroPosto').classList.add('open');
     document.getElementById('modalCadastroPosto').setAttribute('aria-hidden', 'false');
   };
@@ -2847,6 +2931,7 @@
     if (idx !== -1) {
       loadPosto(idx);
       document.getElementById('modalCadastroPostoTitle').textContent = 'Editar Posto de Trabalho';
+      document.getElementById('btnExcluirPosto').style.display = 'block';
       document.getElementById('modalCadastroPosto').classList.add('open');
       document.getElementById('modalCadastroPosto').setAttribute('aria-hidden', 'false');
     }
@@ -2860,12 +2945,43 @@
       if (idx !== -1) {
         loadPosto(idx);
         document.getElementById('modalCadastroPostoTitle').textContent = 'Editar Posto de Trabalho';
+        document.getElementById('btnExcluirPosto').style.display = 'block';
         document.getElementById('modalCadastroPosto').classList.add('open');
         document.getElementById('modalCadastroPosto').setAttribute('aria-hidden', 'false');
       }
     } else {
       alert('Selecione um posto para editar.');
     }
+  };
+
+  window.excluirPostoDireto = async function() {
+    if (!postoModel.id) return;
+    const confirmacao = await sgoConfirm('Tem certeza que deseja excluir este posto? Todos os pontos vinculados a ele podem perder a referência.', 'Excluir Posto');
+    if (!confirmacao) return;
+
+    const btn = document.getElementById('btnExcluirPosto');
+    btn.disabled = true;
+
+    fetch('api/excluir_posto.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: postoModel.id })
+    })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      if (data.sucesso) {
+        alert(data.mensagem);
+        fecharModalCadastroPosto();
+        buscarPostosDoServidor();
+      } else {
+        alert('Erro ao excluir: ' + data.erro);
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      alert('Erro de conexão: ' + err.message);
+    });
   };
 
   window.salvarPostoDireto = function() {
@@ -2879,7 +2995,7 @@
     const payload = {
       id: postoModel.id || null,
       nome: document.getElementById('postoNome').value.trim(),
-      cidade: postoModel.cidade || 'São Paulo/SP',
+      cidade: document.getElementById('postoCidade') ? document.getElementById('postoCidade').value.trim() : (postoModel.cidade || 'Manaus/AM'),
       status: postoModel.status || 'ATIVO',
       jornada: document.getElementById('postoJornada').value.trim(),
       turnoPreferencial: document.getElementById('postoTurno').value,
@@ -2892,7 +3008,12 @@
       descricao: document.getElementById('postoDescricao').value.trim(),
       funcionalidades: document.getElementById('postoFuncionalidades').value.trim(),
       revezamentoNecessario: document.getElementById('postoRevezamento').value,
-      adicionalNoturno: document.getElementById('postoAdicionalNoturno').value
+      adicionalNoturno: document.getElementById('postoAdicionalNoturno').value,
+      latitude: document.getElementById('postoLatitude') ? document.getElementById('postoLatitude').value.trim() : null,
+      longitude: document.getElementById('postoLongitude') ? document.getElementById('postoLongitude').value.trim() : null,
+      endereco: document.getElementById('postoEndereco') ? document.getElementById('postoEndereco').value.trim() : '',
+      telefone_contato: document.getElementById('postoTelefone') ? document.getElementById('postoTelefone').value.trim() : '',
+      operador_responsavel_id: document.getElementById('postoResponsavel') ? document.getElementById('postoResponsavel').value : null
     };
 
     fetch('api/salvar_posto.php', {
@@ -2985,7 +3106,7 @@
     .then(data => {
       btn.disabled = false;
       if (data.sucesso) {
-        alert(data.mensagem);
+        sgoAlert(data.mensagem);
         fecharModalCadastroEquipe();
         buscarEquipesDoServidor();
       } else {
@@ -3532,5 +3653,105 @@
     setInterval(checkTimeout, 10000);
   })();
 </script>
+<!-- MODAL ALERTA CUSTOMIZADO -->
+<div id="modalAlerta" class="overlay-backdrop" style="z-index: 100000;" aria-hidden="true">
+  <div class="overlay-panel" style="max-width: 320px; text-align: center; border-radius: 16px;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalAlertaTitulo">SGO diz</h3>
+    <p id="modalAlertaMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap; font-size: 14px; color: var(--text-light);"></p>
+    <div class="row" style="margin-top: 16px; justify-content: center;">
+      <button id="btnModalAlertaFechar" class="primary" type="button" style="min-width: 140px; justify-content: center;">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO CUSTOMIZADO -->
+<div id="modalConfirm" class="overlay-backdrop" style="z-index: 100000;" aria-hidden="true">
+  <div class="overlay-panel" style="max-width: 320px; text-align: center; border-radius: 16px;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;" id="modalConfirmTitulo">Atenção</h3>
+    <p id="modalConfirmMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap; font-size: 14px; color: var(--text-light);"></p>
+    <div class="row" style="margin-top: 16px; justify-content: center; gap: 8px;">
+      <button id="btnModalConfirmCancelar" class="secondary" type="button" style="min-width: 100px;">Cancelar</button>
+      <button id="btnModalConfirmConfirmar" class="danger" type="button" style="min-width: 100px;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // GLOBAL ALERTS
+  const originalAlert = window.alert;
+  window.sgoAlert = function(mensagem, titulo = 'SGO diz') {
+    const modal = document.getElementById('modalAlerta');
+    const msgEl = document.getElementById('modalAlertaMensagem');
+    const titEl = document.getElementById('modalAlertaTitulo');
+    if (modal && msgEl && titEl) {
+      titEl.textContent = titulo;
+      msgEl.textContent = mensagem;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    } else {
+      originalAlert(mensagem);
+    }
+  };
+
+  window.sgoConfirm = function(mensagem, titulo = 'Atenção') {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('modalConfirm');
+      const msgEl = document.getElementById('modalConfirmMensagem');
+      const titEl = document.getElementById('modalConfirmTitulo');
+      const btnCancelar = document.getElementById('btnModalConfirmCancelar');
+      const btnConfirmar = document.getElementById('btnModalConfirmConfirmar');
+      
+      if (modal && msgEl && titEl && btnCancelar && btnConfirmar) {
+        titEl.textContent = titulo;
+        msgEl.textContent = mensagem;
+        
+        const cleanup = () => {
+          modal.classList.remove('open');
+          modal.setAttribute('aria-hidden', 'true');
+          btnCancelar.removeEventListener('click', onCancel);
+          btnConfirmar.removeEventListener('click', onConfirm);
+        };
+        
+        const onCancel = () => { cleanup(); resolve(false); };
+        const onConfirm = () => { cleanup(); resolve(true); };
+        
+        btnCancelar.addEventListener('click', onCancel);
+        btnConfirmar.addEventListener('click', onConfirm);
+        
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      } else {
+        resolve(window.confirm(mensagem));
+      }
+    });
+  };
+
+  // Sobrescreve o alert nativo para usar o nosso customizado em todo o sistema gestor
+  window.alert = function(msg) {
+    sgoAlert(msg);
+  };
+
+  const btnModalAlertaFechar = document.getElementById('btnModalAlertaFechar');
+  if (btnModalAlertaFechar) {
+    btnModalAlertaFechar.addEventListener('click', () => {
+      const modal = document.getElementById('modalAlerta');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW Registrado: ', reg.scope))
+        .catch(err => console.log('SW Falha: ', err));
+    });
+  }
+</script>
 </body>
 </html>
+
+
