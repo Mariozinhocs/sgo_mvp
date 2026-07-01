@@ -46,7 +46,16 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
-### [2026-06-24]
+### [2026-06-29]
+- **Restauração e Rollback Geral para 25/06/2026**:
+  - Reversão completa do código-fonte local e em staging para o commit `d5555d64`.
+  - Restauração total da base de dados MySQL no servidor de homologação a partir do dump `backup_20260625/banco_backup_20260625.sql`.
+  - Exclusão dos scripts temporários de banco de dados após a execução por segurança.
+  - Correção de erro de sintaxe JavaScript em gestor.html (linha 1615) que causava erro de Unexpected token e bloqueava a execução do painel do gestor.
+  - Correção do caminho do favicon.ico no cache do service-worker.js (movido para a pasta icons/) corrigindo a falha de registro do PWA.
+
+
+### [2026-06-26]
 - **MVP Fase 2 - Gestão Avançada de Postos, UX e PWA**:
   - **Ativação PWA (App Mobile)**: Registrados o `manifest.json` e `service-worker.js` em todos os HTMLs (`index.html`, `gestor.html`, `operador.html`). Atualizados meta tags do iOS e modificado `short_name` para 'SGO'. Criado `icones_utilizados.txt` para documentar assets de ícones nativos (192x192 e 512x512).
   - **Exclusão de Postos**: Implementada a funcionalidade segura de exclusão via backend (`api/excluir_posto.php`), com atualização imediata da lista e do mapa operacional.

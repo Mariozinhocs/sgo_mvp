@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -1612,7 +1612,7 @@
       );
       
       if (equipesFiltradas.length > 0) {
-        selectEquipe.innerHTML = '<option value="">Nenhuma equipe espec�fica</option>' + equipesFiltradas.map(e => <option value=" + e.nome + "> + e.nome + </option>).join('');
+        selectEquipe.innerHTML = '<option value="">Nenhuma equipe específica</option>' + equipesFiltradas.map(e => `<option value="${e.nome}">${e.nome}</option>`).join('');
       } else {
         selectEquipe.innerHTML = '<option value="">Sem equipes cadastradas para este posto</option>';
       }
