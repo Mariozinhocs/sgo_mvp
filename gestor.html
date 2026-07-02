@@ -1586,16 +1586,16 @@
     const inputPosto = document.getElementById('opPostoDesignado');
     const selectEquipe = document.getElementById('opEquipeDesignada');
     
-    if (chk.checked) {
-      container.style.display = 'block';
+    if (chk && chk.checked) {
+      if (container) container.style.display = 'block';
       const dl = document.getElementById('dlPostosDesignacao');
       if (dl && typeof MOCK_POSTOS !== 'undefined') {
         dl.innerHTML = MOCK_POSTOS.map(p => `<option value="${p.nome}">`).join('');
       }
     } else {
-      container.style.display = 'none';
-      if(inputPosto) inputPosto.value = '';
-      if(selectEquipe) selectEquipe.innerHTML = '<option value="">Selecione um posto primeiro...</option>';
+      if (container) container.style.display = 'none';
+      if (inputPosto) inputPosto.value = '';
+      if (selectEquipe) selectEquipe.innerHTML = '<option value="">Selecione um posto primeiro...</option>';
     }
   };
 
@@ -2516,21 +2516,26 @@
     opUsuario.value=opModel.usuario || '';
     opSenha.value='';
     opRoles.value=opModel.roles || 'OPERADOR';
-          const chkDesignar = document.getElementById('chkDesignarPosto');
-      const inputDesignado = document.getElementById('opPostoDesignado');
-      const selectEq = document.getElementById('opEquipeDesignada');
-      if (opModel.postoPrincipal && opModel.postoPrincipal.trim() !== '') {
-        if(chkDesignar) chkDesignar.checked = true;
-        if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
-        if(inputDesignado) inputDesignado.value = opModel.postoPrincipal;
-        if(typeof filtrarEquipesPorPosto === 'function') filtrarEquipesPorPosto(opModel.postoPrincipal);
-        if (opModel.equipe && selectEq) {
-          selectEq.value = opModel.equipe;
-        }
-      } else {
-        if(chkDesignar) chkDesignar.checked = false;
-        if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
+    const inputPostoPrincipal = document.getElementById('opPostoPrincipal');
+    if (inputPostoPrincipal) {
+      inputPostoPrincipal.value = opModel.postoPrincipal || '';
+    }
+
+    const chkDesignar = document.getElementById('chkDesignarPosto');
+    const inputDesignado = document.getElementById('opPostoDesignado');
+    const selectEq = document.getElementById('opEquipeDesignada');
+    if (opModel.postoPrincipal && opModel.postoPrincipal.trim() !== '') {
+      if(chkDesignar) chkDesignar.checked = true;
+      if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
+      if(inputDesignado) inputDesignado.value = opModel.postoPrincipal;
+      if(typeof filtrarEquipesPorPosto === 'function') filtrarEquipesPorPosto(opModel.postoPrincipal);
+      if (opModel.equipe && selectEq) {
+        selectEq.value = opModel.equipe;
       }
+    } else {
+      if(chkDesignar) chkDesignar.checked = false;
+      if(typeof toggleDesignacaoPosto === 'function') toggleDesignacaoPosto();
+    }
     
     document.getElementById('opScopeType').value=opModel.scopeType || 'UNIDADE';
     document.getElementById('opScopeValue').value=opModel.scopeValue || '';
@@ -2635,8 +2640,12 @@
       usuario: opUsuario.value.trim(),
       senha: opSenha.value.trim(),
       roles: opRoles.value,
-            postoPrincipal: document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked ? document.getElementById('opPostoDesignado').value.trim() : '',
-      equipe: document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked && document.getElementById('opEquipeDesignada') ? document.getElementById('opEquipeDesignada').value : '',
+      postoPrincipal: (document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked)
+        ? document.getElementById('opPostoDesignado').value.trim()
+        : (document.getElementById('opPostoPrincipal') ? document.getElementById('opPostoPrincipal').value.trim() : ''),
+      equipe: (document.getElementById('chkDesignarPosto') && document.getElementById('chkDesignarPosto').checked && document.getElementById('opEquipeDesignada'))
+        ? document.getElementById('opEquipeDesignada').value
+        : '',
       scopeType: document.getElementById('opScopeType').value,
       scopeValue: document.getElementById('opScopeValue').value
     };
