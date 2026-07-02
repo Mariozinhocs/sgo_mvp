@@ -53,6 +53,9 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
   - Criação da tabela `escalas_salvas` via migração automática (`api/migrate_db.php`) e novos endpoints (`api/salvar_escala_pdf.php` e `api/obter_escalas_anteriores.php`) para armazenar e resgatar PDFs salvos por usuário, exibindo-os no dropdown "Escalas anteriores".
   - Miniaturas de imagens anexadas exibidas no corpo das mensagens (enviadas e recebidas) em `operador.html` e `gestor.html`.
   - Modal customizado nas duas telas para escolher entre "Visualizar em Nova Janela" ou "Salvar / Baixar Imagem" ao clicar nas fotos.
+  - **Armazenamento Seguro de Anexos das Mensagens**: Substituída a gravação direta de base64 no banco pelo salvamento físico de imagens decodificadas no diretório do servidor (`uploads/mensagens/`). A coluna `anexo_path` no banco de dados agora grava apenas o caminho relativo do arquivo, evitando truncamento e corrupção.
+  - **Nomenclatura Customizada de Anexos**: Os arquivos de imagem anexados são salvos com nomenclatura padronizada e limpa: `<usuario-sem-pontos>_YYYYMMDD_HHMM.jpg` (ex: `user-user_20260702_0020.jpg`), com índice numérico incremental automático se houver colisão de horário.
+  - **Bloqueio de Execução (.htaccess)**: Inserida proteção `.htaccess` na pasta de uploads para prevenir RCE bloqueando execução de scripts PHP/CGI.
 
 ### [2026-06-29]
 - **Restauração e Rollback Geral para 25/06/2026**:
