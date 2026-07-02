@@ -2768,7 +2768,7 @@
       .catch(err => console.error('Erro ao buscar logs de histórico:', err));
   }
 
-  window.gerarEscalaAutomatica = function() {
+  window.gerarEscalaAutomatica = async function() {
     const postoIdVal = parseInt(document.getElementById('planningPosto').value, 10);
     const posto = MOCK_POSTOS.find(p => p.id === postoIdVal);
     if (!posto) {
@@ -2781,65 +2781,107 @@
     const ano = parseInt(anoStr, 10);
     const totalDias = getDaysInMonth(mes, ano);
     
-    currentScaleData = {};
-    
-    const shiftStart = posto.turno_preferencial === 'Noturno' ? '22:00' : '08:00';
-    const shiftEnd = posto.turno_preferencial === 'Noturno' ? '06:00' : '17:00';
-    
-    const operators = MOCK_OPERADORES.filter(op => op.status === 'ATIVO');
+    // Filtrar operadores ATIVOS vinculados a ESTE posto
+    const operators = MOCK_OPERADORES.filter(op => op.status === 'ATIVO' && op.posto === posto.nome);
     if (operators.length === 0) {
-      alert('Nenhum operador ativo cadastrado para a escala.');
+      sgoAlert(`Nenhum operador ativo está atualmente vinculado ao posto "${posto.nome}". Vincule operadores a este posto no painel de cadastro de operadores antes de gerar a escala.`, 'Atenção');
       return;
     }
     
-    let opIdx = 0;
+    const is12x36 = (posto.jornada || '').toLowerCase().includes('12x36') || operators.some(op => (op.jornada_contratual || '').toLowerCase().includes('12x36'));
     
-    for (let d = 1; d <= totalDias; d++) {
-      const checkDate = new Date(ano, mes - 1, d);
+    if (is12x36) {
+      // Cobertura 12x36
+      const confirmacao = await sgoConfirm(
+        `Detectamos o regime 12x36 para o posto "${posto.nome}". Isso requer cobertura de 24h dividida em turnos diurnos (07:00-19:00) e noturnos (19:00-07:00).\n\nDeseja gerar automaticamente a escala alternada do mês inteiro com os ${operators.length} operadores ativos vinculados?`,
+        'Gerador de Escala 12x36'
+      );
+      if (!confirmacao) return;
       
-      const availableOps = operators.filter(op => {
-        if (isDateInPeriod(checkDate, op.ferias_programadas)) return false;
-        if (isDateInPeriod(checkDate, op.afastamentos)) return false;
-        return true;
-      });
+      currentScaleData = {};
       
-      if (availableOps.length === 0) continue;
+      const dayOps = operators.filter((_, idx) => idx % 2 === 0);
+      const nightOps = operators.filter((_, idx) => idx % 2 === 1);
       
-      let opsToAssign = [];
-      
-      for (let i = 0; i < availableOps.length; i++) {
-        const op = availableOps[(opIdx + i) % availableOps.length];
-        
-        const yesterdayShifts = currentScaleData[String(d - 1)] || [];
-        const workedYesterday = yesterdayShifts.some(s => s.usuario_id === op.id);
-        
-        const is12x36 = (op.jornada_contratual || '').toLowerCase().includes('12x36');
-        if (is12x36 && workedYesterday) {
-          continue; 
-        }
-        
-        opsToAssign.push(op);
-        opIdx = (opIdx + i + 1) % availableOps.length;
-        break;
+      if (dayOps.length === 0 || nightOps.length === 0) {
+        sgoAlert('Para gerar uma escala 12x36 de 24h, são necessários pelo menos 2 operadores ativos vinculados (um para a escala diurna e outro para a noturna).', 'Erro');
+        return;
       }
       
-      if (opsToAssign.length === 0) {
-        opsToAssign.push(availableOps[opIdx % availableOps.length]);
+      for (let d = 1; d <= totalDias; d++) {
+        const dayKey = String(d);
+        currentScaleData[dayKey] = [];
+        
+        // Operador do dia (07:00 - 19:00)
+        const dayOp = dayOps[(d - 1) % dayOps.length];
+        currentScaleData[dayKey].push({
+          usuario_id: dayOp.id,
+          nome: dayOp.nome,
+          usuario: dayOp.usuario,
+          horario_inicio: '07:00',
+          horario_fim: '19:00',
+          status: 'confirmed'
+        });
+        
+        // Operador da noite (19:00 - 07:00)
+        const nightOp = nightOps[(d - 1) % nightOps.length];
+        currentScaleData[dayKey].push({
+          usuario_id: nightOp.id,
+          nome: nightOp.nome,
+          usuario: nightOp.usuario,
+          horario_inicio: '19:00',
+          horario_fim: '07:00',
+          status: 'confirmed'
+        });
+      }
+      
+      renderPlanningCalendar();
+      sgoAlert(`Escala 12x36 de cobertura 24h gerada com sucesso para o mês inteiro! Clique em "Salvar rascunho" ou "Publicar" para gravar no servidor.`, 'Escala Gerada');
+      
+    } else {
+      // Cobertura Comercial tradicional
+      const confirmacao = await sgoConfirm(
+        `Deseja preencher automaticamente o mês de forma sequencial (Seg-Sex) com os ${operators.length} operadores ativos para a jornada comercial deste posto?`,
+        'Gerador de Escala Comercial'
+      );
+      if (!confirmacao) return;
+      
+      currentScaleData = {};
+      const shiftStart = posto.turno_preferencial === 'Noturno' ? '22:00' : '08:00';
+      const shiftEnd = posto.turno_preferencial === 'Noturno' ? '06:00' : '17:00';
+      
+      let opIdx = 0;
+      for (let d = 1; d <= totalDias; d++) {
+        const checkDate = new Date(ano, mes - 1, d);
+        const dayOfWeek = checkDate.getDay();
+        
+        // Padrão comercial: Seg-Sex (pula sáb e dom)
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+        
+        const availableOps = operators.filter(op => {
+          if (isDateInPeriod(checkDate, op.ferias_programadas)) return false;
+          if (isDateInPeriod(checkDate, op.afastamentos)) return false;
+          return true;
+        });
+        
+        if (availableOps.length === 0) continue;
+        
+        const op = availableOps[opIdx % availableOps.length];
         opIdx++;
+        
+        currentScaleData[String(d)] = [{
+          usuario_id: op.id,
+          nome: op.nome,
+          usuario: op.usuario,
+          horario_inicio: shiftStart,
+          horario_fim: shiftEnd,
+          status: 'confirmed'
+        }];
       }
       
-      currentScaleData[String(d)] = opsToAssign.map(op => ({
-        usuario_id: op.id,
-        nome: op.nome,
-        usuario: op.usuario,
-        horario_inicio: shiftStart,
-        horario_fim: shiftEnd,
-        status: 'confirmed'
-      }));
+      renderPlanningCalendar();
+      sgoAlert(`Escala comercial gerada automaticamente com sucesso! Clique em "Salvar rascunho" ou "Publicar" no rodapé para persistir.`, 'Escala Gerada');
     }
-    
-    renderPlanningCalendar();
-    alert('Escala gerada automaticamente! Revise os dias para garantir total conformidade CLT.');
   };
 
   function addHistory(evento, resp, det){ 
