@@ -46,6 +46,14 @@ O SGO é um sistema focado no gerenciamento operacional de equipes e escalas de 
 
 ## 4. Histórico de Alterações (Últimas Primeiro)
 
+### [2026-07-01]
+- **Melhorias de Usabilidade, PDF e Anexos**:
+  - Redirecionamento padrão de login configurado para sempre abrir `operador.html`, permitindo a gestores/admins alternar via botão "Painel do Gestor" quando logados.
+  - Integração do `jsPDF` via CDN em `operador.html` para geração dinâmica e leve do PDF da escala mensal.
+  - Criação da tabela `escalas_salvas` via migração automática (`api/migrate_db.php`) e novos endpoints (`api/salvar_escala_pdf.php` e `api/obter_escalas_anteriores.php`) para armazenar e resgatar PDFs salvos por usuário, exibindo-os no dropdown "Escalas anteriores".
+  - Miniaturas de imagens anexadas exibidas no corpo das mensagens (enviadas e recebidas) em `operador.html` e `gestor.html`.
+  - Modal customizado nas duas telas para escolher entre "Visualizar em Nova Janela" ou "Salvar / Baixar Imagem" ao clicar nas fotos.
+
 ### [2026-06-29]
 - **Restauração e Rollback Geral para 25/06/2026**:
   - Reversão completa do código-fonte local e em staging para o commit `d5555d64`.

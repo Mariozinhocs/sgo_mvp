@@ -94,6 +94,15 @@ $createTables = [
         PRIMARY KEY (equipe_id, usuario_id),
         FOREIGN KEY (equipe_id) REFERENCES equipes(id) ON DELETE CASCADE,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+    
+    "CREATE TABLE IF NOT EXISTS escalas_salvas (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        mes_ano VARCHAR(10) NOT NULL,
+        pdf_path VARCHAR(255) NOT NULL,
+        data_geracao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
 ];
 

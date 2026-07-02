@@ -1910,6 +1910,56 @@
   const imgModalFoto = document.getElementById('imgModalFoto');
   const btnFecharModalFoto = document.getElementById('btnFecharModalFoto');
 
+  const modalAcaoAnexo = document.getElementById('modalAcaoAnexo');
+  const btnAcaoVisualizar = document.getElementById('btnAcaoVisualizar');
+  const btnAcaoSalvar = document.getElementById('btnAcaoSalvar');
+  const btnAcaoCancelar = document.getElementById('btnAcaoCancelar');
+  let currentAnexoBase64 = '';
+
+  window.perguntarAcaoAnexo = function(fotoBase64) {
+    currentAnexoBase64 = fotoBase64;
+    modalAcaoAnexo.style.display = 'flex';
+    modalAcaoAnexo.style.pointerEvents = 'auto';
+    modalAcaoAnexo.setAttribute('aria-hidden', 'false');
+  };
+
+  if (btnAcaoVisualizar) {
+    btnAcaoVisualizar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+      modalAcaoAnexo.setAttribute('aria-hidden', 'true');
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write('<html><head><title>Visualizar Anexo</title></head><body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center;"><img src="' + currentAnexoBase64 + '" style="max-width:100%; max-height:100vh; object-fit:contain;"/></body></html>');
+        newTab.document.close();
+      } else {
+        alert('Bloqueador de pop-ups ativo! Permita pop-ups para visualizar a imagem.');
+      }
+    });
+  }
+
+  if (btnAcaoSalvar) {
+    btnAcaoSalvar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+      modalAcaoAnexo.setAttribute('aria-hidden', 'true');
+      const link = document.createElement('a');
+      link.href = currentAnexoBase64;
+      link.download = 'anexo_sgo.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+
+  if (btnAcaoCancelar) {
+    btnAcaoCancelar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+      modalAcaoAnexo.setAttribute('aria-hidden', 'true');
+    });
+  }
+
   window.visualizarFoto = function(fotoBase64) {
     imgModalFoto.src = fotoBase64;
     modalFoto.style.display = 'flex';
@@ -3287,7 +3337,12 @@
         recebidas.forEach(m => {
           const tr = document.createElement('tr');
           const dataStr = new Date(m.data_envio).toLocaleString('pt-BR');
-          const anexoBtn = m.anexo_path ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex;">📷 Ver</button>` : '';
+          const anexoBtn = m.anexo_path 
+            ? `<div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                 <img src="${m.anexo_path}" alt="Anexo" style="max-width:60px; max-height:60px; border-radius:4px; cursor:pointer; border:1px solid var(--border-subtle); object-fit:cover;" onclick="perguntarAcaoAnexo('${m.anexo_path}')" />
+                 <button class="primary" onclick="perguntarAcaoAnexo('${m.anexo_path}')" style="padding: 2px 6px; font-size:9px; display:inline-flex; width:100%; justify-content:center;">📷 Ver/Salvar</button>
+               </div>` 
+            : '';
           tr.innerHTML = `
             <td>${dataStr}</td>
             <td><strong>${m.remetente_nome}</strong></td>
@@ -3312,12 +3367,19 @@
           else if (m.tipo_destinatario === 'POSTO') dest = `Posto: ${m.posto_nome || 'Desconhecido'}`;
           else if (m.tipo_destinatario === 'EQUIPE') dest = `Equipe: ${m.equipe_nome || 'Desconhecida'}`;
           
+          const anexoBtn = m.anexo_path 
+            ? `<div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                 <img src="${m.anexo_path}" alt="Anexo" style="max-width:60px; max-height:60px; border-radius:4px; cursor:pointer; border:1px solid var(--border-subtle); object-fit:cover;" onclick="perguntarAcaoAnexo('${m.anexo_path}')" />
+                 <button class="primary" onclick="perguntarAcaoAnexo('${m.anexo_path}')" style="padding: 2px 6px; font-size:9px; display:inline-flex; width:100%; justify-content:center;">📷 Ver/Salvar</button>
+               </div>` 
+            : '—';
+
           tr.innerHTML = `
             <td>${dataStr}</td>
             <td><strong>${dest}</strong></td>
             <td>${m.assunto}</td>
             <td style="white-space:normal; max-width:300px;">${m.corpo}</td>
-            <td>—</td>
+            <td>${anexoBtn}</td>
           `;
           tbodyEnviadas.appendChild(tr);
         });
@@ -3727,6 +3789,19 @@
     <p id="modalAlertaMensagem" class="small" style="margin: 10px 0; white-space: pre-wrap; font-size: 14px; color: var(--text-light);"></p>
     <div class="row" style="margin-top: 16px; justify-content: center;">
       <button id="btnModalAlertaFechar" class="primary" type="button" style="min-width: 140px; justify-content: center;">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AÇÃO DO ANEXO -->
+<div id="modalAcaoAnexo" class="overlay-backdrop" style="z-index: 100000;" aria-hidden="true">
+  <div class="overlay-panel" style="max-width: 320px; text-align: center; border-radius: 16px;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;">Ação do Anexo</h3>
+    <p class="small" style="margin-bottom: 15px;">Escolha o que deseja fazer com a imagem:</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button id="btnAcaoVisualizar" class="primary" type="button" style="width:100%; padding:8px; justify-content:center;">Visualizar em Nova Janela</button>
+      <button id="btnAcaoSalvar" class="secondary" type="button" style="width:100%; padding:8px; justify-content:center;">Salvar / Baixar Imagem</button>
+      <button id="btnAcaoCancelar" class="secondary" type="button" style="width:100%; padding:8px; background:#475569; color:#fff; justify-content:center;">Cancelar</button>
     </div>
   </div>
 </div>

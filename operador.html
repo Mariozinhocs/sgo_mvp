@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -540,6 +540,7 @@
       margin-top:8px;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <header>
@@ -825,6 +826,19 @@
   </div>
 </div>
 
+<!-- MODAL AÇÃO DO ANEXO -->
+<div id="modalAcaoAnexo" class="modal-backdrop" style="z-index: 100000;">
+  <div class="modal-card" style="max-width: 320px; text-align: center;">
+    <h3 style="margin: 0 0 6px; font-size: 15px;">Ação do Anexo</h3>
+    <p class="small" style="margin-bottom: 15px;">Escolha o que deseja fazer com a imagem:</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button id="btnAcaoVisualizar" class="primary" type="button" style="width:100%; padding:8px;">Visualizar em Nova Janela</button>
+      <button id="btnAcaoSalvar" class="secondary" type="button" style="width:100%; padding:8px;">Salvar / Baixar Imagem</button>
+      <button id="btnAcaoCancelar" class="secondary" type="button" style="width:100%; padding:8px; background:#475569; color:#fff;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TEST MODE FLOATING PANEL -->
 <div id="testHelperPanel" style="display:none; position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: rgba(0, 0, 0, 0.9); color: #fff; padding: 12px; border-radius: 8px; border: 1px dashed #00ff00; font-family: monospace; font-size: 11px; max-width: 250px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
   <div style="font-weight: bold; margin-bottom: 8px; color: #00ff00; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 4px;">
@@ -946,6 +960,7 @@
         window.location.href = 'gestor.html';
       });
     }
+    carregarEscalasAnteriores();
   }
 
   document.getElementById('btnSair').addEventListener('click', () => {
@@ -1511,6 +1526,52 @@
   const imgModalFoto = document.getElementById('imgModalFoto');
   const btnFecharModalFoto = document.getElementById('btnFecharModalFoto');
 
+  const modalAcaoAnexo = document.getElementById('modalAcaoAnexo');
+  const btnAcaoVisualizar = document.getElementById('btnAcaoVisualizar');
+  const btnAcaoSalvar = document.getElementById('btnAcaoSalvar');
+  const btnAcaoCancelar = document.getElementById('btnAcaoCancelar');
+  let currentAnexoBase64 = '';
+
+  window.perguntarAcaoAnexo = function(fotoBase64) {
+    currentAnexoBase64 = fotoBase64;
+    modalAcaoAnexo.style.display = 'flex';
+    modalAcaoAnexo.style.pointerEvents = 'auto';
+  };
+
+  if (btnAcaoVisualizar) {
+    btnAcaoVisualizar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write('<html><head><title>Visualizar Anexo</title></head><body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center;"><img src="' + currentAnexoBase64 + '" style="max-width:100%; max-height:100vh; object-fit:contain;"/></body></html>');
+        newTab.document.close();
+      } else {
+        alert('Bloqueador de pop-ups ativo! Permita pop-ups para visualizar a imagem.');
+      }
+    });
+  }
+
+  if (btnAcaoSalvar) {
+    btnAcaoSalvar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+      const link = document.createElement('a');
+      link.href = currentAnexoBase64;
+      link.download = 'anexo_sgo.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+
+  if (btnAcaoCancelar) {
+    btnAcaoCancelar.addEventListener('click', () => {
+      modalAcaoAnexo.style.display = 'none';
+      modalAcaoAnexo.style.pointerEvents = 'none';
+    });
+  }
+
   window.visualizarFoto = function(fotoBase64) {
     imgModalFoto.src = fotoBase64;
     modalFoto.style.display = 'flex';
@@ -1638,10 +1699,21 @@
             salvarMarcacoes(mes, ano, m);
           });
         });
+        
+        const btnPdf = document.getElementById('btnGerarPdfEscala');
+        if (btnPdf) {
+          btnPdf.removeAttribute('disabled');
+          btnPdf.textContent = 'Gerar PDF da escala';
+        }
       })
       .catch(err => {
         console.error(err);
         escalaBox.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--danger);">Falha ao obter escalas: ${err.message}</div>`;
+        const btnPdf = document.getElementById('btnGerarPdfEscala');
+        if (btnPdf) {
+          btnPdf.setAttribute('disabled', 'true');
+          btnPdf.textContent = 'Gerar PDF da escala (indisponível)';
+        }
       });
   }
 
@@ -1655,10 +1727,160 @@
   escalaAno.addEventListener('change', atualizarEscalaAtual);
   atualizarEscalaAtual();
 
+  function carregarEscalasAnteriores() {
+    if (!usuario || !usuario.id) return;
+    fetch(`api/obter_escalas_anteriores.php?usuario_id=${usuario.id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.sucesso && data.escalas) {
+          const select = document.getElementById('selectEscalasAnteriores');
+          select.innerHTML = '<option value="">Selecione uma escala anterior...</option>';
+          data.escalas.forEach(esc => {
+            const opt = document.createElement('option');
+            opt.value = esc.pdf_path;
+            opt.textContent = esc.mes_ano;
+            select.appendChild(opt);
+          });
+        }
+      })
+      .catch(err => console.error('Erro ao obter escalas anteriores:', err));
+  }
+
   selectEscalasAnteriores.addEventListener('change', () => {
     if (!selectEscalasAnteriores.value) return;
-    alert('Consulta de PDF de escala anterior será implementada em próxima fase.');
+    window.open(selectEscalasAnteriores.value, '_blank');
+    selectEscalasAnteriores.value = '';
   });
+
+  const btnGerarPdfEscala = document.getElementById('btnGerarPdfEscala');
+  if (btnGerarPdfEscala) {
+    btnGerarPdfEscala.addEventListener('click', () => {
+      if (!window.jspdf) {
+        alert('Erro: Biblioteca jsPDF não carregada.');
+        return;
+      }
+      if (!usuario || !usuario.id) return;
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Cabeçalho Premium
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(2, 8, 38);
+      doc.text('SGO - Sistema de Gestão de Operações', 14, 20);
+      
+      doc.setFontSize(12);
+      doc.text('Relatório de Escala Mensal de Trabalho', 14, 27);
+      doc.setLineWidth(0.5);
+      doc.line(14, 30, 196, 30);
+      
+      // Detalhes do Usuário e Período
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Colaborador: ${usuario.nome} (Matrícula: ${usuario.matricula})`, 14, 38);
+      
+      const mesTexto = escalaMes.options[escalaMes.selectedIndex].text;
+      const anoTexto = escalaAno.options[escalaAno.selectedIndex].text;
+      const mesAnoValue = `${String(parseInt(escalaMes.value, 10) + 1).padStart(2, '0')}/${escalaAno.value}`;
+      doc.text(`Período de Referência: ${mesTexto}/${anoTexto}`, 14, 44);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 50);
+      
+      // Cabeçalho da Tabela
+      let y = 60;
+      doc.setFillColor(2, 8, 38);
+      doc.rect(14, y, 182, 8, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.text('Dia', 16, y + 5.5);
+      doc.text('Horário Previsto', 35, y + 5.5);
+      doc.text('Posto / Base', 75, y + 5.5);
+      doc.text('Trabalhado', 120, y + 5.5);
+      doc.text('Registros de Ponto', 142, y + 5.5);
+      
+      // Linhas da Tabela
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      y += 8;
+      
+      const rows = document.querySelectorAll('#escalaBox table tbody tr');
+      rows.forEach(tr => {
+        if (y > 275) {
+          doc.addPage();
+          y = 20;
+          doc.setFillColor(2, 8, 38);
+          doc.rect(14, y, 182, 8, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(255, 255, 255);
+          doc.text('Dia', 16, y + 5.5);
+          doc.text('Horário Previsto', 35, y + 5.5);
+          doc.text('Posto / Base', 75, y + 5.5);
+          doc.text('Trabalhado', 120, y + 5.5);
+          doc.text('Registros de Ponto', 142, y + 5.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          y += 8;
+        }
+        
+        const tds = tr.querySelectorAll('td');
+        if (tds.length >= 5) {
+          const dia = tds[0].textContent.trim();
+          const horario = tds[1].textContent.trim();
+          const posto = tds[2].textContent.trim();
+          const trabalhado = tds[3].querySelector('input').checked ? 'Sim' : 'Não';
+          const logsText = Array.from(tds[4].querySelectorAll('div')).map(el => el.textContent.replace('📷', '').trim()).join(', ') || 'Sem registros';
+          
+          doc.setDrawColor(230, 230, 230);
+          doc.line(14, y + 7, 196, y + 7);
+          
+          doc.text(dia, 16, y + 4.5);
+          doc.text(horario, 35, y + 4.5);
+          const clippedPosto = posto.length > 22 ? posto.substring(0, 20) + '...' : posto;
+          doc.text(clippedPosto, 75, y + 4.5);
+          doc.text(trabalhado, 123, y + 4.5);
+          const clippedLogs = logsText.length > 28 ? logsText.substring(0, 26) + '...' : logsText;
+          doc.text(clippedLogs, 142, y + 4.5);
+          
+          y += 8;
+        }
+      });
+      
+      const pdfBase64 = doc.output('datauristring');
+      
+      btnGerarPdfEscala.disabled = true;
+      btnGerarPdfEscala.textContent = 'Enviando...';
+      
+      fetch('api/salvar_escala_pdf.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: usuario.id,
+          mes_ano: mesAnoValue,
+          pdf_base64: pdfBase64
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        btnGerarPdfEscala.disabled = false;
+        btnGerarPdfEscala.textContent = 'Gerar PDF da escala';
+        if (data.sucesso) {
+          carregarEscalasAnteriores();
+          alert('PDF gerado e arquivado com sucesso nas Escalas Anteriores!');
+          doc.save(`escala_${usuario.id}_${mesAnoValue.replace('/', '_')}.pdf`);
+        } else {
+          alert('Erro ao salvar escala no servidor: ' + data.erro);
+        }
+      })
+      .catch(err => {
+        btnGerarPdfEscala.disabled = false;
+        btnGerarPdfEscala.textContent = 'Gerar PDF da escala';
+        console.error(err);
+        alert('Erro ao salvar escala: ' + err.message);
+      });
+    });
+  }
 
   (function initInactivityTimeout() {
     const INACTIVITY_KEY = 'sgo_last_activity';
@@ -1890,7 +2112,10 @@
       recebidas.forEach(m => {
         const dataStr = new Date(m.data_envio).toLocaleString('pt-BR');
         const anexoBtn = m.anexo_path 
-          ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex; margin-top:6px;">📷 Ver Anexo</button>` 
+          ? `<div style="margin-top:8px;">
+               <img src="${m.anexo_path}" alt="Anexo" style="max-width:120px; max-height:120px; border-radius:6px; cursor:pointer; border:1px solid var(--border-subtle); display:block; object-fit:cover;" onclick="perguntarAcaoAnexo('${m.anexo_path}')" />
+               <button class="primary" onclick="perguntarAcaoAnexo('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex; margin-top:6px;">📷 Ver/Salvar Anexo</button>
+             </div>` 
           : '';
         html += `
           <div class="info-box" style="margin-top: 8px;">
@@ -1915,7 +2140,10 @@
       enviadas.forEach(m => {
         const dataStr = new Date(m.data_envio).toLocaleString('pt-BR');
         const anexoBtn = m.anexo_path 
-          ? `<button class="primary" onclick="visualizarFoto('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex; margin-top:6px;">📷 Ver Anexo</button>` 
+          ? `<div style="margin-top:8px;">
+               <img src="${m.anexo_path}" alt="Anexo" style="max-width:120px; max-height:120px; border-radius:6px; cursor:pointer; border:1px solid var(--border-subtle); display:block; object-fit:cover;" onclick="perguntarAcaoAnexo('${m.anexo_path}')" />
+               <button class="primary" onclick="perguntarAcaoAnexo('${m.anexo_path}')" style="padding: 2px 6px; font-size:10px; display:inline-flex; margin-top:6px;">📷 Ver/Salvar Anexo</button>
+             </div>` 
           : '';
         
         const destNome = m.tipo_destinatario === 'INDIVIDUAL' && m.destinatario_nome 
