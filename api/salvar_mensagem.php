@@ -66,6 +66,70 @@ if (empty($remetente_id) || empty($assunto) || empty($corpo)) {
     exit;
 }
 
+// 1. Obter nome de usuário para compor o nome do arquivo de anexo
+$username = 'usuario';
+if ($remetente_id) {
+    $stmtUser = $pdo->prepare("SELECT usuario FROM usuarios WHERE id = :id");
+    $stmtUser->execute(['id' => $remetente_id]);
+    $userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
+    if ($userRow && !empty($userRow['usuario'])) {
+        $username = $userRow['usuario'];
+    }
+}
+
+// Limpar caracteres indesejados no nome de usuário
+$cleanUsername = str_replace('.', '-', $username);
+$cleanUsername = preg_replace('/[^a-zA-Z0-9\-]/', '', $cleanUsername);
+
+// 2. Processar anexo se houver
+$dbPath = null;
+if (!empty($anexo_base64)) {
+    // Detectar extensão da imagem
+    $extension = 'jpg';
+    if (preg_match('/^data:image\/(\w+);base64,/', $anexo_base64, $typeMatch)) {
+        $ext = strtolower($typeMatch[1]);
+        if (in_array($ext, ['jpeg', 'jpg', 'png', 'webp', 'gif'])) {
+            $extension = $ext === 'jpeg' ? 'jpg' : $ext;
+        }
+    }
+    
+    // Limpar prefixo base64 se presente
+    if (strpos($anexo_base64, 'data:') === 0) {
+        $parts = explode(',', $anexo_base64);
+        $anexo_base64 = end($parts);
+    }
+    
+    $imgBinary = base64_decode($anexo_base64);
+    if ($imgBinary !== false) {
+        $uploadDir = __DIR__ . '/../uploads/mensagens';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Obter data no fuso correto (Brasília por padrão ou local)
+        $tzName = getTimezoneForLatLng($lat, $lng);
+        $dtObj = new DateTime("now", new DateTimeZone($tzName));
+        $dateStr = $dtObj->format('Ymd_Hi');
+        
+        // Padrão solicitado: user-user_20260702_0020.jpg
+        $baseName = $cleanUsername . '_' . $dateStr;
+        $fileName = $baseName . '.' . $extension;
+        $filePath = $uploadDir . '/' . $fileName;
+        
+        // Prevenir sobrescrita caso enviem múltiplas fotos no mesmo minuto
+        $counter = 1;
+        while (file_exists($filePath)) {
+            $fileName = $baseName . '_' . $counter . '.' . $extension;
+            $filePath = $uploadDir . '/' . $fileName;
+            $counter++;
+        }
+        
+        if (file_put_contents($filePath, $imgBinary) !== false) {
+            $dbPath = 'uploads/mensagens/' . $fileName;
+        }
+    }
+}
+
 try {
     $tzName = getTimezoneForLatLng($lat, $lng);
     $dt = new DateTime("now", new DateTimeZone($tzName));
@@ -83,7 +147,7 @@ try {
         'equipe_id' => $equipe_id,
         'assunto' => $assunto,
         'corpo' => $corpo,
-        'anexo_path' => $anexo_base64 ?: null,
+        'anexo_path' => $dbPath,
         'data_envio' => $data_envio,
         'lat' => $lat,
         'lng' => $lng

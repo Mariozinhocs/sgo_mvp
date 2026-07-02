@@ -1,0 +1,4 @@
+<FilesMatch "\.(php|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    ForceType text/plain
+    Deny from all
+</FilesMatch>
