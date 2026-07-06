@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sgo-mvp-v2';
+const CACHE_NAME = 'sgo-mvp-v3';
 const URLS_TO_CACHE = [
   './',
   './index.html',
@@ -29,9 +29,23 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
-  );
+  // Estratégia Network-First para páginas HTML (evita cache infinito de redirecionamentos de login)
+  if (event.request.mode === 'navigate' || event.request.url.includes('.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  } else {
+    // Cache-First para assets estáticos (ícones, manifest, etc.)
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });

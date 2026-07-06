@@ -1601,6 +1601,7 @@
 
   window.filtrarEquipesPorPosto = function(postoNome) {
     const selectEquipe = document.getElementById('opEquipeDesignada');
+    if (!selectEquipe) return;
     if (!postoNome) {
       selectEquipe.innerHTML = '<option value="">Selecione um posto primeiro...</option>';
       return;
@@ -1930,7 +1931,7 @@
       modalAcaoAnexo.setAttribute('aria-hidden', 'true');
       const newTab = window.open();
       if (newTab) {
-        newTab.document.write('<html><head><title>Visualizar Anexo</title><style>body {margin:0; background:#0b0f19; display:flex; align-items:center; justify-content:center; font-family:sans-serif; height:100vh; overflow:hidden;} .btn-fechar {position:fixed; top:20px; right:20px; background:rgba(255,255,255,0.1); color:#ffffff; border:1px solid rgba(255,255,255,0.2); padding:10px 22px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.2s ease; backdrop-filter:blur(8px); z-index:1000; box-shadow:0 4px 12px rgba(0,0,0,0.3);} .btn-fechar:hover {background:#ef4444; border-color:#ef4444;}</style></head><body><button class="btn-fechar" onclick="window.close()">✕ Fechar</button><img src="' + currentAnexoBase64 + '" style="max-width:100%; max-height:100vh; object-fit:contain;"/></body></html>');
+        newTab.document.write('<html><head><title>Visualizar Anexo</title><style>body {margin:0; background:#0b0f19; display:flex; align-items:center; justify-content:center; font-family:sans-serif; height:100vh; overflow:hidden;} .btn-exit {font-size:13px; border-radius:999px; border:1px solid rgba(248,113,113,0.6); padding:6px 12px; background:rgba(127,29,29,0.9); color:#fee2e2; display:inline-flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; position:fixed; top:20px; right:20px; z-index:1000; box-shadow:0 4px 12px rgba(0,0,0,0.3); transition:background 0.2s;} .btn-exit:hover {background:rgba(153,27,27,0.95);} .btn-exit span {font-size:14px;}</style></head><body><button class="btn-exit" onclick="window.close()"><span>✕</span> Fechar</button><img src="' + currentAnexoBase64 + '" style="max-width:100%; max-height:100vh; object-fit:contain;"/></body></html>');
         newTab.document.close();
       } else {
         alert('Bloqueador de pop-ups ativo! Permita pop-ups para visualizar a imagem.');
