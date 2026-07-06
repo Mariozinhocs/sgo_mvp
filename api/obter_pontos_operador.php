@@ -15,19 +15,25 @@ try {
         $mesAno = date('m/Y');
     }
 
+    $parts = explode('/', $mesAno);
+    $month = intval($parts[0]);
+    $year = intval($parts[1]);
+
     $sql = "SELECT r.*, u.nome AS usuario_nome, u.matricula AS usuario_matricula, u.posto_principal AS usuario_posto,
                    p.latitude AS posto_lat, p.longitude AS posto_lng
             FROM registro_ponto r
             JOIN usuarios u ON r.usuario_id = u.id
             LEFT JOIN postos p ON u.posto_principal = p.nome
             WHERE r.usuario_id = :usuario_id
-              AND DATE_FORMAT(r.data, '%m/%Y') = :mes_ano
+              AND MONTH(r.data) = :month
+              AND YEAR(r.data) = :year
             ORDER BY r.data DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         'usuario_id' => $usuarioId,
-        'mes_ano' => $mesAno
+        'month' => $month,
+        'year' => $year
     ]);
     $pontos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
