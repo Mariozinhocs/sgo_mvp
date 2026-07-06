@@ -1402,31 +1402,39 @@
     try {
       const geoRaw = localStorage.getItem('sgo_geo_pos');
       if (geoRaw) {
-        const geo = JSON.parse(geoRaw);
-        if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
-          const operatorCoords = [geo.lat, geo.lng];
-          
-          const iconHtml = `<div style="background-color:#ef4444; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 10px #ef4444;"></div>`;
-          const operatorIcon = L.divIcon({
-            html: iconHtml,
-            className: 'operator-map-marker',
-            iconSize: [16, 16],
-            iconAnchor: [8, 8]
-          });
+        let loggedUser = null;
+        try { loggedUser = JSON.parse(localStorage.getItem('sgo_usuario')); } catch(e) {}
+        const roles = (loggedUser && loggedUser.roles) ? loggedUser.roles : [];
+        const isGestor = roles.includes('GESTOR');
+        const isSupervisor = roles.includes('SUPERVISOR');
+        
+        if (isGestor || isSupervisor) {
+          const geo = JSON.parse(geoRaw);
+          if (geo && typeof geo.lat === 'number' && typeof geo.lng === 'number') {
+            const operatorCoords = [geo.lat, geo.lng];
+            
+            const iconHtml = `<div style="background-color:#ef4444; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 10px #ef4444;"></div>`;
+            const operatorIcon = L.divIcon({
+              html: iconHtml,
+              className: 'operator-map-marker',
+              iconSize: [16, 16],
+              iconAnchor: [8, 8]
+            });
 
-          const popupContent = `
-            <div style="font-family:system-ui,sans-serif; font-size:12px; color:${isLight ? '#020617' : '#e5e7eb'}; padding: 4px;">
-              <strong style="color:#ef4444; font-size:13px; display:block; margin-bottom:4px;">🔴 Último Login Operador</strong>
-              <div><strong>Coordenadas:</strong> ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)}</div>
-              <div><strong>Capturado em:</strong> ${new Date(geo.ts).toLocaleTimeString('pt-BR')}</div>
-            </div>
-          `;
+            const popupContent = `
+              <div style="font-family:system-ui,sans-serif; font-size:12px; color:${isLight ? '#020617' : '#e5e7eb'}; padding: 4px;">
+                <strong style="color:#ef4444; font-size:13px; display:block; margin-bottom:4px;">🔴 Último Login Operador</strong>
+                <div><strong>Coordenadas:</strong> ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)}</div>
+                <div><strong>Capturado em:</strong> ${new Date(geo.ts).toLocaleTimeString('pt-BR')}</div>
+              </div>
+            `;
 
-          L.marker(operatorCoords, { icon: operatorIcon })
-            .addTo(mapInstance)
-            .bindPopup(popupContent);
+            L.marker(operatorCoords, { icon: operatorIcon })
+              .addTo(mapInstance)
+              .bindPopup(popupContent);
 
-          bounds.push(operatorCoords);
+            bounds.push(operatorCoords);
+          }
         }
       }
     } catch (e) {
@@ -2255,7 +2263,24 @@
           const intFimStr = p.intervalo_fim ? new Date(p.intervalo_fim.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
           const checkoutStr = p.checkout ? new Date(p.checkout.replace(/-/g, '/')).toLocaleTimeString('pt-BR') : '—';
           
-          const coords = (p.lat && p.lng) ? `${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)}` : '—';
+          let loggedUser = null;
+          try { loggedUser = JSON.parse(localStorage.getItem('sgo_usuario')); } catch(e) {}
+          const roles = (loggedUser && loggedUser.roles) ? loggedUser.roles : [];
+          const isGestor = roles.includes('GESTOR');
+          const isSupervisor = roles.includes('SUPERVISOR');
+          
+          let coords = '—';
+          if (p.lat && p.lng) {
+            if (isGestor || isSupervisor) {
+              if (isSupervisor && loggedUser.scope_type === 'UNIDADE' && loggedUser.scope_value && p.usuario_posto !== loggedUser.scope_value) {
+                coords = 'Restrito';
+              } else {
+                coords = `${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)}`;
+              }
+            } else {
+              coords = 'Restrito';
+            }
+          }
           
           const checkinFotoBtn = p.foto_checkin 
             ? `<button class="btn-ver-foto" onclick="visualizarFoto('${p.foto_checkin}')" style="background:none;border:none;cursor:pointer;padding:0;font-size:14px;margin-left:4px;" title="Ver foto Check-in">📷</button>` 
