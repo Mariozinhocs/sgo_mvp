@@ -4068,7 +4068,7 @@
                 <th style="padding:6px 4px;">Entrada</th>
                 <th style="padding:6px 4px;">Saída</th>
                 <th style="padding:6px 4px;">Localização</th>
-                <th style="padding:6px 4px;">Validação</th>
+                <th style="padding:6px 4px;">Verificação</th>
               </tr>
             </thead>
             <tbody>
@@ -4101,7 +4101,7 @@
               statusBadge = `<span style="background:#f59e0b; color:#fff; font-size:9px; padding:2px 5px; border-radius:4px; font-weight:600;">Sem GPS Posto</span>`;
             }
             
-            validateBtn = `<button class="secondary" onclick="abrirMapaValidacao('${nomeOp.replace(/'/g, "\\'")}', ${p.lat}, ${p.lng}, '${postoNome.replace(/'/g, "\\'")}')" style="padding:2px 6px; font-size:10px; border-radius:4px; cursor:pointer;" type="button">Validar</button>`;
+            validateBtn = `<button class="secondary" onclick="abrirMapaValidacao('${nomeOp.replace(/'/g, "\\'")}', ${p.lat}, ${p.lng}, '${postoNome.replace(/'/g, "\\'")}')" style="padding:2px 6px; font-size:10px; border-radius:4px; cursor:pointer;" type="button">verificar</button>`;
           }
           
           html += `
